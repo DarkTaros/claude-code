@@ -361,6 +361,10 @@ function getChatGPTCodexModelOptions(): ModelOption[] {
 // @[MODEL LAUNCH]: Update the model picker lists below to include/reorder options for the new model.
 // Each user tier (ant, Max/Team Premium, Pro/Team Standard/Enterprise, PAYG 1P, PAYG 3P) has its own list.
 function getModelOptionsBase(fastMode = false): ModelOption[] {
+  if (getAPIProvider() === 'ah_server') {
+    return [getDefaultOptionForUser(fastMode)]
+  }
+
   if (process.env.USER_TYPE === 'ant') {
     // Build options from antModels config
     const antModelOptions: ModelOption[] = getAntModels().map(m => ({
@@ -555,6 +559,17 @@ function getKnownModelOption(model: string): ModelOption | null {
 export function getModelOptions(fastMode = false): ModelOption[] {
   const options = getModelOptionsBase(fastMode)
 
+  // Append additional model options fetched during bootstrap
+  for (const opt of getGlobalConfig().additionalModelOptionsCache ?? []) {
+    if (!options.some(existing => existing.value === opt.value)) {
+      options.push(opt)
+    }
+  }
+
+  if (getAPIProvider() === 'ah_server') {
+    return filterModelOptionsByAllowlist(options)
+  }
+
   // Add the custom model from the ANTHROPIC_CUSTOM_MODEL_OPTION env var
   const envCustomModel = process.env.ANTHROPIC_CUSTOM_MODEL_OPTION
   if (
@@ -568,13 +583,6 @@ export function getModelOptions(fastMode = false): ModelOption[] {
         process.env.ANTHROPIC_CUSTOM_MODEL_OPTION_DESCRIPTION ??
         `Custom model (${envCustomModel})`,
     })
-  }
-
-  // Append additional model options fetched during bootstrap
-  for (const opt of getGlobalConfig().additionalModelOptionsCache ?? []) {
-    if (!options.some(existing => existing.value === opt.value)) {
-      options.push(opt)
-    }
   }
 
   // Add custom model from either the current model value or the initial one

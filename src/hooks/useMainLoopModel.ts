@@ -6,6 +6,8 @@ import {
   type ModelName,
   parseUserSpecifiedModel,
 } from '../utils/model/model.js'
+import { getAPIProvider } from '../utils/model/providers.js'
+import { requireCachedAhServerDefaultModel } from '../utils/model/ahServerModels.js'
 
 // The value of the selector is a full model name that can be used directly in
 // API calls. Use this over getMainLoopModel() when the component needs to
@@ -25,10 +27,16 @@ export function useMainLoopModel(): ModelName {
   const [, forceRerender] = useReducer(x => x + 1, 0)
   useEffect(() => onGrowthBookRefresh(forceRerender), [])
 
-  const model = parseUserSpecifiedModel(
-    mainLoopModelForSession ??
-      mainLoopModel ??
-      getDefaultMainLoopModelSetting(),
+  const selectedModel = mainLoopModelForSession ?? mainLoopModel
+  if (getAPIProvider() === 'ah_server') {
+    const model =
+      selectedModel === null
+        ? requireCachedAhServerDefaultModel()
+        : selectedModel
+    return parseUserSpecifiedModel(model)
+  }
+
+  return parseUserSpecifiedModel(
+    selectedModel ?? getDefaultMainLoopModelSetting(),
   )
-  return model
 }

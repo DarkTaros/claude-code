@@ -141,8 +141,11 @@ export async function* adaptOpenAIStreamToAnthropic(
       }
     }
 
-    // Handle text content
-    if (delta.content != null && delta.content !== '') {
+    // Handle text content. Some OpenAI-compatible providers stream
+    // multimodal/content-part objects instead of a plain string; extract the
+    // actual text instead of letting "[object Object]" leak into the UI.
+    const textContent = textFromOpenAIContent(delta.content)
+    if (textContent !== '') {
       if (!textBlockOpen) {
         // Close thinking block if still open
         if (thinkingBlockOpen) {
@@ -173,7 +176,7 @@ export async function* adaptOpenAIStreamToAnthropic(
         index: currentContentIndex,
         delta: {
           type: 'text_delta',
-          text: delta.content,
+          text: textContent,
         },
       } as BetaRawMessageStreamEvent
     }
@@ -316,6 +319,26 @@ export async function* adaptOpenAIStreamToAnthropic(
       type: 'message_stop',
     } as BetaRawMessageStreamEvent
   }
+}
+
+function textFromOpenAIContent(content: unknown): string {
+  if (typeof content === 'string') return content
+  if (Array.isArray(content)) {
+    return content
+      .map(part => textFromOpenAIContentPart(part))
+      .filter(Boolean)
+      .join('\n')
+  }
+  return textFromOpenAIContentPart(content)
+}
+
+function textFromOpenAIContentPart(part: unknown): string {
+  if (typeof part === 'string') return part
+  if (!part || typeof part !== 'object') return ''
+  const record = part as Record<string, unknown>
+  if (typeof record.text === 'string') return record.text
+  if (typeof record.content === 'string') return record.content
+  return ''
 }
 
 /**

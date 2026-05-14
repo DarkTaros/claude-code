@@ -398,6 +398,30 @@ describe('thinking support (reasoning_content)', () => {
     expect(textDelta.delta.text).toBe('Here is my answer.')
   })
 
+  test('extracts text from structured content deltas', async () => {
+    const events = await collectEvents([
+      makeChunk({
+        choices: [
+          {
+            index: 0,
+            delta: {
+              content: [{ type: 'text', text: 'structured answer' }],
+            } as any,
+            finish_reason: null,
+          },
+        ],
+      }),
+      makeChunk({
+        choices: [{ index: 0, delta: {}, finish_reason: 'stop' }],
+      }),
+    ])
+
+    const textDelta = events.find(
+      e => e.type === 'content_block_delta' && e.delta.type === 'text_delta',
+    ) as any
+    expect(textDelta.delta.text).toBe('structured answer')
+  })
+
   test('handles reasoning then tool_calls', async () => {
     const events = await collectEvents([
       makeChunk({

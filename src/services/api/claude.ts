@@ -1346,6 +1346,18 @@ async function* queryModel(
     return
   }
 
+  if (getAPIProvider() === 'ah_server') {
+    const { queryModelAhServer } = await import('./ahServer/index.js')
+    yield* queryModelAhServer(
+      messagesForAPI,
+      systemPrompt,
+      filteredTools,
+      signal,
+      options,
+    )
+    return
+  }
+
   if (getAPIProvider() === 'gemini') {
     const { queryModelGemini } = await import('./gemini/index.js')
     yield* queryModelGemini(

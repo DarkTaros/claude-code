@@ -1,4 +1,5 @@
 import { z } from 'zod/v4'
+import { getSettings_DEPRECATED } from '../utils/settings/settings.js'
 
 const startResponseSchema = z.object({
   deviceCode: z.string(),
@@ -28,14 +29,28 @@ const tokenErrorSchema = z.object({
   error: z.string(),
 })
 
+const cliModelSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string().optional(),
+  capabilities: z.record(z.string(), z.boolean()).optional(),
+})
+
+const cliModelsResponseSchema = z.object({
+  models: z.array(cliModelSchema),
+  defaultModel: z.string().nullable().optional(),
+})
+
 export type AhCliAuthStart = z.infer<typeof startResponseSchema>
 export type AhCliAuthToken = z.infer<typeof tokenSuccessSchema>
+export type AhCliModel = z.infer<typeof cliModelSchema>
+export type AhCliModelsResponse = z.infer<typeof cliModelsResponseSchema>
 
 function normalizeBaseUrl(baseUrl: string) {
   return baseUrl.replace(/\/+$/, '')
 }
 
-function getAhServerBaseUrl() {
+export function getAhServerBaseUrl() {
   const baseUrl = process.env.AH_SERVER_BASE_URL?.trim()
   if (!baseUrl) {
     throw new Error(
@@ -51,6 +66,20 @@ function getAhServerBaseUrl() {
   }
 }
 
+export function getAhServerAccessToken() {
+  const token = getSettings_DEPRECATED()?.ahServerAuth?.accessToken?.trim()
+  if (!token) {
+    throw new Error('Missing AH SSO login. Run /login and choose AH SSO.')
+  }
+  return token
+}
+
+export function getAhServerAuthHeaders(token = getAhServerAccessToken()) {
+  return {
+    authorization: `Bearer ${token}`,
+  }
+}
+
 async function parseJsonResponse(response: Response) {
   try {
     return await response.json()
@@ -59,6 +88,27 @@ async function parseJsonResponse(response: Response) {
       `ah_server returned non-JSON response (${response.status}).`,
     )
   }
+}
+
+async function parseErrorResponse(response: Response) {
+  const contentType = response.headers.get('content-type') ?? ''
+  if (contentType.includes('application/json')) {
+    try {
+      const json = (await response.json()) as unknown
+      if (json && typeof json === 'object') {
+        const error = (json as { error?: unknown }).error
+        if (typeof error === 'string') return error
+        if (error && typeof error === 'object') {
+          const message = (error as { message?: unknown }).message
+          if (typeof message === 'string') return message
+        }
+      }
+    } catch {
+      // Fall through to text parsing below.
+    }
+  }
+  const text = await response.text().catch(() => '')
+  return text || response.statusText || `HTTP ${response.status}`
 }
 
 export async function startAhCliAuth(): Promise<
@@ -121,4 +171,58 @@ export async function pollAhCliAuthToken(params: {
     throw new Error('AH SSO login was denied.')
   }
   throw new Error(`ah_server token request failed: ${error}`)
+}
+
+export async function fetchAhServerModels(params?: {
+  baseUrl?: string
+  token?: string
+  signal?: AbortSignal
+  fetchOverride?: typeof fetch
+}): Promise<AhCliModelsResponse> {
+  const baseUrl = params?.baseUrl ?? getAhServerBaseUrl()
+  const fetchFn = params?.fetchOverride ?? (globalThis.fetch as typeof fetch)
+  const response = await fetchFn(`${baseUrl}/api/cli/models`, {
+    method: 'GET',
+    headers: {
+      accept: 'application/json',
+      ...getAhServerAuthHeaders(params?.token),
+    },
+    signal: params?.signal,
+  })
+
+  if (!response.ok) {
+    throw new Error(
+      `ah_server models request failed (${response.status}): ${await parseErrorResponse(response)}`,
+    )
+  }
+
+  const json = await parseJsonResponse(response)
+  const parsed = cliModelsResponseSchema.safeParse(json)
+  if (!parsed.success) {
+    throw new Error('ah_server models response is invalid.')
+  }
+  return parsed.data
+}
+
+export async function createAhServerChatCompletion(params: {
+  body: unknown
+  signal: AbortSignal
+  fetchOverride?: typeof fetch
+}): Promise<Response> {
+  const baseUrl = getAhServerBaseUrl()
+  const fetchFn = params.fetchOverride ?? (globalThis.fetch as typeof fetch)
+  return fetchFn(`${baseUrl}/api/cli/chat/completions`, {
+    method: 'POST',
+    headers: {
+      accept: 'text/event-stream, application/json',
+      'content-type': 'application/json',
+      ...getAhServerAuthHeaders(),
+    },
+    body: JSON.stringify(params.body),
+    signal: params.signal,
+  })
+}
+
+export async function getAhServerResponseError(response: Response) {
+  return parseErrorResponse(response)
 }

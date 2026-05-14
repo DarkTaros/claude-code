@@ -15,6 +15,7 @@ import { logError } from '../../utils/log.js'
 import { getAPIProvider } from '../../utils/model/providers.js'
 import { isEssentialTrafficOnly } from '../../utils/privacyLevel.js'
 import { getClaudeCodeUserAgent } from '../../utils/userAgent.js'
+import { fetchAhServerModels } from '../ahServerAuth.js'
 
 const bootstrapResponseSchema = lazySchema(() =>
   z.object({
@@ -39,10 +40,43 @@ const bootstrapResponseSchema = lazySchema(() =>
 
 type BootstrapResponse = z.infer<ReturnType<typeof bootstrapResponseSchema>>
 
+async function fetchAhServerBootstrapAPI(): Promise<BootstrapResponse | null> {
+  try {
+    const response = await fetchAhServerModels()
+    const models = response.defaultModel
+      ? [
+          ...response.models.filter(
+            model => model.id === response.defaultModel,
+          ),
+          ...response.models.filter(
+            model => model.id !== response.defaultModel,
+          ),
+        ]
+      : response.models
+    return {
+      client_data: null,
+      additional_model_options: models.map(model => ({
+        value: model.id,
+        label: model.name,
+        description: model.description ?? model.id,
+      })),
+    }
+  } catch (error) {
+    logForDebugging(
+      `[Bootstrap] AH server fetch failed: ${error instanceof Error ? error.message : String(error)}`,
+    )
+    throw error
+  }
+}
+
 async function fetchBootstrapAPI(): Promise<BootstrapResponse | null> {
   if (isEssentialTrafficOnly()) {
     logForDebugging('[Bootstrap] Skipped: Nonessential traffic disabled')
     return null
+  }
+
+  if (getAPIProvider() === 'ah_server') {
+    return fetchAhServerBootstrapAPI()
   }
 
   if (getAPIProvider() !== 'firstParty') {
@@ -111,7 +145,9 @@ async function fetchBootstrapAPI(): Promise<BootstrapResponse | null> {
 /**
  * Fetch bootstrap data from the API and persist to disk cache.
  */
-export async function fetchBootstrapData(): Promise<void> {
+export async function fetchBootstrapData(options?: {
+  throwOnError?: boolean
+}): Promise<void> {
   try {
     const response = await fetchBootstrapAPI()
     if (!response) return
@@ -137,5 +173,8 @@ export async function fetchBootstrapData(): Promise<void> {
     }))
   } catch (error) {
     logError(error)
+    if (options?.throwOnError) {
+      throw error
+    }
   }
 }

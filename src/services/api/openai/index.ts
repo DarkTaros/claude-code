@@ -44,6 +44,7 @@ import {
   convertOutputToLangfuse,
   convertToolsToLangfuse,
 } from '../../../services/langfuse/convert.js'
+import { unwrapSerializedTextBlock } from '../serializedTextBlock.js'
 export {
   isOpenAIThinkingEnabled,
   resolveOpenAIMaxTokens,
@@ -163,6 +164,7 @@ function assembleFinalAssistantOutputs(params: {
   const allBlocks = Object.keys(contentBlocks)
     .sort((a, b) => Number(a) - Number(b))
     .map(k => contentBlocks[Number(k)])
+    .map(unwrapSerializedTextBlock)
     .filter(Boolean)
 
   if (allBlocks.length > 0) {

@@ -23,6 +23,7 @@ import { formatDuration } from '../../utils/format.js';
 import { setEnvHookNotifier } from '../../utils/hooks/fileChangedWatcher.js';
 import { toIDEDisplayName } from '../../utils/ide.js';
 import { getMessagesAfterCompactBoundary } from '../../utils/messages.js';
+import { getAPIProvider } from '../../utils/model/providers.js';
 import { tokenCountFromLastAPIResponse } from '../../utils/tokens.js';
 import { ConfigurableShortcutHint } from '../ConfigurableShortcutHint.js';
 import { IdeStatusIndicator } from '../IdeStatusIndicator.js';
@@ -105,6 +106,7 @@ export function Notifications({
   const isInOverageMode = claudeAiLimits.isUsingOverage;
   const subscriptionType = getSubscriptionType();
   const isTeamOrEnterprise = subscriptionType === 'team' || subscriptionType === 'enterprise';
+  const isAhServerProvider = getAPIProvider() === 'ah_server';
 
   // Check if the external editor hint should be shown
   const editor = getExternalEditor();
@@ -148,6 +150,7 @@ export function Notifications({
           notifications={notifications}
           isInOverageMode={isInOverageMode ?? false}
           isTeamOrEnterprise={isTeamOrEnterprise}
+          isAhServerProvider={isAhServerProvider}
           apiKeyStatus={apiKeyStatus}
           debug={debug}
           verbose={verbose}
@@ -165,6 +168,7 @@ function NotificationContent({
   notifications,
   isInOverageMode,
   isTeamOrEnterprise,
+  isAhServerProvider,
   apiKeyStatus,
   debug,
   verbose,
@@ -179,6 +183,7 @@ function NotificationContent({
   };
   isInOverageMode: boolean;
   isTeamOrEnterprise: boolean;
+  isAhServerProvider: boolean;
   apiKeyStatus: VerificationStatus;
   debug: boolean;
   verbose: boolean;
@@ -249,7 +254,7 @@ function NotificationContent({
           </Text>
         </Box>
       )}
-      {(apiKeyStatus === 'invalid' || apiKeyStatus === 'missing') && (
+      {!isAhServerProvider && (apiKeyStatus === 'invalid' || apiKeyStatus === 'missing') && (
         <Box>
           <Text color="error" wrap="truncate">
             {isEnvTruthy(process.env.CLAUDE_CODE_REMOTE)

@@ -206,6 +206,7 @@ import {
   parseUserSpecifiedModel,
 } from './utils/model/model.js';
 import { ensureModelStringsInitialized } from './utils/model/modelStrings.js';
+import { getAPIProvider } from './utils/model/providers.js';
 import { PERMISSION_MODES } from './utils/permissions/PermissionMode.js';
 import {
   getAutoModeEnabledStateIfCached,
@@ -2494,6 +2495,10 @@ async function run(): Promise<CommanderCommand> {
 
       // Special case the default model with the null keyword
       // NOTE: Model resolution happens after setup() to ensure trust is established before AWS auth
+      if (getAPIProvider() === 'ah_server') {
+        await fetchBootstrapData({ throwOnError: true });
+      }
+
       const userSpecifiedModel = options.model === 'default' ? getDefaultMainLoopModel() : options.model;
       const userSpecifiedFallbackModel = fallbackModel === 'default' ? getDefaultMainLoopModel() : fallbackModel;
 
@@ -2714,11 +2719,13 @@ async function run(): Promise<CommanderCommand> {
         /* eslint-disable @typescript-eslint/no-require-imports */
         const briefVisibility =
           feature('KAIROS') || feature('KAIROS_BRIEF')
-            ? (
-                require('@claude-code-best/builtin-tools/tools/BriefTool/BriefTool.js') as typeof import('@claude-code-best/builtin-tools/tools/BriefTool/BriefTool.js')
-              ).isBriefEnabled()
-              ? 'Call SendUserMessage at checkpoints to mark where things stand.'
-              : 'The user will see any text you output.'
+            ? (() => {
+                const briefTool =
+                  require('@claude-code-best/builtin-tools/tools/BriefTool/BriefTool.js') as typeof import('@claude-code-best/builtin-tools/tools/BriefTool/BriefTool.js');
+                return typeof briefTool.isBriefEnabled === 'function' && briefTool.isBriefEnabled()
+                  ? 'Call SendUserMessage at checkpoints to mark where things stand.'
+                  : 'The user will see any text you output.';
+              })()
             : 'The user will see any text you output.';
         /* eslint-enable @typescript-eslint/no-require-imports */
         const proactivePrompt = `\n# Proactive Mode\n\nYou are in proactive mode. Take initiative — explore, act, and make progress without waiting for instructions.\n\nStart by briefly greeting the user.\n\nYou will receive periodic <tick> prompts. These are check-ins. Do whatever seems most useful, or call Sleep if there's nothing to do. ${briefVisibility}`;

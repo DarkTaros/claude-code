@@ -34,6 +34,11 @@ import {
   CHATGPT_CODEX_FAST_MODEL,
   isChatGPTAuthMode,
 } from './chatgptModels.js'
+import {
+  assertCachedAhServerModel,
+  requireCachedAhServerDefaultModel,
+  isCachedAhServerModel,
+} from './ahServerModels.js'
 
 export type ModelShortName = string
 export type ModelName = string
@@ -88,6 +93,13 @@ export function getUserSpecifiedModelSetting(): ModelSetting | undefined {
     specifiedModel = process.env.ANTHROPIC_MODEL || settings.model || undefined
   }
 
+  if (getAPIProvider() === 'ah_server') {
+    if (specifiedModel === undefined || specifiedModel === null) {
+      return specifiedModel
+    }
+    return isCachedAhServerModel(specifiedModel) ? specifiedModel : undefined
+  }
+
   // Ignore the user-specified model if it's not in the availableModels allowlist.
   if (specifiedModel && !isModelAllowed(specifiedModel)) {
     return undefined
@@ -123,6 +135,9 @@ export function getBestModel(): ModelName {
 // @[MODEL LAUNCH]: Update the default Opus model (3P providers may lag so keep defaults unchanged).
 export function getDefaultOpusModel(): ModelName {
   const provider = getAPIProvider()
+  if (provider === 'ah_server') {
+    return requireCachedAhServerDefaultModel()
+  }
   if (provider === 'openai' && isChatGPTAuthMode()) {
     return CHATGPT_CODEX_DEFAULT_MODEL
   }
@@ -151,6 +166,9 @@ export function getDefaultOpusModel(): ModelName {
 // @[MODEL LAUNCH]: Update the default Sonnet model (3P providers may lag so keep defaults unchanged).
 export function getDefaultSonnetModel(): ModelName {
   const provider = getAPIProvider()
+  if (provider === 'ah_server') {
+    return requireCachedAhServerDefaultModel()
+  }
   if (provider === 'openai' && isChatGPTAuthMode()) {
     return CHATGPT_CODEX_DEFAULT_MODEL
   }
@@ -176,6 +194,9 @@ export function getDefaultSonnetModel(): ModelName {
 // @[MODEL LAUNCH]: Update the default Haiku model (3P providers may lag so keep defaults unchanged).
 export function getDefaultHaikuModel(): ModelName {
   const provider = getAPIProvider()
+  if (provider === 'ah_server') {
+    return requireCachedAhServerDefaultModel()
+  }
   if (provider === 'openai' && isChatGPTAuthMode()) {
     return CHATGPT_CODEX_FAST_MODEL
   }
@@ -235,6 +256,10 @@ export function getRuntimeMainLoopModel(params: {
  * @returns The default model setting to use
  */
 export function getDefaultMainLoopModelSetting(): ModelName | ModelAlias {
+  if (getAPIProvider() === 'ah_server') {
+    return requireCachedAhServerDefaultModel()
+  }
+
   // Ants default to defaultModel from flag config, or Opus 1M if not configured
   if (process.env.USER_TYPE === 'ant') {
     return (
@@ -514,6 +539,10 @@ export function parseUserSpecifiedModel(
 ): ModelName {
   const modelInputTrimmed = modelInput.trim()
   const normalizedModel = modelInputTrimmed.toLowerCase()
+
+  if (getAPIProvider() === 'ah_server') {
+    return assertCachedAhServerModel(modelInputTrimmed)
+  }
 
   const has1mTag = has1mContext(normalizedModel)
   const modelString = has1mTag

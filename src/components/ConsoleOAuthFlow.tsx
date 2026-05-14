@@ -14,7 +14,6 @@ import {
   requestChatGPTDeviceCode,
   type ChatGPTDeviceCode,
 } from '../services/api/openai/chatgptAuth.js';
-import { clearOpenAIClientCache } from '../services/api/openai/client.js';
 import { pollAhCliAuthToken, startAhCliAuth, type AhCliAuthStart } from '../services/ahServerAuth.js';
 import { OAuthService } from '../services/oauth/index.js';
 import { getOauthAccountInfo, validateForceLoginOrg } from '../utils/auth.js';
@@ -1046,16 +1045,17 @@ function OAuthStatusMessage({
                 continue;
               }
 
-              const env: Record<string, string | undefined> = {
-                OPENAI_BASE_URL: `${auth.baseUrl}/v1`,
-                OPENAI_API_KEY: tokenResult.accessToken,
+              const envKeysToClear: Record<string, undefined> = {
+                OPENAI_BASE_URL: undefined,
+                OPENAI_API_KEY: undefined,
                 OPENAI_AUTH_MODE: undefined,
               };
               const settingsUpdate: Parameters<typeof updateSettingsForSource>[1] = {
-                modelType: 'openai',
-                env: env as unknown as Record<string, string>,
+                modelType: 'ah_server' as any,
+                model: undefined,
+                env: envKeysToClear as unknown as Record<string, string>,
                 ahServerAuth: {
-                  baseUrl: auth.baseUrl,
+                  accessToken: tokenResult.accessToken,
                   userEmail: tokenResult.user?.email ?? null,
                   userName: tokenResult.user?.name ?? null,
                   expiresAt: tokenResult.expiresAt,
@@ -1065,14 +1065,9 @@ function OAuthStatusMessage({
               if (error) {
                 throw new Error('Failed to save AH SSO settings. Please try again.');
               }
-              for (const [key, value] of Object.entries(env)) {
-                if (value === undefined) {
-                  delete process.env[key];
-                } else {
-                  process.env[key] = value;
-                }
+              for (const key of Object.keys(envKeysToClear)) {
+                delete process.env[key];
               }
-              clearOpenAIClientCache();
               setOAuthStatus({ state: 'success' });
               void onDone();
               return;
