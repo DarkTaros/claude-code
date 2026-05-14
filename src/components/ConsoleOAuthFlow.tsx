@@ -14,6 +14,8 @@ import {
   requestChatGPTDeviceCode,
   type ChatGPTDeviceCode,
 } from '../services/api/openai/chatgptAuth.js';
+import { clearOpenAIClientCache } from '../services/api/openai/client.js';
+import { pollAhCliAuthToken, startAhCliAuth, type AhCliAuthStart } from '../services/ahServerAuth.js';
 import { OAuthService } from '../services/oauth/index.js';
 import { getOauthAccountInfo, validateForceLoginOrg } from '../utils/auth.js';
 import { openBrowser } from '../utils/browser.js';
@@ -56,6 +58,11 @@ type OAuthStatus =
       phase: 'requesting' | 'waiting';
       deviceCode?: ChatGPTDeviceCode;
     } // ChatGPT account subscription via Codex OAuth device flow
+  | {
+      state: 'ah_sso';
+      phase: 'requesting' | 'waiting';
+      auth?: AhCliAuthStart & { baseUrl: string };
+    } // AH server SSO via Logto device-style flow
   | {
       state: 'gemini_api';
       baseUrl: string;
@@ -440,6 +447,15 @@ function OAuthStatusMessage({
                 {
                   label: (
                     <Text>
+                      AH SSO · <Text dimColor>使用诶嘿账号登录</Text>
+                      {'\n'}
+                    </Text>
+                  ),
+                  value: 'ah_sso',
+                },
+                {
+                  label: (
+                    <Text>
                       Anthropic Compatible · <Text dimColor>Configure your own API endpoint</Text>
                       {'\n'}
                     </Text>
@@ -538,6 +554,12 @@ function OAuthStatusMessage({
                   logEvent('tengu_chatgpt_subscription_selected', {});
                   setOAuthStatus({
                     state: 'chatgpt_subscription',
+                    phase: 'requesting',
+                  });
+                } else if (value === 'ah_sso') {
+                  logEvent('tengu_ah_sso_selected', {});
+                  setOAuthStatus({
+                    state: 'ah_sso',
                     phase: 'requesting',
                   });
                 } else if (value === 'gemini_api') {
@@ -983,6 +1005,124 @@ function OAuthStatusMessage({
             {renderOpenAIRow('opus_model', 'Opus     ')}
           </Box>
           <Text dimColor>↑↓/Tab to switch · Enter on last field to save · Esc to go back</Text>
+        </Box>
+      );
+    }
+
+    case 'ah_sso': {
+      const status = oauthStatus as {
+        state: 'ah_sso';
+        phase: 'requesting' | 'waiting';
+        auth?: AhCliAuthStart & { baseUrl: string };
+      };
+      const startedRef = useRef(false);
+
+      useEffect(() => {
+        if (startedRef.current) return;
+        startedRef.current = true;
+        let cancelled = false;
+        const controller = new AbortController();
+
+        async function runLogin() {
+          try {
+            const auth = await startAhCliAuth();
+            if (cancelled) return;
+            setOAuthStatus({
+              state: 'ah_sso',
+              phase: 'waiting',
+              auth,
+            });
+            void openBrowser(auth.verificationUri);
+
+            const deadline = Date.now() + auth.expiresIn * 1000;
+            while (!cancelled && Date.now() < deadline) {
+              await new Promise(resolve => setTimeout(resolve, Math.max(1, auth.interval) * 1000));
+              const tokenResult = await pollAhCliAuthToken({
+                baseUrl: auth.baseUrl,
+                deviceCode: auth.deviceCode,
+                signal: controller.signal,
+              });
+              if (tokenResult === 'authorization_pending') {
+                continue;
+              }
+
+              const env: Record<string, string | undefined> = {
+                OPENAI_BASE_URL: `${auth.baseUrl}/v1`,
+                OPENAI_API_KEY: tokenResult.accessToken,
+                OPENAI_AUTH_MODE: undefined,
+              };
+              const settingsUpdate: Parameters<typeof updateSettingsForSource>[1] = {
+                modelType: 'openai',
+                env: env as unknown as Record<string, string>,
+                ahServerAuth: {
+                  baseUrl: auth.baseUrl,
+                  userEmail: tokenResult.user?.email ?? null,
+                  userName: tokenResult.user?.name ?? null,
+                  expiresAt: tokenResult.expiresAt,
+                },
+              } as Parameters<typeof updateSettingsForSource>[1];
+              const { error } = updateSettingsForSource('userSettings', settingsUpdate);
+              if (error) {
+                throw new Error('Failed to save AH SSO settings. Please try again.');
+              }
+              for (const [key, value] of Object.entries(env)) {
+                if (value === undefined) {
+                  delete process.env[key];
+                } else {
+                  process.env[key] = value;
+                }
+              }
+              clearOpenAIClientCache();
+              setOAuthStatus({ state: 'success' });
+              void onDone();
+              return;
+            }
+            throw new Error('AH SSO login timed out. Please run /login again.');
+          } catch (err) {
+            if (cancelled) return;
+            setOAuthStatus({
+              state: 'error',
+              message: (err as Error).message,
+              toRetry: {
+                state: 'ah_sso',
+                phase: 'requesting',
+              },
+            });
+          }
+        }
+
+        void runLogin();
+        return () => {
+          cancelled = true;
+          controller.abort();
+        };
+      }, [setOAuthStatus, onDone]);
+
+      return (
+        <Box flexDirection="column" gap={1}>
+          <Text bold>AH SSO Login</Text>
+          {status.phase === 'requesting' && (
+            <Box>
+              <Spinner />
+              <Text>Requesting AH SSO login code…</Text>
+            </Box>
+          )}
+          {status.phase === 'waiting' && status.auth && (
+            <Box flexDirection="column" gap={1}>
+              <Text>Open this link and sign in with your AH account:</Text>
+              <Link url={status.auth.verificationUri}>
+                <Text dimColor>{status.auth.verificationUri}</Text>
+              </Link>
+              <Text>
+                Code: <Text bold>{status.auth.userCode}</Text>
+              </Text>
+              <Box>
+                <Spinner />
+                <Text>Waiting for AH SSO authorization…</Text>
+              </Box>
+            </Box>
+          )}
+          <Text dimColor>Esc to go back. Login codes expire after 10 minutes by default.</Text>
         </Box>
       );
     }

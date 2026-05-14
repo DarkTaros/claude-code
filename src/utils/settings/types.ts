@@ -396,6 +396,17 @@ export const SettingsSchema = lazySchema(() =>
             'model ID (e.g. a Bedrock inference profile ARN). Typically set in managed settings by ' +
             'enterprise administrators.',
         ),
+      ahServerAuth: z
+        .object({
+          baseUrl: z.string().url(),
+          userEmail: z.string().nullable().optional(),
+          userName: z.string().nullable().optional(),
+          expiresAt: z.string().optional(),
+        })
+        .optional()
+        .describe(
+          'AH server SSO metadata saved by /login. The bearer token itself lives in env.OPENAI_API_KEY.',
+        ),
       // Whether to automatically approve all MCP servers in the project
       enableAllProjectMcpServers: z
         .boolean()
