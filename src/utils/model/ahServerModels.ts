@@ -1,5 +1,7 @@
 import { getGlobalConfig } from '../config.js'
 
+const AH_SERVER_BOOTSTRAP_FALLBACK_MODEL = 'default'
+
 export function getCachedAhServerModelIds(): string[] {
   return (getGlobalConfig().additionalModelOptionsCache ?? [])
     .map(option => option.value)
@@ -22,6 +24,9 @@ export function assertCachedAhServerModel(model: unknown): string {
   if (isCachedAhServerModel(model)) return model
   const modelList = getCachedAhServerModelIds()
   if (modelList.length === 0) {
+    if (model === AH_SERVER_BOOTSTRAP_FALLBACK_MODEL) {
+      return AH_SERVER_BOOTSTRAP_FALLBACK_MODEL
+    }
     throw new Error(
       'AH Server model list is not loaded. Check AH_SERVER_BASE_URL and run /login again.',
     )
@@ -34,9 +39,7 @@ export function assertCachedAhServerModel(model: unknown): string {
 export function requireCachedAhServerDefaultModel(): string {
   const model = getCachedAhServerDefaultModel()
   if (!model) {
-    throw new Error(
-      'AH Server model list is not loaded. Check AH_SERVER_BASE_URL and run /login again.',
-    )
+    return AH_SERVER_BOOTSTRAP_FALLBACK_MODEL
   }
   return model
 }

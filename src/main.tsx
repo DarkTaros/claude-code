@@ -2496,7 +2496,7 @@ async function run(): Promise<CommanderCommand> {
       // Special case the default model with the null keyword
       // NOTE: Model resolution happens after setup() to ensure trust is established before AWS auth
       if (getAPIProvider() === 'ah_server') {
-        await fetchBootstrapData({ throwOnError: true });
+        void fetchBootstrapData();
       }
 
       const userSpecifiedModel = options.model === 'default' ? getDefaultMainLoopModel() : options.model;

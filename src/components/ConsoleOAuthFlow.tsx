@@ -61,7 +61,7 @@ type OAuthStatus =
       state: 'ah_sso';
       phase: 'requesting' | 'waiting';
       auth?: AhCliAuthStart & { baseUrl: string };
-    } // AH server SSO via Logto device-style flow
+    } // AH server SSO via Keycloak-backed device-style flow
   | {
       state: 'gemini_api';
       baseUrl: string;
@@ -1055,6 +1055,7 @@ function OAuthStatusMessage({
                 model: undefined,
                 env: envKeysToClear as unknown as Record<string, string>,
                 ahServerAuth: {
+                  baseUrl: auth.baseUrl,
                   accessToken: tokenResult.accessToken,
                   userEmail: tokenResult.user?.email ?? null,
                   userName: tokenResult.user?.name ?? null,

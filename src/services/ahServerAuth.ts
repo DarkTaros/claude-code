@@ -1,6 +1,38 @@
 import { z } from 'zod/v4'
 import { getSettings_DEPRECATED } from '../utils/settings/settings.js'
 
+export class AhServerConfigError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'AhServerConfigError'
+  }
+}
+
+export class AhServerAuthError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'AhServerAuthError'
+  }
+}
+
+export class AhServerHttpError extends Error {
+  readonly status: number
+
+  constructor(status: number, message: string) {
+    super(message)
+    this.name = 'AhServerHttpError'
+    this.status = status
+  }
+}
+
+export function isAhServerLoginStateInvalidError(error: unknown) {
+  return (
+    error instanceof AhServerConfigError ||
+    error instanceof AhServerAuthError ||
+    (error instanceof AhServerHttpError && error.status === 401)
+  )
+}
+
 const startResponseSchema = z.object({
   deviceCode: z.string(),
   userCode: z.string(),
@@ -51,17 +83,19 @@ function normalizeBaseUrl(baseUrl: string) {
 }
 
 export function getAhServerBaseUrl() {
-  const baseUrl = process.env.AH_SERVER_BASE_URL?.trim()
+  const baseUrl =
+    process.env.AH_SERVER_BASE_URL?.trim() ||
+    getSettings_DEPRECATED()?.ahServerAuth?.baseUrl?.trim()
   if (!baseUrl) {
-    throw new Error(
-      'Missing AH_SERVER_BASE_URL. Set it to your ah_server URL, for example http://localhost:8787.',
+    throw new AhServerConfigError(
+      'Missing AH server URL. Set AH_SERVER_BASE_URL or run /login and choose AH SSO.',
     )
   }
   try {
     return normalizeBaseUrl(new URL(baseUrl).toString())
   } catch {
-    throw new Error(
-      'AH_SERVER_BASE_URL must be a full URL, for example http://localhost:8787.',
+    throw new AhServerConfigError(
+      'AH server URL must be a full URL, for example http://localhost:8787.',
     )
   }
 }
@@ -69,7 +103,9 @@ export function getAhServerBaseUrl() {
 export function getAhServerAccessToken() {
   const token = getSettings_DEPRECATED()?.ahServerAuth?.accessToken?.trim()
   if (!token) {
-    throw new Error('Missing AH SSO login. Run /login and choose AH SSO.')
+    throw new AhServerAuthError(
+      'Missing AH SSO login. Run /login and choose AH SSO.',
+    )
   }
   return token
 }
@@ -191,9 +227,8 @@ export async function fetchAhServerModels(params?: {
   })
 
   if (!response.ok) {
-    throw new Error(
-      `ah_server models request failed (${response.status}): ${await parseErrorResponse(response)}`,
-    )
+    const message = `ah_server models request failed (${response.status}): ${await parseErrorResponse(response)}`
+    throw new AhServerHttpError(response.status, message)
   }
 
   const json = await parseJsonResponse(response)

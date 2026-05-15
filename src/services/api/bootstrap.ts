@@ -14,8 +14,16 @@ import { lazySchema } from '../../utils/lazySchema.js'
 import { logError } from '../../utils/log.js'
 import { getAPIProvider } from '../../utils/model/providers.js'
 import { isEssentialTrafficOnly } from '../../utils/privacyLevel.js'
+import {
+  getSettings_DEPRECATED,
+  updateSettingsForSource,
+} from '../../utils/settings/settings.js'
+import type { SettingsJson } from '../../utils/settings/types.js'
 import { getClaudeCodeUserAgent } from '../../utils/userAgent.js'
-import { fetchAhServerModels } from '../ahServerAuth.js'
+import {
+  fetchAhServerModels,
+  isAhServerLoginStateInvalidError,
+} from '../ahServerAuth.js'
 
 const bootstrapResponseSchema = lazySchema(() =>
   z.object({
@@ -39,6 +47,35 @@ const bootstrapResponseSchema = lazySchema(() =>
 )
 
 type BootstrapResponse = z.infer<ReturnType<typeof bootstrapResponseSchema>>
+
+function clearAhServerLoginState(reason: string) {
+  logForDebugging(`[Bootstrap] Clearing AH server login state: ${reason}`)
+
+  const baseUrl = getSettings_DEPRECATED().ahServerAuth?.baseUrl
+  const settingsUpdate: SettingsJson = {
+    modelType: undefined,
+    model: undefined,
+    ahServerAuth: baseUrl
+      ? {
+          baseUrl,
+          accessToken: undefined,
+          userEmail: undefined,
+          userName: undefined,
+          expiresAt: undefined,
+        }
+      : undefined,
+  }
+  const { error } = updateSettingsForSource('userSettings', settingsUpdate)
+  if (error) {
+    logError(error)
+  }
+
+  saveGlobalConfig(current => ({
+    ...current,
+    clientDataCache: null,
+    additionalModelOptionsCache: [],
+  }))
+}
 
 async function fetchAhServerBootstrapAPI(): Promise<BootstrapResponse | null> {
   try {
@@ -173,6 +210,15 @@ export async function fetchBootstrapData(options?: {
     }))
   } catch (error) {
     logError(error)
+    if (
+      getAPIProvider() === 'ah_server' &&
+      isAhServerLoginStateInvalidError(error)
+    ) {
+      clearAhServerLoginState(
+        error instanceof Error ? error.message : String(error),
+      )
+      return
+    }
     if (options?.throwOnError) {
       throw error
     }

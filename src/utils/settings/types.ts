@@ -398,14 +398,15 @@ export const SettingsSchema = lazySchema(() =>
         ),
       ahServerAuth: z
         .object({
-          accessToken: z.string(),
+          baseUrl: z.string().optional(),
+          accessToken: z.string().optional(),
           userEmail: z.string().nullable().optional(),
           userName: z.string().nullable().optional(),
           expiresAt: z.string().optional(),
         })
         .optional()
         .describe(
-          'AH server SSO login state saved by /login. Provider API keys and base URLs are never stored on the client.',
+          'AH server SSO login state saved by /login. Provider API keys and upstream base URLs are never stored on the client.',
         ),
       // Whether to automatically approve all MCP servers in the project
       enableAllProjectMcpServers: z
