@@ -14,6 +14,7 @@ import {
   requestChatGPTDeviceCode,
   type ChatGPTDeviceCode,
 } from '../services/api/openai/chatgptAuth.js';
+import { refreshAhServerModelCache } from '../services/api/bootstrap.js';
 import { pollAhCliAuthToken, startAhCliAuth, type AhCliAuthStart } from '../services/ahServerAuth.js';
 import { OAuthService } from '../services/oauth/index.js';
 import { getOauthAccountInfo, validateForceLoginOrg } from '../utils/auth.js';
@@ -1069,6 +1070,11 @@ function OAuthStatusMessage({
               for (const key of Object.keys(envKeysToClear)) {
                 delete process.env[key];
               }
+              await refreshAhServerModelCache({
+                baseUrl: auth.baseUrl,
+                token: tokenResult.accessToken,
+                signal: controller.signal,
+              });
               setOAuthStatus({ state: 'success' });
               void onDone();
               return;

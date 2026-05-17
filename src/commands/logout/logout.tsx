@@ -24,6 +24,7 @@ export async function performLogout({ clearOnboarding = false }): Promise<void> 
   await removeApiKey();
   await removeChatGPTAuth();
   clearChatGPTSettingsAuthMode();
+  clearAhServerSettingsAuth();
 
   // Wipe all secure storage data on logout
   const secureStorage = getSecureStorage();
@@ -44,6 +45,8 @@ export async function performLogout({ clearOnboarding = false }): Promise<void> 
       }
     }
     updated.oauthAccount = undefined;
+    updated.clientDataCache = null;
+    updated.additionalModelOptionsCache = [];
     return updated;
   });
 }
@@ -60,6 +63,24 @@ function clearChatGPTSettingsAuthMode(): void {
     env: {
       OPENAI_AUTH_MODE: undefined,
     } as unknown as Record<string, string>,
+  };
+  updateSettingsForSource('userSettings', settingsUpdate);
+}
+
+function clearAhServerSettingsAuth(): void {
+  const userSettings = getSettingsForSource('userSettings') ?? {};
+  const ahServerBaseUrl = userSettings.ahServerAuth?.baseUrl;
+  const settingsUpdate: Parameters<typeof updateSettingsForSource>[1] = {
+    ...(userSettings.modelType === 'ah_server' ? { modelType: undefined, model: undefined } : {}),
+    ahServerAuth: ahServerBaseUrl
+      ? {
+          baseUrl: ahServerBaseUrl,
+          accessToken: undefined,
+          userEmail: undefined,
+          userName: undefined,
+          expiresAt: undefined,
+        }
+      : undefined,
   };
   updateSettingsForSource('userSettings', settingsUpdate);
 }

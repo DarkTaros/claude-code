@@ -5,12 +5,14 @@ import type {
   Message,
   StreamEvent,
   SystemAPIErrorMessage,
+  UserMessage,
 } from '../../../types/message.js'
 import type { Tools } from '../../../Tool.js'
 import { toolToAPISchema } from '../../../utils/api.js'
 import { logForDebugging } from '../../../utils/debug.js'
 import {
   createAssistantAPIErrorMessage,
+  normalizeMessagesForAPI,
   normalizeContentFromAPI,
 } from '../../../utils/messages.js'
 import type { SDKAssistantMessageError } from '../../../entrypoints/agentSdkTypes.js'
@@ -18,11 +20,61 @@ import type { SystemPrompt } from '../../../utils/systemPromptType.js'
 import type { Options } from '../claude.js'
 import {
   createAhServerChatCompletion,
+  fetchAhServerModels,
   getAhServerResponseError,
 } from '../../ahServerAuth.js'
 import { unwrapSerializedTextBlock } from '../serializedTextBlock.js'
+import {
+  adaptOpenAIStreamToAnthropic,
+  anthropicMessagesToOpenAI,
+  anthropicToolChoiceToOpenAI,
+  anthropicToolsToOpenAI,
+} from '@ant/model-provider'
+import type { ChatCompletionChunk } from 'openai/resources/chat/completions/completions.mjs'
 
-async function* parseSSE(response: Response): AsyncGenerator<unknown, void> {
+const AH_SERVER_BOOTSTRAP_FALLBACK_MODEL = 'default'
+
+async function resolveAhServerRequestModel(model: string): Promise<string> {
+  if (model !== AH_SERVER_BOOTSTRAP_FALLBACK_MODEL) return model
+
+  const response = await fetchAhServerModels()
+  if (!response.defaultModel) {
+    throw new Error(
+      'AH Server model list is loaded but does not include a default model.',
+    )
+  }
+  return response.defaultModel
+}
+
+function parseOpenAIChunkData(data: string): ChatCompletionChunk {
+  const parsed = JSON.parse(data) as unknown
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    throw new Error('ah_server returned a non-object OpenAI chunk')
+  }
+
+  if ('error' in parsed) {
+    const error = (parsed as { error?: { message?: unknown } }).error
+    throw new Error(
+      typeof error?.message === 'string'
+        ? error.message
+        : 'ah_server returned a stream error',
+    )
+  }
+
+  const record = parsed as Record<string, unknown>
+  if (
+    record.object !== 'chat.completion.chunk' ||
+    !Array.isArray(record.choices)
+  ) {
+    throw new Error('ah_server returned a non-OpenAI chat completion chunk')
+  }
+
+  return parsed as ChatCompletionChunk
+}
+
+async function* parseOpenAIChatCompletionSSE(
+  response: Response,
+): AsyncGenerator<ChatCompletionChunk, void> {
   if (!response.body) {
     throw new Error('ah_server response did not include a body')
   }
@@ -46,8 +98,12 @@ async function* parseSSE(response: Response): AsyncGenerator<unknown, void> {
         .map(line => line.slice(5).trimStart())
         .join('\n')
 
+      if (!data && frame.trim()) {
+        throw new Error('ah_server returned a malformed SSE frame')
+      }
+
       if (data && data !== '[DONE]') {
-        yield JSON.parse(data) as unknown
+        yield parseOpenAIChunkData(data)
       }
 
       splitAt = buffer.indexOf('\n\n')
@@ -58,18 +114,17 @@ async function* parseSSE(response: Response): AsyncGenerator<unknown, void> {
   if (tail.startsWith('data:')) {
     const data = tail.slice(5).trimStart()
     if (data && data !== '[DONE]') {
-      yield JSON.parse(data) as unknown
+      yield parseOpenAIChunkData(data)
     }
+  } else if (tail) {
+    throw new Error('ah_server returned a malformed SSE frame')
   }
 }
 
-function isAnthropicStreamEvent(event: unknown): event is { type: string } {
-  return Boolean(
-    event &&
-      typeof event === 'object' &&
-      'type' in event &&
-      typeof (event as { type?: unknown }).type === 'string',
-  )
+function isOpenAIConvertibleMessage(
+  msg: Message,
+): msg is AssistantMessage | UserMessage {
+  return msg.type === 'assistant' || msg.type === 'user'
 }
 
 export async function* queryModelAhServer(
@@ -83,7 +138,11 @@ export async function* queryModelAhServer(
   void
 > {
   try {
-    const requestModel = options.model
+    const requestModel = await resolveAhServerRequestModel(options.model)
+    const messagesForAPI = normalizeMessagesForAPI(messages, tools)
+    const openAIConvertibleMessages = messagesForAPI.filter(
+      isOpenAIConvertibleMessage,
+    )
     const toolSchemas = await Promise.all(
       tools.map(tool =>
         toolToAPISchema(tool, {
@@ -105,25 +164,30 @@ export async function* queryModelAhServer(
         )
       },
     )
+    const openaiMessages = anthropicMessagesToOpenAI(
+      openAIConvertibleMessages,
+      systemPrompt,
+    )
+    const openaiTools = anthropicToolsToOpenAI(standardTools)
+    const openaiToolChoice = anthropicToolChoiceToOpenAI(options.toolChoice)
 
     logForDebugging(
-      `[AH Server] Calling model=${requestModel}, messages=${messages.length}, tools=${standardTools.length}`,
+      `[AH Server] Calling model=${requestModel}, messages=${openaiMessages.length}, tools=${openaiTools.length}`,
     )
 
     const response = await createAhServerChatCompletion({
       body: {
         model: requestModel,
-        messages,
-        systemPrompt,
-        tools: standardTools,
-        toolChoice: options.toolChoice,
+        messages: openaiMessages,
+        ...(openaiTools.length > 0 ? { tools: openaiTools } : {}),
+        ...(openaiToolChoice ? { tool_choice: openaiToolChoice } : {}),
         stream: true,
-        options: {
-          maxOutputTokens: options.maxOutputTokensOverride,
-          temperature: options.temperatureOverride,
-          effort: options.effortValue,
-          outputFormat: options.outputFormat,
-        },
+        ...(typeof options.maxOutputTokensOverride === 'number'
+          ? { max_tokens: options.maxOutputTokensOverride }
+          : {}),
+        ...(typeof options.temperatureOverride === 'number'
+          ? { temperature: options.temperatureOverride }
+          : {}),
       },
       signal,
       fetchOverride: options.fetchOverride as unknown as typeof fetch,
@@ -148,22 +212,11 @@ export async function* queryModelAhServer(
     let ttftMs = 0
     const start = Date.now()
 
-    for await (const event of parseSSE(response)) {
-      if (!isAnthropicStreamEvent(event)) continue
-
-      if (event.type === 'error') {
-        const errorMessage =
-          typeof (event as any).error?.message === 'string'
-            ? (event as any).error.message
-            : 'ah_server returned a stream error'
-        yield createAssistantAPIErrorMessage({
-          content: `AH Server API Error: ${errorMessage}`,
-          apiError: 'api_error',
-          error: new Error(errorMessage) as unknown as SDKAssistantMessageError,
-        })
-        continue
-      }
-
+    const adaptedStream = adaptOpenAIStreamToAnthropic(
+      parseOpenAIChatCompletionSSE(response),
+      requestModel,
+    )
+    for await (const event of adaptedStream) {
       switch (event.type) {
         case 'message_start':
           partialMessage = (event as any).message

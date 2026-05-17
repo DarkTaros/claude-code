@@ -21,6 +21,7 @@ import {
 import type { SettingsJson } from '../../utils/settings/types.js'
 import { getClaudeCodeUserAgent } from '../../utils/userAgent.js'
 import {
+  type AhCliModelsResponse,
   fetchAhServerModels,
   isAhServerLoginStateInvalidError,
 } from '../ahServerAuth.js'
@@ -77,27 +78,47 @@ function clearAhServerLoginState(reason: string) {
   }))
 }
 
+function ahServerModelsToBootstrapResponse(
+  response: AhCliModelsResponse,
+): BootstrapResponse {
+  const models = response.defaultModel
+    ? [
+        ...response.models.filter(model => model.id === response.defaultModel),
+        ...response.models.filter(model => model.id !== response.defaultModel),
+      ]
+    : response.models
+  return {
+    client_data: null,
+    additional_model_options: models.map(model => ({
+      value: model.id,
+      label: model.name,
+      description: model.description ?? model.id,
+    })),
+  }
+}
+
+export async function refreshAhServerModelCache(params?: {
+  baseUrl?: string
+  token?: string
+  signal?: AbortSignal
+  fetchOverride?: typeof fetch
+}): Promise<void> {
+  const response = ahServerModelsToBootstrapResponse(
+    await fetchAhServerModels(params),
+  )
+  const clientData = response.client_data ?? null
+  const additionalModelOptions = response.additional_model_options ?? []
+
+  saveGlobalConfig(current => ({
+    ...current,
+    clientDataCache: clientData,
+    additionalModelOptionsCache: additionalModelOptions,
+  }))
+}
+
 async function fetchAhServerBootstrapAPI(): Promise<BootstrapResponse | null> {
   try {
-    const response = await fetchAhServerModels()
-    const models = response.defaultModel
-      ? [
-          ...response.models.filter(
-            model => model.id === response.defaultModel,
-          ),
-          ...response.models.filter(
-            model => model.id !== response.defaultModel,
-          ),
-        ]
-      : response.models
-    return {
-      client_data: null,
-      additional_model_options: models.map(model => ({
-        value: model.id,
-        label: model.name,
-        description: model.description ?? model.id,
-      })),
-    }
+    return ahServerModelsToBootstrapResponse(await fetchAhServerModels())
   } catch (error) {
     logForDebugging(
       `[Bootstrap] AH server fetch failed: ${error instanceof Error ? error.message : String(error)}`,
