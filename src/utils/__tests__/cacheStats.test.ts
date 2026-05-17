@@ -14,9 +14,9 @@ import { join } from 'node:path'
 import * as fsp from 'node:fs/promises'
 
 // ---------------------------------------------------------------------------
-// Mock envUtils so getClaudeConfigHomeDir returns a temp dir while THIS
-// suite runs. After it finishes, getClaudeConfigHomeDir falls back to the
-// real semantics (process.env.CLAUDE_CONFIG_DIR ?? ~/.claude) so other
+// Mock envUtils so getAhcodeConfigHomeDir returns a temp dir while THIS
+// suite runs. After it finishes, getAhcodeConfigHomeDir falls back to the
+// real semantics (process.env.AHCODE_CONFIG_DIR ?? ~/.ahcode) so other
 // tests in the same process (envUtils.test.ts in particular) don't see
 // the test's tmpDir leaked as the user config home.
 // ---------------------------------------------------------------------------
@@ -30,7 +30,7 @@ afterAll(() => {
 // process-global, so envUtils.test.ts and other consumers (providers,
 // model, etc.) running in the same process see real behavior for
 // hasNodeOption, isEnvTruthy, isBareMode, parseEnvVars, etc. Only
-// getClaudeConfigHomeDir is overridden (to point at the test temp dir).
+// getAhcodeConfigHomeDir is overridden (to point at the test temp dir).
 const VERTEX_REGION_OVERRIDES: ReadonlyArray<[string, string]> = [
   ['claude-haiku-4-5', 'VERTEX_REGION_CLAUDE_HAIKU_4_5'],
   ['claude-3-5-haiku', 'VERTEX_REGION_CLAUDE_3_5_HAIKU'],
@@ -57,7 +57,7 @@ const realIsEnvDefinedFalsy = (v: string | boolean | undefined): boolean => {
 const realDefaultVertexRegion = (): string =>
   process.env.CLOUD_ML_REGION || 'us-east5'
 
-// Real getClaudeConfigHomeDir is memoized via lodash, so consumers may call
+// Real getAhcodeConfigHomeDir is memoized via lodash, so consumers may call
 // `.cache.clear()` on it (see tasks.test.ts). Provide a no-op .cache stub.
 const mockedGetClaudeConfigHomeDir: (() => string) & {
   cache: { clear: () => void; get: (k: unknown) => unknown }
@@ -65,7 +65,7 @@ const mockedGetClaudeConfigHomeDir: (() => string) & {
   () =>
     useMockForCacheStats
       ? tmpDir
-      : (process.env.CLAUDE_CONFIG_DIR ?? join(homedir(), '.claude')).normalize(
+      : (process.env.AHCODE_CONFIG_DIR ?? join(homedir(), '.ahcode')).normalize(
           'NFC',
         ),
   {
@@ -77,7 +77,7 @@ const mockedGetClaudeConfigHomeDir: (() => string) & {
 )
 
 mock.module('src/utils/envUtils.js', () => ({
-  getClaudeConfigHomeDir: mockedGetClaudeConfigHomeDir,
+  getAhcodeConfigHomeDir: mockedGetClaudeConfigHomeDir,
   isEnvTruthy: realIsEnvTruthy,
   hasNodeOption: (flag: string) => {
     const opts = process.env.NODE_OPTIONS
@@ -85,7 +85,7 @@ mock.module('src/utils/envUtils.js', () => ({
   },
   isEnvDefinedFalsy: realIsEnvDefinedFalsy,
   isBareMode: () =>
-    realIsEnvTruthy(process.env.CLAUDE_CODE_SIMPLE) ||
+    realIsEnvTruthy(process.env.AHCODE_SIMPLE) ||
     process.argv.includes('--bare'),
   parseEnvVars: (rawEnvArgs: string[] | undefined) => {
     const parsed: Record<string, string> = {}
@@ -116,7 +116,7 @@ mock.module('src/utils/envUtils.js', () => ({
       ? `${tmpDir}/teams`
       : join(
           (
-            process.env.CLAUDE_CONFIG_DIR ?? join(homedir(), '.claude')
+            process.env.AHCODE_CONFIG_DIR ?? join(homedir(), '.ahcode')
           ).normalize('NFC'),
           'teams',
         ),

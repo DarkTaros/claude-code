@@ -22,13 +22,13 @@ export function getAPIProvider(
   if (modelType === 'grok') return 'grok'
   if (modelType === 'ah_server') return 'ah_server'
 
-  if (isEnvTruthy(process.env.CLAUDE_CODE_USE_BEDROCK)) return 'bedrock'
-  if (isEnvTruthy(process.env.CLAUDE_CODE_USE_VERTEX)) return 'vertex'
-  if (isEnvTruthy(process.env.CLAUDE_CODE_USE_FOUNDRY)) return 'foundry'
+  if (isEnvTruthy(process.env.AHCODE_USE_BEDROCK)) return 'bedrock'
+  if (isEnvTruthy(process.env.AHCODE_USE_VERTEX)) return 'vertex'
+  if (isEnvTruthy(process.env.AHCODE_USE_FOUNDRY)) return 'foundry'
 
-  if (isEnvTruthy(process.env.CLAUDE_CODE_USE_OPENAI)) return 'openai'
-  if (isEnvTruthy(process.env.CLAUDE_CODE_USE_GEMINI)) return 'gemini'
-  if (isEnvTruthy(process.env.CLAUDE_CODE_USE_GROK)) return 'grok'
+  if (isEnvTruthy(process.env.AHCODE_USE_OPENAI)) return 'openai'
+  if (isEnvTruthy(process.env.AHCODE_USE_GEMINI)) return 'gemini'
+  if (isEnvTruthy(process.env.AHCODE_USE_GROK)) return 'grok'
 
   return 'firstParty'
 }

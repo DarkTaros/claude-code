@@ -50,13 +50,13 @@ import {
   type ToolCallProgress,
   toolMatchesName,
 } from '../../Tool.js'
-import { ListMcpResourcesTool } from '@claude-code-best/builtin-tools/tools/ListMcpResourcesTool/ListMcpResourcesTool.js'
+import { ListMcpResourcesTool } from '@ahcode/builtin-tools/tools/ListMcpResourcesTool/ListMcpResourcesTool.js'
 import {
   type MCPProgress,
   MCPTool,
-} from '@claude-code-best/builtin-tools/tools/MCPTool/MCPTool.js'
-import { createMcpAuthTool } from '@claude-code-best/builtin-tools/tools/McpAuthTool/McpAuthTool.js'
-import { ReadMcpResourceTool } from '@claude-code-best/builtin-tools/tools/ReadMcpResourceTool/ReadMcpResourceTool.js'
+} from '@ahcode/builtin-tools/tools/MCPTool/MCPTool.js'
+import { createMcpAuthTool } from '@ahcode/builtin-tools/tools/McpAuthTool/McpAuthTool.js'
+import { ReadMcpResourceTool } from '@ahcode/builtin-tools/tools/ReadMcpResourceTool/ReadMcpResourceTool.js'
 import { createAbortController } from '../../utils/abortController.js'
 import { count } from '../../utils/array.js'
 import {
@@ -123,8 +123,8 @@ import { getLoggingSafeMcpBaseUrl } from './utils.js'
 import {
   isMcpSessionExpiredError as isMcpSessionExpiredErrorFromPackage,
   MAX_MCP_DESCRIPTION_LENGTH as PKG_MAX_MCP_DESCRIPTION_LENGTH,
-} from '@claude-code-best/mcp-client'
-import { recursivelySanitizeUnicode } from '@claude-code-best/mcp-client'
+} from '@ahcode/mcp-client'
+import { recursivelySanitizeUnicode } from '@ahcode/mcp-client'
 
 /* eslint-disable @typescript-eslint/no-require-imports */
 const fetchMcpSkillsForClient = feature('MCP_SKILLS')
@@ -136,7 +136,7 @@ const fetchMcpSkillsForClient = feature('MCP_SKILLS')
 import { UnauthorizedError } from '@modelcontextprotocol/sdk/client/auth.js'
 import type { AssistantMessage } from 'src/types/message.js'
 /* eslint-enable @typescript-eslint/no-require-imports */
-import { classifyMcpToolForCollapse } from '@claude-code-best/builtin-tools/tools/MCPTool/classifyForCollapse.js'
+import { classifyMcpToolForCollapse } from '@ahcode/builtin-tools/tools/MCPTool/classifyForCollapse.js'
 import { clearKeychainCache } from '../../utils/secureStorage/macOsKeychainHelpers.js'
 import { sleep } from '../../utils/sleep.js'
 import {
@@ -251,7 +251,7 @@ const isComputerUseMCPServer = feature('CHICAGO_MCP')
 
 import { mkdir, readFile, unlink, writeFile } from 'fs/promises'
 import { dirname, join } from 'path'
-import { getClaudeConfigHomeDir } from '../../utils/envUtils.js'
+import { getAhcodeConfigHomeDir } from '../../utils/envUtils.js'
 /* eslint-enable @typescript-eslint/no-require-imports */
 import { jsonParse, jsonStringify } from '../../utils/slowOperations.js'
 
@@ -260,7 +260,7 @@ const MCP_AUTH_CACHE_TTL_MS = 15 * 60 * 1000 // 15 min
 type McpAuthCacheData = Record<string, { timestamp: number }>
 
 function getMcpAuthCachePath(): string {
-  return join(getClaudeConfigHomeDir(), 'mcp-needs-auth-cache.json')
+  return join(getAhcodeConfigHomeDir(), 'mcp-needs-auth-cache.json')
 }
 
 // Memoized so N concurrent isMcpAuthCached() calls during batched connection
@@ -951,9 +951,8 @@ export const connectToServer = memoize(
         !(serverRef as ScopedMcpServerConfig).type
       ) {
         const stdioRef = serverRef as McpStdioServerConfig
-        const finalCommand =
-          process.env.CLAUDE_CODE_SHELL_PREFIX || stdioRef.command
-        const finalArgs = process.env.CLAUDE_CODE_SHELL_PREFIX
+        const finalCommand = process.env.AHCODE_SHELL_PREFIX || stdioRef.command
+        const finalArgs = process.env.AHCODE_SHELL_PREFIX
           ? [[stdioRef.command, ...stdioRef.args].join(' ')]
           : stdioRef.args
         transport = new StdioClientTransport({
@@ -996,7 +995,7 @@ export const connectToServer = memoize(
       const client = new Client(
         {
           name: 'claude-code',
-          title: 'Claude Code',
+          title: 'AH Code',
           version: MACRO.VERSION ?? 'unknown',
           description: "Anthropic's agentic coding tool",
           websiteUrl: PRODUCT_URL,
@@ -3385,7 +3384,7 @@ export async function setupSdkMcpClients(
       const client = new Client(
         {
           name: 'claude-code',
-          title: 'Claude Code',
+          title: 'AH Code',
           version: MACRO.VERSION ?? 'unknown',
           description: "Anthropic's agentic coding tool",
           websiteUrl: PRODUCT_URL,

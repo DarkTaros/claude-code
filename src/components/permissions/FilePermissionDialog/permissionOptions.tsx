@@ -9,18 +9,18 @@ import { expandPath, getDirectoryForPath } from '../../../utils/path.js';
 import { normalizeCaseForComparison, pathInAllowedWorkingPath } from '../../../utils/permissions/filesystem.js';
 import type { OptionWithDescription } from '../../CustomSelect/select.js';
 /**
- * Check if a path is within the project's .claude/ folder.
- * This is used to determine whether to show the special ".claude folder" permission option.
+ * Check if a path is within the project's .ahcode/ folder.
+ * This is used to determine whether to show the special ".ahcode folder" permission option.
  */
 export function isInClaudeFolder(filePath: string): boolean {
   const absolutePath = expandPath(filePath);
-  const claudeFolderPath = expandPath(`${getOriginalCwd()}/.claude`);
+  const claudeFolderPath = expandPath(`${getOriginalCwd()}/.ahcode`);
 
-  // Check if the path is within the project's .claude folder
+  // Check if the path is within the project's .ahcode folder
   const normalizedAbsolutePath = normalizeCaseForComparison(absolutePath);
   const normalizedClaudeFolderPath = normalizeCaseForComparison(claudeFolderPath);
 
-  // Path must start with the .claude folder path (and be inside it, not just the folder itself)
+  // Path must start with the .ahcode folder path (and be inside it, not just the folder itself)
   return (
     normalizedAbsolutePath.startsWith(normalizedClaudeFolderPath + sep.toLowerCase()) ||
     // Also match case where sep is / on posix systems
@@ -29,13 +29,13 @@ export function isInClaudeFolder(filePath: string): boolean {
 }
 
 /**
- * Check if a path is within the global ~/.claude/ folder.
- * This is used to determine whether to show the special ".claude folder" permission option
+ * Check if a path is within the global ~/.ahcode/ folder.
+ * This is used to determine whether to show the special ".ahcode folder" permission option
  * for files in the user's home directory.
  */
 export function isInGlobalClaudeFolder(filePath: string): boolean {
   const absolutePath = expandPath(filePath);
-  const globalClaudeFolderPath = join(homedir(), '.claude');
+  const globalClaudeFolderPath = join(homedir(), '.ahcode');
 
   const normalizedAbsolutePath = normalizeCaseForComparison(absolutePath);
   const normalizedGlobalClaudeFolderPath = normalizeCaseForComparison(globalClaudeFolderPath);
@@ -98,17 +98,17 @@ export function getFilePermissionOptions({
 
   const inAllowedPath = pathInAllowedWorkingPath(filePath, toolPermissionContext);
 
-  // Check if this is a .claude/ folder path (project or global)
+  // Check if this is a .ahcode/ folder path (project or global)
   const inClaudeFolder = isInClaudeFolder(filePath);
   const inGlobalClaudeFolder = isInGlobalClaudeFolder(filePath);
 
-  // Option 2: For .claude/ folder, show special option instead of generic session option
+  // Option 2: For .ahcode/ folder, show special option instead of generic session option
   // Note: Session-level options are always shown since they only affect in-memory state,
   // not persisted settings. The allowManagedPermissionRulesOnly setting only restricts
   // persisted permission rules.
   if ((inClaudeFolder || inGlobalClaudeFolder) && operationType !== 'read') {
     options.push({
-      label: 'Yes, allow edits to .claude/ config for this session',
+      label: 'Yes, allow edits to .ahcode/ config for this session',
       value: 'yes-claude-folder',
       option: {
         type: 'accept-session',

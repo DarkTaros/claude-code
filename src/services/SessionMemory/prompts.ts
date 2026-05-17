@@ -1,7 +1,7 @@
 import { readFile } from 'fs/promises'
 import { join } from 'path'
 import { roughTokenCountEstimation } from '../../services/tokenEstimation.js'
-import { getClaudeConfigHomeDir } from '../../utils/envUtils.js'
+import { getAhcodeConfigHomeDir } from '../../utils/envUtils.js'
 import { getErrnoCode, toError } from '../../utils/errors.js'
 import { logError } from '../../utils/log.js'
 import { getDisplayedEffortLevel } from '../../utils/effort.js'
@@ -65,7 +65,7 @@ CRITICAL RULES FOR EDITING:
 - It's OK to skip updating a section if there are no substantial new insights to add. Do not add filler content like "No info yet", just leave sections blank/unedited if appropriate.
 - Write DETAILED, INFO-DENSE content for each section - include specifics like file paths, function names, error messages, exact commands, technical details, etc.
 - For "Key results", include the complete, exact output the user requested (e.g., full table, full answer, etc.)
-- Do not include information that's already in the CLAUDE.md files included in the context
+- Do not include information that's already in the AHCODE.md files included in the context
 - Keep each section under ~${MAX_SECTION_LENGTH} tokens/words - if a section is approaching this limit, condense it by cycling out less important details while preserving the most critical information
 - Focus on actionable, specific information that would help someone understand or recreate the work discussed in the conversation
 - IMPORTANT: Always update "Current State" to reflect the most recent work - this is critical for continuity after compaction
@@ -87,7 +87,7 @@ REMEMBER: Use the Edit tool in parallel and stop. Do not continue after the edit
  */
 export async function loadSessionMemoryTemplate(): Promise<string> {
   const templatePath = join(
-    getClaudeConfigHomeDir(),
+    getAhcodeConfigHomeDir(),
     'session-memory',
     'config',
     'template.md',
@@ -107,12 +107,12 @@ export async function loadSessionMemoryTemplate(): Promise<string> {
 
 /**
  * Load custom session memory prompt from file if it exists
- * Custom prompts can be placed at ~/.claude/session-memory/prompt.md
+ * Custom prompts can be placed at ~/.ahcode/session-memory/prompt.md
  * Use {{variableName}} syntax for variable substitution (e.g., {{currentNotes}}, {{notesPath}})
  */
 export async function loadSessionMemoryPrompt(): Promise<string> {
   const promptPath = join(
-    getClaudeConfigHomeDir(),
+    getAhcodeConfigHomeDir(),
     'session-memory',
     'config',
     'prompt.md',

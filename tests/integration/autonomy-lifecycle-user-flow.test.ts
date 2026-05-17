@@ -68,7 +68,7 @@ async function runAutonomyCli(args: string[]): Promise<string> {
     cwd: tempDir,
     env: {
       ...process.env,
-      CLAUDE_CONFIG_DIR: configDir,
+      AHCODE_CONFIG_DIR: configDir,
       CI: 'true',
       GITHUB_ACTIONS: 'true',
       NODE_ENV: 'development',
@@ -93,8 +93,8 @@ async function runAutonomyCli(args: string[]): Promise<string> {
 beforeEach(() => {
   tempDir = mkdtempSync(join(tmpdir(), 'autonomy-user-flow-'))
   configDir = join(tempDir, 'config')
-  previousConfigDir = process.env.CLAUDE_CONFIG_DIR
-  process.env.CLAUDE_CONFIG_DIR = configDir
+  previousConfigDir = process.env.AHCODE_CONFIG_DIR
+  process.env.AHCODE_CONFIG_DIR = configDir
   resetStateForTests()
   setOriginalCwd(tempDir)
   setProjectRoot(tempDir)
@@ -103,9 +103,9 @@ beforeEach(() => {
 afterEach(() => {
   resetStateForTests()
   if (previousConfigDir === undefined) {
-    delete process.env.CLAUDE_CONFIG_DIR
+    delete process.env.AHCODE_CONFIG_DIR
   } else {
-    process.env.CLAUDE_CONFIG_DIR = previousConfigDir
+    process.env.AHCODE_CONFIG_DIR = previousConfigDir
   }
   if (tempDir) {
     rmSync(tempDir, { recursive: true, force: true })
@@ -119,10 +119,10 @@ describe('autonomy lifecycle user-equivalent CLI flow', () => {
     expect(output).toContain('# Autonomy Deep Status')
     expect(output).toContain('Autonomy runs: 0')
     expect(output).toContain('Autonomy flows: 0')
-    expect(existsSync(join(tempDir, '.claude', 'autonomy', 'runs.json'))).toBe(
+    expect(existsSync(join(tempDir, '.ahcode', 'autonomy', 'runs.json'))).toBe(
       false,
     )
-    expect(existsSync(join(tempDir, '.claude', 'autonomy', 'flows.json'))).toBe(
+    expect(existsSync(join(tempDir, '.ahcode', 'autonomy', 'flows.json'))).toBe(
       false,
     )
   })

@@ -5,11 +5,11 @@ import type { BalanceProvider } from './types.js'
  * Generic URL+key balance provider.
  *
  * Environment:
- *   CLAUDE_CODE_BALANCE_URL        — GET endpoint returning JSON (required)
- *   CLAUDE_CODE_BALANCE_KEY        — optional Bearer token (falls back to OPENAI_API_KEY / ANTHROPIC_API_KEY)
- *   CLAUDE_CODE_BALANCE_JSON_PATH  — dot path into the JSON for the remaining number (default: "balance")
+ *   AHCODE_BALANCE_URL        — GET endpoint returning JSON (required)
+ *   AHCODE_BALANCE_KEY        — optional Bearer token (falls back to OPENAI_API_KEY / ANTHROPIC_API_KEY)
+ *   AHCODE_BALANCE_JSON_PATH  — dot path into the JSON for the remaining number (default: "balance")
  *                                    array indices allowed, e.g. "data.0.credit"
- *   CLAUDE_CODE_BALANCE_CURRENCY   — display currency label (default: "USD")
+ *   AHCODE_BALANCE_CURRENCY   — display currency label (default: "USD")
  *
  * Kept intentionally permissive so any OpenAI-compatible "my balance" endpoint
  * can be wired up without writing new code.
@@ -58,11 +58,11 @@ export const genericBalanceProvider: BalanceProvider = {
   providerId: 'generic',
 
   isEnabled(): boolean {
-    return Boolean(process.env.CLAUDE_CODE_BALANCE_URL)
+    return Boolean(process.env.AHCODE_BALANCE_URL)
   },
 
   async fetchBalance(signal?: AbortSignal): Promise<ProviderBalance | null> {
-    const rawUrl = process.env.CLAUDE_CODE_BALANCE_URL
+    const rawUrl = process.env.AHCODE_BALANCE_URL
     if (!rawUrl) return null
 
     let url: URL
@@ -73,15 +73,15 @@ export const genericBalanceProvider: BalanceProvider = {
     }
 
     // Fallback chain: BALANCE_KEY → OPENAI_API_KEY → ANTHROPIC_API_KEY.
-    // WARNING: fallback keys are sent to CLAUDE_CODE_BALANCE_URL as Bearer token.
-    // If that URL is untrusted, your provider key leaks. Prefer CLAUDE_CODE_BALANCE_KEY.
+    // WARNING: fallback keys are sent to AHCODE_BALANCE_URL as Bearer token.
+    // If that URL is untrusted, your provider key leaks. Prefer AHCODE_BALANCE_KEY.
     const key =
-      process.env.CLAUDE_CODE_BALANCE_KEY ||
+      process.env.AHCODE_BALANCE_KEY ||
       process.env.OPENAI_API_KEY ||
       process.env.ANTHROPIC_API_KEY ||
       ''
-    const path = process.env.CLAUDE_CODE_BALANCE_JSON_PATH || 'balance'
-    const currency = process.env.CLAUDE_CODE_BALANCE_CURRENCY || 'USD'
+    const path = process.env.AHCODE_BALANCE_JSON_PATH || 'balance'
+    const currency = process.env.AHCODE_BALANCE_CURRENCY || 'USD'
 
     let res: Response
     try {

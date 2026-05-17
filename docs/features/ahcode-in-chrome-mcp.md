@@ -2,7 +2,7 @@
 
 ## 1. 功能简介
 
-Claude in Chrome 让 Claude Code 直接控制你的 Chrome 浏览器。你可以用自然语言让 Claude 帮你：
+Claude in Chrome 让 AH Code 直接控制你的 Chrome 浏览器。你可以用自然语言让 Claude 帮你：
 
 - 打开网页、导航、前进后退
 - 填写表单、上传图片
@@ -16,10 +16,10 @@ Claude in Chrome 让 Claude Code 直接控制你的 Chrome 浏览器。你可以
 
 | 条件 | 说明 |
 |------|------|
-| Claude Code 订阅 | 需要 Claude Pro、Max 或 Team 订阅，浏览器插件功能不向免费用户开放 |
+| AH Code 订阅 | 需要 Claude Pro、Max 或 Team 订阅，浏览器插件功能不向免费用户开放 |
 | Chrome 浏览器 | 需已安装 Google Chrome |
 | Claude in Chrome 扩展 | 从 Chrome Web Store 安装（`claude.ai/chrome`） |
-| Claude Code CLI | 已通过 `bun run dev` 或构建产物运行 |
+| AH Code CLI | 已通过 `bun run dev` 或构建产物运行 |
 
 ## 3. 启用方式
 
@@ -47,11 +47,11 @@ bun run dev -- --no-chrome
 
 ### 通过配置默认启用
 
-在 Claude Code 设置中将 `claudeInChromeDefaultEnabled` 设为 `true`，以后启动无需加 `--chrome` 参数。
+在 AH Code 设置中将 `claudeInChromeDefaultEnabled` 设为 `true`，以后启动无需加 `--chrome` 参数。
 
 ## 4. 使用流程
 
-1. **启动 CLI** — 加 `--chrome` 参数启动 Claude Code
+1. **启动 CLI** — 加 `--chrome` 参数启动 AH Code
 2. **确认连接** — REPL 中输入 `/chrome`，查看扩展状态是否显示 "Installed / Connected"
 3. **开始对话** — 正常与 Claude 对话，当需要操作浏览器时直接说，例如：
    - "打开 https://example.com 并截图"

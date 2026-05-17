@@ -25,13 +25,13 @@ let tempDir: string
 let previousConfigDir: string | undefined
 
 beforeEach(async () => {
-  previousConfigDir = process.env.CLAUDE_CONFIG_DIR
+  previousConfigDir = process.env.AHCODE_CONFIG_DIR
   tempDir = join(
     tmpdir(),
     `autonomy-cli-${Date.now()}-${Math.random().toString(16).slice(2)}`,
   )
   await mkdir(tempDir, { recursive: true })
-  process.env.CLAUDE_CONFIG_DIR = join(tempDir, 'config')
+  process.env.AHCODE_CONFIG_DIR = join(tempDir, 'config')
   resetStateForTests()
   setOriginalCwd(tempDir)
   setProjectRoot(tempDir)
@@ -40,9 +40,9 @@ beforeEach(async () => {
 afterEach(async () => {
   resetStateForTests()
   if (previousConfigDir === undefined) {
-    delete process.env.CLAUDE_CONFIG_DIR
+    delete process.env.AHCODE_CONFIG_DIR
   } else {
-    process.env.CLAUDE_CONFIG_DIR = previousConfigDir
+    process.env.AHCODE_CONFIG_DIR = previousConfigDir
   }
   await rm(tempDir, { recursive: true, force: true })
 })
@@ -65,9 +65,9 @@ describe('autonomy CLI handler', () => {
   })
 
   test('prints deep status for CLI status --deep', async () => {
-    await mkdir(join(tempDir, '.claude'), { recursive: true })
+    await mkdir(join(tempDir, '.ahcode'), { recursive: true })
     await writeFile(
-      join(tempDir, '.claude', 'remote-trigger-audit.jsonl'),
+      join(tempDir, '.ahcode', 'remote-trigger-audit.jsonl'),
       `${JSON.stringify({
         auditId: 'audit-1',
         createdAt: 1,

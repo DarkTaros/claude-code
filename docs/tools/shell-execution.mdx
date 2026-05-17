@@ -1,6 +1,6 @@
 ---
 title: "命令执行工具 - BashTool 安全设计与实现"
-description: "从源码角度解析 Claude Code BashTool：只读命令判定、AST 安全解析、自动后台化、输出截断和专用工具 vs shell 命令的设计权衡。"
+description: "从源码角度解析 AH Code BashTool：只读命令判定、AST 安全解析、自动后台化、输出截断和专用工具 vs shell 命令的设计权衡。"
 keywords: ["Bash 工具", "命令执行", "Shell 执行", "安全命令", "AI 执行命令"]
 ---
 
@@ -138,7 +138,7 @@ shellCommand.onTimeout → spawnBackgroundTask()
 
 ## 为什么用专用工具而不是直接调 shell
 
-Claude Code 为文件读写、代码搜索等操作提供了专用工具（Read、Grep、Glob），而不是让 AI 用 `cat`、`grep` 等 shell 命令。这不仅是用户体验的选择，更是架构层面的设计决策：
+AH Code 为文件读写、代码搜索等操作提供了专用工具（Read、Grep、Glob），而不是让 AI 用 `cat`、`grep` 等 shell 命令。这不仅是用户体验的选择，更是架构层面的设计决策：
 
 | 维度 | 专用工具 | Bash 命令 |
 |------|---------|----------|

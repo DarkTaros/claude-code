@@ -2,9 +2,9 @@ import { afterEach, describe, expect, test } from 'bun:test'
 import { waitForUrlEvent } from '../index'
 
 const originalEnv = {
-  CLAUDE_CODE_URL_EVENT: process.env.CLAUDE_CODE_URL_EVENT,
-  CLAUDE_CODE_DEEP_LINK_URL: process.env.CLAUDE_CODE_DEEP_LINK_URL,
-  CLAUDE_CODE_URL: process.env.CLAUDE_CODE_URL,
+  AHCODE_URL_EVENT: process.env.AHCODE_URL_EVENT,
+  AHCODE_DEEP_LINK_URL: process.env.AHCODE_DEEP_LINK_URL,
+  AHCODE_URL: process.env.AHCODE_URL,
 }
 const originalArgv = process.argv.slice()
 
@@ -29,7 +29,7 @@ describe('waitForUrlEvent', () => {
   })
 
   test('returns a Claude URL from environment variables', async () => {
-    process.env.CLAUDE_CODE_URL_EVENT = 'claude-cli://prompt?q=hello'
+    process.env.AHCODE_URL_EVENT = 'claude-cli://prompt?q=hello'
 
     await expect(waitForUrlEvent()).resolves.toBe('claude-cli://prompt?q=hello')
   })
@@ -41,7 +41,7 @@ describe('waitForUrlEvent', () => {
   })
 
   test('rejects URLs exceeding the maximum length', async () => {
-    process.env.CLAUDE_CODE_URL_EVENT = `claude-cli://${'x'.repeat(2048)}`
+    process.env.AHCODE_URL_EVENT = `claude-cli://${'x'.repeat(2048)}`
 
     await expect(waitForUrlEvent()).resolves.toBeNull()
   })

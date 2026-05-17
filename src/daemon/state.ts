@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync, mkdirSync, unlinkSync } from 'fs'
 import { join, dirname } from 'path'
-import { getClaudeConfigHomeDir } from '../utils/envUtils.js'
+import { getAhcodeConfigHomeDir } from '../utils/envUtils.js'
 
 /**
  * Daemon state persisted to disk so that `status` / `stop` can work
@@ -20,7 +20,7 @@ export type DaemonStatus = 'running' | 'stopped' | 'stale'
  * Returns the path to the daemon state file for a given daemon name.
  */
 export function getDaemonStateFilePath(name = 'remote-control'): string {
-  return join(getClaudeConfigHomeDir(), 'daemon', `${name}.json`)
+  return join(getAhcodeConfigHomeDir(), 'daemon', `${name}.json`)
 }
 
 /**

@@ -1,6 +1,6 @@
 ---
 title: "项目记忆系统 - 文件级跨对话记忆架构"
-description: "深度解析 Claude Code 记忆系统：基于文件的持久化存储、MEMORY.md 索引结构、四类型分类法、Sonnet 智能召回、Session Memory 压缩集成。"
+description: "深度解析 AH Code 记忆系统：基于文件的持久化存储、MEMORY.md 索引结构、四类型分类法、Sonnet 智能召回、Session Memory 压缩集成。"
 keywords: ["项目记忆", "MEMORY.md", "AI 记忆", "跨对话", "自动记忆", "memdir"]
 ---
 
@@ -10,12 +10,12 @@ keywords: ["项目记忆", "MEMORY.md", "AI 记忆", "跨对话", "自动记忆"
 
 源码路径：`src/memdir/paths.ts`、`src/memdir/memdir.ts`
 
-Claude Code 的记忆系统是**纯文件**的——没有数据库、没有向量存储，只有 Markdown 文件和目录结构。
+AH Code 的记忆系统是**纯文件**的——没有数据库、没有向量存储，只有 Markdown 文件和目录结构。
 
 ### 目录布局
 
 ```
-~/.claude/projects/<sanitized-git-root>/memory/
+~/.ahcode/projects/<sanitized-git-root>/memory/
 ├── MEMORY.md                    ← 入口索引（每次对话加载）
 ├── user_role.md                 ← 用户记忆
 ├── feedback_testing.md          ← 反馈记忆

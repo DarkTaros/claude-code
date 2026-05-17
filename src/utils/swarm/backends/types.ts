@@ -1,5 +1,5 @@
-import type { AgentColorName } from '@claude-code-best/builtin-tools/tools/AgentTool/agentColorManager.js'
-import type { CustomAgentDefinition } from '@claude-code-best/builtin-tools/tools/AgentTool/loadAgentsDir.js'
+import type { AgentColorName } from '@ahcode/builtin-tools/tools/AgentTool/agentColorManager.js'
+import type { CustomAgentDefinition } from '@ahcode/builtin-tools/tools/AgentTool/loadAgentsDir.js'
 import type { ToolUseContext } from '../../../Tool.js'
 
 /**

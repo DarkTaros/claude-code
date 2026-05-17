@@ -1,6 +1,6 @@
 import { appendFileSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
-import { getClaudeConfigHomeDir } from '../utils/envUtils.js'
+import { getAhcodeConfigHomeDir } from '../utils/envUtils.js'
 
 export interface JobState {
   jobId: string
@@ -12,7 +12,7 @@ export interface JobState {
 }
 
 function getJobsDir(): string {
-  return join(getClaudeConfigHomeDir(), 'jobs')
+  return join(getAhcodeConfigHomeDir(), 'jobs')
 }
 
 export function getJobDir(jobId: string): string {

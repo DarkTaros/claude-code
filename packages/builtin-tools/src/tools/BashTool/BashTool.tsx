@@ -25,7 +25,7 @@ import type { AgentId } from 'src/types/ids.js';
 import type { AssistantMessage } from 'src/types/message.js';
 import { parseForSecurity } from 'src/utils/bash/ast.js';
 import { splitCommand_DEPRECATED, splitCommandWithOperators } from 'src/utils/bash/commands.js';
-import { extractClaudeCodeHints } from 'src/utils/claudeCodeHints.js';
+import { extractAhcodeHints } from 'src/utils/ahcodeCodeHints.js';
 import { detectCodeIndexingFromCommand } from 'src/utils/codeIndexing.js';
 import { isEnvTruthy } from 'src/utils/envUtils.js';
 import { isENOENT, ShellError } from 'src/utils/errors.js';
@@ -295,7 +295,7 @@ const DISALLOWED_AUTO_BACKGROUND_COMMANDS = [
 // Check if background tasks are disabled at module load time
 const isBackgroundTasksDisabled =
   // eslint-disable-next-line custom-rules/no-process-env-top-level -- Intentional: schema must be defined at module load
-  isEnvTruthy(process.env.CLAUDE_CODE_DISABLE_BACKGROUND_TASKS);
+  isEnvTruthy(process.env.AHCODE_DISABLE_BACKGROUND_TASKS);
 
 const fullInputSchema = lazySchema(() =>
   z.strictObject({
@@ -629,7 +629,7 @@ export const BashTool = buildTool({
     // `new RegExp` per call. userFacingName runs per-render for every bash
     // message in history; with ~50 msgs + one slow-to-tokenize command, this
     // exceeds the shimmer tick → transition abort → infinite retry (#21605).
-    return isEnvTruthy(process.env.CLAUDE_CODE_BASH_SANDBOX_SHOW_INDICATOR) && shouldUseSandbox(input)
+    return isEnvTruthy(process.env.AHCODE_BASH_SANDBOX_SHOW_INDICATOR) && shouldUseSandbox(input)
       ? 'SandboxedBash'
       : 'Bash';
   },
@@ -917,13 +917,13 @@ export const BashTool = buildTool({
 
     let strippedStdout = stripEmptyLines(stdout);
 
-    // Claude Code hints protocol: CLIs/SDKs gated on CLAUDECODE=1 emit a
+    // AH Code hints protocol: CLIs/SDKs gated on CLAUDECODE=1 emit a
     // `<claude-code-hint />` tag to stderr (merged into stdout here). Scan,
-    // record for useClaudeCodeHintRecommendation to surface, then strip
+    // record for useAhcodeHintRecommendation to surface, then strip
     // so the model never sees the tag — a zero-token side channel.
     // Stripping runs unconditionally (subagent output must stay clean too);
     // only the dialog recording is main-thread-only.
-    const extracted = extractClaudeCodeHints(strippedStdout, input.command);
+    const extracted = extractAhcodeHints(strippedStdout, input.command);
     strippedStdout = extracted.stripped;
     if (isMainThread && extracted.hints.length > 0) {
       for (const hint of extracted.hints) maybeRecordPluginHint(hint);

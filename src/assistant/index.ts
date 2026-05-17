@@ -4,7 +4,7 @@ import { getKairosActive, getSessionId } from '../bootstrap/state.js'
 import type { AppState } from '../state/AppState.js'
 import { formatAgentId } from '../utils/agentId.js'
 import { getCwd } from '../utils/cwd.js'
-import { getClaudeConfigHomeDir } from '../utils/envUtils.js'
+import { getAhcodeConfigHomeDir } from '../utils/envUtils.js'
 import { TEAM_LEAD_NAME } from '../utils/swarm/constants.js'
 import {
   getTeamFilePath,
@@ -110,13 +110,13 @@ export async function initializeAssistantTeam(): Promise<
 }
 
 /**
- * Assistant-specific system prompt addendum loaded from ~/.claude/agents/assistant.md.
+ * Assistant-specific system prompt addendum loaded from ~/.ahcode/agents/assistant.md.
  * Returns empty string if the file doesn't exist.
  */
 export function getAssistantSystemPromptAddendum(): string {
   try {
     return readFileSync(
-      join(getClaudeConfigHomeDir(), 'agents', 'assistant.md'),
+      join(getAhcodeConfigHomeDir(), 'agents', 'assistant.md'),
       'utf-8',
     )
   } catch {

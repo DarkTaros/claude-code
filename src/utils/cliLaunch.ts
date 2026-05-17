@@ -114,11 +114,8 @@ export function buildCliLaunch(
   // Ensure Windows children can discover git-bash without shelling out
   const env: NodeJS.ProcessEnv = { ...baseEnv }
   if (IS_WINDOWS) {
-    if (
-      process.env.CLAUDE_CODE_GIT_BASH_PATH &&
-      !env.CLAUDE_CODE_GIT_BASH_PATH
-    ) {
-      env.CLAUDE_CODE_GIT_BASH_PATH = process.env.CLAUDE_CODE_GIT_BASH_PATH
+    if (process.env.AHCODE_GIT_BASH_PATH && !env.AHCODE_GIT_BASH_PATH) {
+      env.AHCODE_GIT_BASH_PATH = process.env.AHCODE_GIT_BASH_PATH
     }
     if (process.env.SHELL && !env.SHELL) {
       env.SHELL = process.env.SHELL

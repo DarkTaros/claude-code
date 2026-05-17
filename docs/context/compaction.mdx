@@ -1,6 +1,6 @@
 ---
 title: "上下文压缩 - Compaction 三层策略与边界机制"
-description: "深度解析 Claude Code 上下文压缩的完整实现：Session Memory 压缩、传统 API 摘要压缩、MicroCompact 局部压缩三层策略，以及 CompactBoundary 消息、工具对保持、PTL 紧急降级等关键机制。"
+description: "深度解析 AH Code 上下文压缩的完整实现：Session Memory 压缩、传统 API 摘要压缩、MicroCompact 局部压缩三层策略，以及 CompactBoundary 消息、工具对保持、PTL 紧急降级等关键机制。"
 keywords: ["上下文压缩", "Compaction", "token 管理", "对话压缩", "上下文窗口", "MicroCompact"]
 ---
 
@@ -154,7 +154,7 @@ export const POST_COMPACT_SKILLS_TOKEN_BUDGET = 25_000    // 技能总预算 25K
 这 50K token 的重新注入预算用于：
 1. 恢复最近读取的文件内容（最多 5 个文件，每个截断到 5K token）
 2. 恢复已激活的技能指令（每个技能截断到 5K token，总计 25K）
-3. 重新注入 CLAUDE.md 内容
+3. 重新注入 AHCODE.md 内容
 4. 恢复 MCP 工具发现结果
 
 ## CompactBoundary：压缩的边界标记
@@ -243,7 +243,7 @@ Reactive Compact 目前在反编译版本中是 stub（`isReactiveOnlyMode() →
 
 - **Pre-compact Hook**（`executePreCompactHooks`）：在压缩前执行，可以注入"必须保留"的标记
 - **Post-compact Hook**（`executePostCompactHooks`）：在压缩后执行，可以验证关键信息是否保留
-- **Session Start Hook**（`processSessionStartHooks('compact')`）：SM 压缩使用此 Hook 恢复 CLAUDE.md 等上下文
+- **Session Start Hook**（`processSessionStartHooks('compact')`）：SM 压缩使用此 Hook 恢复 AHCODE.md 等上下文
 
 Hook 结果以 `HookResultMessage` 的形式附加到压缩结果中，确保用户的自定义逻辑在压缩过程中被尊重。
 

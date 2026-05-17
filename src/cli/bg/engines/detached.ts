@@ -25,9 +25,9 @@ export class DetachedEngine implements BgEngine {
     const launch = buildCliLaunch(opts.args, {
       env: {
         ...opts.env,
-        CLAUDE_CODE_SESSION_KIND: 'bg',
-        CLAUDE_CODE_SESSION_NAME: opts.sessionName,
-        CLAUDE_CODE_SESSION_LOG: opts.logPath,
+        AHCODE_SESSION_KIND: 'bg',
+        AHCODE_SESSION_NAME: opts.sessionName,
+        AHCODE_SESSION_LOG: opts.logPath,
       } as NodeJS.ProcessEnv,
     })
 

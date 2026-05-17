@@ -119,9 +119,9 @@ let claudeDir: string
 
 beforeEach(() => {
   tmpDir = mkdtempSync(join(tmpdir(), 'share-test-'))
-  claudeDir = join(tmpDir, '.claude')
+  claudeDir = join(tmpDir, '.ahcode')
   mkdirSync(claudeDir, { recursive: true })
-  process.env.CLAUDE_CONFIG_DIR = claudeDir
+  process.env.AHCODE_CONFIG_DIR = claudeDir
   // Reset to gh-succeeds default (execFile returns empty stdout — gh check passes,
   // gist create will fail with "Unexpected gh gist output" which is acceptable for
   // tests that only exercise content-preparation paths).
@@ -130,7 +130,7 @@ beforeEach(() => {
 
 afterEach(() => {
   rmSync(tmpDir, { recursive: true, force: true })
-  delete process.env.CLAUDE_CONFIG_DIR
+  delete process.env.AHCODE_CONFIG_DIR
 })
 
 // ── Helpers ──

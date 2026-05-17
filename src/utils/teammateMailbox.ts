@@ -1,7 +1,7 @@
 /**
  * Teammate Mailbox - File-based messaging system for agent swarms
  *
- * Each teammate has an inbox file at .claude/teams/{team_name}/inboxes/{agent_name}.json
+ * Each teammate has an inbox file at .ahcode/teams/{team_name}/inboxes/{agent_name}.json
  * Other teammates can write messages to it, and the recipient sees them as attachments.
  *
  * Note: Inboxes are keyed by agent name within a team.
@@ -13,7 +13,7 @@ import { join } from 'path'
 import { z } from 'zod/v4'
 import { TEAMMATE_MESSAGE_TAG } from '../constants/xml.js'
 import { PermissionModeSchema } from '../entrypoints/sdk/coreSchemas.js'
-import { SEND_MESSAGE_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/SendMessageTool/constants.js'
+import { SEND_MESSAGE_TOOL_NAME } from '@ahcode/builtin-tools/tools/SendMessageTool/constants.js'
 import type { Message } from '../types/message.js'
 import { generateRequestId } from './agentId.js'
 import { count } from './array.js'
@@ -276,7 +276,7 @@ async function writeCompactedMailbox(
 
 /**
  * Get the path to a teammate's inbox file
- * Structure: ~/.claude/teams/{team_name}/inboxes/{agent_name}.json
+ * Structure: ~/.ahcode/teams/{team_name}/inboxes/{agent_name}.json
  */
 export function getInboxPath(agentName: string, teamName?: string): string {
   const team = teamName || getTeamName() || 'default'
@@ -304,7 +304,7 @@ async function ensureInboxDir(teamName?: string): Promise<void> {
 /**
  * Read all messages from a teammate's inbox
  * @param agentName - The agent name (not UUID) to read inbox for
- * @param teamName - Optional team name (defaults to CLAUDE_CODE_TEAM_NAME env var or 'default')
+ * @param teamName - Optional team name (defaults to AHCODE_TEAM_NAME env var or 'default')
  */
 export async function readMailbox(
   agentName: string,
@@ -842,11 +842,11 @@ export type SandboxPermissionRequestMessage = {
   type: 'sandbox_permission_request'
   /** Unique identifier for this request */
   requestId: string
-  /** Worker's CLAUDE_CODE_AGENT_ID */
+  /** Worker's AHCODE_AGENT_ID */
   workerId: string
-  /** Worker's CLAUDE_CODE_AGENT_NAME */
+  /** Worker's AHCODE_AGENT_NAME */
   workerName: string
-  /** Worker's CLAUDE_CODE_AGENT_COLOR */
+  /** Worker's AHCODE_AGENT_COLOR */
   workerColor?: string
   /** The host pattern requesting network access */
   hostPattern: {
@@ -1089,7 +1089,7 @@ export function createShutdownRejectedMessage(params: {
  * This is the core logic extracted for reuse by both the tool and UI components.
  *
  * @param targetName - Name of the teammate to send shutdown request to
- * @param teamName - Optional team name (defaults to CLAUDE_CODE_TEAM_NAME env var)
+ * @param teamName - Optional team name (defaults to AHCODE_TEAM_NAME env var)
  * @param reason - Optional reason for the shutdown request
  * @returns The request ID and target name
  */

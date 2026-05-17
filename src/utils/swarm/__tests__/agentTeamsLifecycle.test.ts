@@ -80,13 +80,13 @@ function writeTeamConfig(teamName: string, config: unknown): void {
 
 beforeEach(() => {
   terminateCalls = []
-  previousConfigDir = process.env.CLAUDE_CONFIG_DIR
+  previousConfigDir = process.env.AHCODE_CONFIG_DIR
   previousAnthropicApiKey = process.env.ANTHROPIC_API_KEY
   tempHome = join(
     tmpdir(),
     `agent-teams-lifecycle-${Date.now()}-${Math.random().toString(16).slice(2)}`,
   )
-  process.env.CLAUDE_CONFIG_DIR = tempHome
+  process.env.AHCODE_CONFIG_DIR = tempHome
   process.env.ANTHROPIC_API_KEY = 'test-key'
   state = {
     teamContext: undefined,
@@ -107,9 +107,9 @@ beforeEach(() => {
 
 afterEach(() => {
   if (previousConfigDir === undefined) {
-    delete process.env.CLAUDE_CONFIG_DIR
+    delete process.env.AHCODE_CONFIG_DIR
   } else {
-    process.env.CLAUDE_CONFIG_DIR = previousConfigDir
+    process.env.AHCODE_CONFIG_DIR = previousConfigDir
   }
   if (previousAnthropicApiKey === undefined) {
     delete process.env.ANTHROPIC_API_KEY
@@ -122,22 +122,22 @@ afterEach(() => {
 describe('Agent Teams lifecycle', () => {
   test('runs TeamCreate -> spawn -> TaskUpdate -> SendMessage -> TeamDelete', async () => {
     const { TeamCreateTool } = await import(
-      '@claude-code-best/builtin-tools/tools/TeamCreateTool/TeamCreateTool.js'
+      '@ahcode/builtin-tools/tools/TeamCreateTool/TeamCreateTool.js'
     )
     const { spawnTeammate } = await import(
-      '@claude-code-best/builtin-tools/tools/shared/spawnMultiAgent.js'
+      '@ahcode/builtin-tools/tools/shared/spawnMultiAgent.js'
     )
     const { TaskCreateTool } = await import(
-      '@claude-code-best/builtin-tools/tools/TaskCreateTool/TaskCreateTool.js'
+      '@ahcode/builtin-tools/tools/TaskCreateTool/TaskCreateTool.js'
     )
     const { TaskUpdateTool } = await import(
-      '@claude-code-best/builtin-tools/tools/TaskUpdateTool/TaskUpdateTool.js'
+      '@ahcode/builtin-tools/tools/TaskUpdateTool/TaskUpdateTool.js'
     )
     const { SendMessageTool } = await import(
-      '@claude-code-best/builtin-tools/tools/SendMessageTool/SendMessageTool.js'
+      '@ahcode/builtin-tools/tools/SendMessageTool/SendMessageTool.js'
     )
     const { TeamDeleteTool } = await import(
-      '@claude-code-best/builtin-tools/tools/TeamDeleteTool/TeamDeleteTool.js'
+      '@ahcode/builtin-tools/tools/TeamDeleteTool/TeamDeleteTool.js'
     )
 
     const context = {
@@ -214,7 +214,7 @@ describe('Agent Teams lifecycle', () => {
 
   test('TeamDelete waits for active teammates to become inactive before cleanup', async () => {
     const { TeamDeleteTool } = await import(
-      '@claude-code-best/builtin-tools/tools/TeamDeleteTool/TeamDeleteTool.js'
+      '@ahcode/builtin-tools/tools/TeamDeleteTool/TeamDeleteTool.js'
     )
     const now = Date.now()
     writeTeamConfig('alpha', {

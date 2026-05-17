@@ -103,7 +103,7 @@ export async function daemonMain(args: string[]): Promise<void> {
 
 function printHelp(): void {
   console.log(`
-Claude Code Daemon — background process management
+AH Code Daemon — background process management
 
 USAGE
   claude daemon [subcommand]
@@ -346,7 +346,7 @@ function spawnWorker(
     DAEMON_WORKER_PERMISSION: config.permissionMode,
     DAEMON_WORKER_SANDBOX: config.sandbox || '0',
     DAEMON_WORKER_CREATE_SESSION: '1',
-    CLAUDE_CODE_SESSION_KIND: 'daemon-worker',
+    AHCODE_SESSION_KIND: 'daemon-worker',
   }
 
   console.log(`[daemon] spawning worker '${worker.kind}'`)

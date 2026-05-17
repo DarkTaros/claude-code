@@ -5,13 +5,13 @@ import {
   getLargeMemoryFiles,
   MAX_MEMORY_CHARACTER_COUNT,
   type MemoryFileInfo,
-} from '../claudemd'
+} from '../ahcodemd'
 
 function mockMemoryFile(
   overrides: Partial<MemoryFileInfo> = {},
 ): MemoryFileInfo {
   return {
-    path: '/project/CLAUDE.md',
+    path: '/project/AHCODE.md',
     type: 'Project',
     content: 'test content',
     ...overrides,
@@ -78,16 +78,16 @@ describe('stripHtmlComments', () => {
 })
 
 describe('isMemoryFilePath', () => {
-  test('returns true for CLAUDE.md path', () => {
-    expect(isMemoryFilePath('/project/CLAUDE.md')).toBe(true)
+  test('returns true for AHCODE.md path', () => {
+    expect(isMemoryFilePath('/project/AHCODE.md')).toBe(true)
   })
 
-  test('returns true for CLAUDE.local.md path', () => {
-    expect(isMemoryFilePath('/project/CLAUDE.local.md')).toBe(true)
+  test('returns true for AHCODE.local.md path', () => {
+    expect(isMemoryFilePath('/project/AHCODE.local.md')).toBe(true)
   })
 
-  test('returns true for .claude/rules/ path', () => {
-    expect(isMemoryFilePath('/project/.claude/rules/foo.md')).toBe(true)
+  test('returns true for .ahcode/rules/ path', () => {
+    expect(isMemoryFilePath('/project/.ahcode/rules/foo.md')).toBe(true)
   })
 
   test('returns false for regular file', () => {
@@ -98,16 +98,16 @@ describe('isMemoryFilePath', () => {
     expect(isMemoryFilePath('/project/README.md')).toBe(false)
   })
 
-  test('returns false for .claude directory non-rules file', () => {
-    expect(isMemoryFilePath('/project/.claude/settings.json')).toBe(false)
+  test('returns false for .ahcode directory non-rules file', () => {
+    expect(isMemoryFilePath('/project/.ahcode/settings.json')).toBe(false)
   })
 
   test('returns false for lowercase claude.md (case-sensitive match)', () => {
     expect(isMemoryFilePath('/project/claude.md')).toBe(false)
   })
 
-  test('returns false for non-.md file in .claude/rules/', () => {
-    expect(isMemoryFilePath('.claude/rules/foo.txt')).toBe(false)
+  test('returns false for non-.md file in .ahcode/rules/', () => {
+    expect(isMemoryFilePath('.ahcode/rules/foo.txt')).toBe(false)
   })
 })
 

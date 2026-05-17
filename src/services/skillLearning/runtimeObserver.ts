@@ -41,7 +41,7 @@ import { readObservations } from './observationStore.js'
 import { checkPromotion } from './promotion.js'
 import { existsSync } from 'node:fs'
 import { join } from 'node:path'
-import { getClaudeConfigHomeDir } from '../../utils/envUtils.js'
+import { getAhcodeConfigHomeDir } from '../../utils/envUtils.js'
 
 export const RUNTIME_SESSION_ID = 'runtime-session'
 
@@ -95,7 +95,7 @@ export function initSkillLearning(): void {
 
 async function runStartupMaintenance(): Promise<void> {
   if (!isSkillLearningEnabled()) return
-  if (process.env.CLAUDE_SKILL_LEARNING_DISABLE) return
+  if (process.env.AHCODE_SKILL_LEARNING_DISABLE) return
   const project = resolveProjectContext(process.cwd())
   const options = { project }
   await Promise.allSettled([
@@ -122,7 +122,7 @@ export async function runSkillLearningPostSampling(
   // thread — `startsWith` covers 'repl_main_thread:outputStyle:<name>'), sub-
   // agent skip, and a path guard that prevents feedback loops when the user
   // hand-edits files inside the skill-learning storage directory itself.
-  if (process.env.CLAUDE_SKILL_LEARNING_DISABLE) return
+  if (process.env.AHCODE_SKILL_LEARNING_DISABLE) return
   if (!context.querySource?.startsWith('repl_main_thread')) return
   if (context.toolUseContext.agentId) return
   const cwd = process.cwd()
@@ -205,8 +205,8 @@ async function autoEvolveLearnedSkills(options: {
   const cwd = process.cwd()
 
   const skillRoots = [
-    join(cwd, '.claude', 'skills'),
-    join(getClaudeConfigHomeDir(), 'skills'),
+    join(cwd, '.ahcode', 'skills'),
+    join(getAhcodeConfigHomeDir(), 'skills'),
   ]
   const skillClusters = clusterInstincts(instincts).filter(
     candidate =>
@@ -230,8 +230,8 @@ async function autoEvolveLearnedSkills(options: {
   const commandDrafts = generateCommandCandidates(instincts, { cwd })
   for (const draft of commandDrafts) {
     const roots = [
-      join(cwd, '.claude', 'commands'),
-      join(getClaudeConfigHomeDir(), 'commands'),
+      join(cwd, '.ahcode', 'commands'),
+      join(getAhcodeConfigHomeDir(), 'commands'),
     ]
     const existing = await compareExistingArtifacts('command', draft, roots)
     if (existing.length > 0) continue
@@ -241,8 +241,8 @@ async function autoEvolveLearnedSkills(options: {
   const agentDrafts = generateAgentCandidates(instincts, { cwd })
   for (const draft of agentDrafts) {
     const roots = [
-      join(cwd, '.claude', 'agents'),
-      join(getClaudeConfigHomeDir(), 'agents'),
+      join(cwd, '.ahcode', 'agents'),
+      join(getAhcodeConfigHomeDir(), 'agents'),
     ]
     const existing = await compareExistingArtifacts('agent', draft, roots)
     if (existing.length > 0) continue

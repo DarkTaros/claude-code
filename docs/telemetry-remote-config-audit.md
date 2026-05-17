@@ -29,7 +29,7 @@
 
 - **服务端**: `https://api.anthropic.com/`（remote eval 模式）
 - **行为**: 启动时拉取全量 feature flags，每 6h（外部用户）/ 20min（ant）定时刷新
-- **磁盘缓存**: feature values 写入 `~/.claude.json` 的 `cachedGrowthBookFeatures`
+- **磁盘缓存**: feature values 写入 `~/.ahcode.json` 的 `cachedGrowthBookFeatures`
 - **用途**:
   - 控制 Datadog 开关（`tengu_log_datadog_events`）
   - 控制事件采样率（`tengu_event_sampling_config`）
@@ -66,7 +66,7 @@
 - **行为**: 完整的 OTEL SDK 初始化，支持 metrics / logs / traces 三种信号
 - **协议**: gRPC / http-json / http-protobuf（通过 `OTEL_EXPORTER_OTLP_PROTOCOL` 选择）
 - **exporter**: console / otlp / prometheus
-- **触发**: `CLAUDE_CODE_ENABLE_TELEMETRY=1` 环境变量
+- **触发**: `AHCODE_ENABLE_TELEMETRY=1` 环境变量
 - **增强 trace**: `feature('ENHANCED_TELEMETRY_BETA')` + GrowthBook gate `enhanced_telemetry_beta`
 
 ## 7. BigQuery Metrics Exporter（内部指标）
@@ -91,7 +91,7 @@
 **文件**: `src/utils/startupProfiler.ts`
 
 - **行为**: 采样启动性能数据（100% ant / 0.5% 外部），通过 `logEvent('tengu_startup_perf')` 上报
-- **详细模式**: `CLAUDE_CODE_PROFILE_STARTUP=1` 输出完整性能报告到文件
+- **详细模式**: `AHCODE_PROFILE_STARTUP=1` 输出完整性能报告到文件
 
 ## 10. Beta Session Tracing
 
@@ -124,10 +124,10 @@
 DISABLE_TELEMETRY=1
 
 # 更激进：禁用所有非必要网络（包括自动更新、grove、release notes 等）
-CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+AHCODE_DISABLE_NONESSENTIAL_TRAFFIC=1
 
 # 3P 提供商自动禁用
-CLAUDE_CODE_USE_BEDROCK=1  # 或 VERTEX/FOUNDRY
+AHCODE_USE_BEDROCK=1  # 或 VERTEX/FOUNDRY
 ```
 
 `src/utils/privacyLevel.ts` 是集中控制点，三个级别：`default < no-telemetry < essential-traffic`。

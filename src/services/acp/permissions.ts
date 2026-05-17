@@ -1,5 +1,5 @@
 /**
- * Permission bridge: maps Claude Code's canUseTool / PermissionDecision
+ * Permission bridge: maps AH Code's canUseTool / PermissionDecision
  * system to ACP's requestPermission() flow.
  *
  * Supports:

@@ -17,8 +17,7 @@ import {
 const _restores: (() => void)[] = []
 const originalCwd = process.cwd()
 const originalAcpPermissionMode = process.env.ACP_PERMISSION_MODE
-const originalAcpAllowBypass =
-  process.env.CLAUDE_CODE_ACP_ALLOW_BYPASS_PERMISSIONS
+const originalAcpAllowBypass = process.env.AHCODE_ACP_ALLOW_BYPASS_PERMISSIONS
 
 function mockModulePreservingExports(
   tsPath: string,
@@ -36,7 +35,7 @@ afterAll(() => {
   }
   _restores.length = 0
   restoreEnv('ACP_PERMISSION_MODE', originalAcpPermissionMode)
-  restoreEnv('CLAUDE_CODE_ACP_ALLOW_BYPASS_PERMISSIONS', originalAcpAllowBypass)
+  restoreEnv('AHCODE_ACP_ALLOW_BYPASS_PERMISSIONS', originalAcpAllowBypass)
 })
 
 // ── Module mocks (must precede any import of the module under test) ──
@@ -223,7 +222,7 @@ function restoreEnv(name: string, value: string | undefined) {
 describe('AcpAgent', () => {
   beforeEach(() => {
     delete process.env.ACP_PERMISSION_MODE
-    delete process.env.CLAUDE_CODE_ACP_ALLOW_BYPASS_PERMISSIONS
+    delete process.env.AHCODE_ACP_ALLOW_BYPASS_PERMISSIONS
     mockSetModel.mockClear()
     mockSwitchSession.mockClear()
     mockSubmitMessage.mockReset()
@@ -393,7 +392,7 @@ describe('AcpAgent', () => {
     })
 
     test('honors _meta.permissionMode bypass with a local ACP bypass gate', async () => {
-      process.env.CLAUDE_CODE_ACP_ALLOW_BYPASS_PERMISSIONS = '1'
+      process.env.AHCODE_ACP_ALLOW_BYPASS_PERMISSIONS = '1'
       const agent = new AcpAgent(makeConn())
       const res = await agent.newSession({
         cwd: '/tmp',
@@ -849,7 +848,7 @@ describe('AcpAgent', () => {
     })
 
     test('can switch to bypassPermissions mode with a local ACP bypass gate', async () => {
-      process.env.CLAUDE_CODE_ACP_ALLOW_BYPASS_PERMISSIONS = '1'
+      process.env.AHCODE_ACP_ALLOW_BYPASS_PERMISSIONS = '1'
       const agent = new AcpAgent(makeConn())
       const { sessionId } = await agent.newSession({ cwd: '/tmp' } as any)
       await agent.setSessionMode({
@@ -864,7 +863,7 @@ describe('AcpAgent', () => {
     })
 
     test('rejects bypassPermissions when the session does not expose it', async () => {
-      process.env.CLAUDE_CODE_ACP_ALLOW_BYPASS_PERMISSIONS = '1'
+      process.env.AHCODE_ACP_ALLOW_BYPASS_PERMISSIONS = '1'
       const agent = new AcpAgent(makeConn())
       const { sessionId } = await agent.newSession({ cwd: '/tmp' } as any)
       const session = agent.sessions.get(sessionId)

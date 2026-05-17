@@ -13,12 +13,12 @@ const PROVIDERS: BalanceProvider[] = [
 ]
 
 function selectProvider(): BalanceProvider | null {
-  if (process.env.CLAUDE_CODE_BALANCE_PROVIDER === 'none') return null
+  if (process.env.AHCODE_BALANCE_PROVIDER === 'none') return null
   return PROVIDERS.find(p => p.isEnabled()) ?? null
 }
 
 function intervalMs(): number {
-  const raw = process.env.CLAUDE_CODE_BALANCE_POLL_INTERVAL_MINUTES
+  const raw = process.env.AHCODE_BALANCE_POLL_INTERVAL_MINUTES
   const n = raw ? Number(raw) : DEFAULT_INTERVAL_MIN
   if (!Number.isFinite(n) || n <= 0) return DEFAULT_INTERVAL_MIN * 60_000
   return Math.floor(n * 60_000)

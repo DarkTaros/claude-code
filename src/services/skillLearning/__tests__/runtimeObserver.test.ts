@@ -21,8 +21,8 @@ beforeEach(() => {
   previousCwd = process.cwd()
   process.chdir(root)
   process.env = { ...originalEnv }
-  process.env.CLAUDE_SKILL_LEARNING_HOME = join(root, 'learning-home')
-  process.env.CLAUDE_CONFIG_DIR = join(root, 'config')
+  process.env.AHCODE_SKILL_LEARNING_HOME = join(root, 'learning-home')
+  process.env.AHCODE_CONFIG_DIR = join(root, 'config')
   process.env.SKILL_LEARNING_ENABLED = '1'
   process.env.NODE_ENV = 'test'
   setSkillLearningConfigForTest({ minConfidence: 0.3, minClusterSize: 1 })
@@ -54,25 +54,25 @@ describe('runtimeObserver', () => {
     })
 
     const observations = await readObservations({
-      rootDir: process.env.CLAUDE_SKILL_LEARNING_HOME,
+      rootDir: process.env.AHCODE_SKILL_LEARNING_HOME,
       project: {
         projectId: 'global',
         projectName: 'global',
         cwd: root,
         scope: 'global',
         source: 'global',
-        storageDir: join(process.env.CLAUDE_SKILL_LEARNING_HOME!, 'global'),
+        storageDir: join(process.env.AHCODE_SKILL_LEARNING_HOME!, 'global'),
       },
     })
     const instincts = await loadInstincts({
-      rootDir: process.env.CLAUDE_SKILL_LEARNING_HOME,
+      rootDir: process.env.AHCODE_SKILL_LEARNING_HOME,
       project: {
         projectId: 'global',
         projectName: 'global',
         cwd: root,
         scope: 'global',
         source: 'global',
-        storageDir: join(process.env.CLAUDE_SKILL_LEARNING_HOME!, 'global'),
+        storageDir: join(process.env.AHCODE_SKILL_LEARNING_HOME!, 'global'),
       },
     })
 
@@ -97,7 +97,7 @@ describe('runtimeObserver', () => {
     })
 
     const observations = await readObservations({
-      rootDir: process.env.CLAUDE_SKILL_LEARNING_HOME,
+      rootDir: process.env.AHCODE_SKILL_LEARNING_HOME,
     })
     expect(observations).toEqual([])
   })
@@ -132,7 +132,7 @@ describe('runtimeObserver', () => {
       existsSync(
         join(
           root,
-          '.claude',
+          '.ahcode',
           'skills',
           'testing-choosing-between-mock-testing-library',
           'SKILL.md',

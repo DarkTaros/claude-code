@@ -6,7 +6,7 @@ import {
   getSessionId,
   getSessionProjectDir,
 } from '../../bootstrap/state.js'
-import { getClaudeConfigHomeDir } from '../../utils/envUtils.js'
+import { getAhcodeConfigHomeDir } from '../../utils/envUtils.js'
 import { sanitizePath } from '../../utils/path.js'
 import type { Command, LocalCommandResult } from '../../types/command.js'
 
@@ -101,7 +101,7 @@ function sanitizeErrorMessage(msg: string): string {
 }
 
 function getPerfReportDir(): string {
-  return join(homedir(), '.claude', 'perf-reports')
+  return join(getAhcodeConfigHomeDir(), 'perf-reports')
 }
 
 function getTranscriptPath(): string {
@@ -109,7 +109,7 @@ function getTranscriptPath(): string {
   const projectDir = getSessionProjectDir()
   if (projectDir) return join(projectDir, `${sessionId}.jsonl`)
   return join(
-    getClaudeConfigHomeDir(),
+    getAhcodeConfigHomeDir(),
     'projects',
     sanitizePath(getOriginalCwd()),
     `${sessionId}.jsonl`,
@@ -350,7 +350,7 @@ function formatReportMarkdown(
     )
 
   return [
-    '# Claude Code Performance Snapshot',
+    '# AH Code Performance Snapshot',
     '',
     `- timestamp: ${new Date().toISOString()}`,
     `- session:   ${sessionId}`,

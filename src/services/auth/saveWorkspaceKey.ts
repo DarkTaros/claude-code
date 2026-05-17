@@ -14,7 +14,7 @@
  */
 
 import { promises as fs } from 'fs'
-import { getGlobalClaudeFile } from '../../utils/env.js'
+import { getGlobalAhcodeFile } from '../../utils/env.js'
 import { getGlobalConfig, saveGlobalConfig } from '../../utils/config.js'
 import { logError } from '../../utils/log.js'
 
@@ -31,7 +31,7 @@ const MAX_KEY_LENGTH = 256
 // ---------------------------------------------------------------------------
 
 /**
- * Validates and saves a workspace API key to ~/.claude.json.
+ * Validates and saves a workspace API key to ~/.ahcode.json.
  *
  * The write is performed via saveGlobalConfig so the in-process cache is
  * updated immediately — no restart needed.
@@ -114,7 +114,7 @@ export async function removeWorkspaceKey(): Promise<void> {
 /**
  * Returns the effective workspace API key from the two-source chain:
  *   1. ANTHROPIC_API_KEY env var (takes precedence)
- *   2. workspaceApiKey from ~/.claude.json
+ *   2. workspaceApiKey from ~/.ahcode.json
  *
  * Returns undefined when neither is set.
  */
@@ -146,7 +146,7 @@ function sanitizeErrorMessage(err: unknown): string {
  * - Windows: fs.chmod is a no-op; we log a one-time informational warning.
  */
 async function tryChmod600(): Promise<void> {
-  const configPath = getGlobalClaudeFile()
+  const configPath = getGlobalAhcodeFile()
   if (process.platform === 'win32') {
     logError(
       new Error(

@@ -8,7 +8,7 @@ import {
 } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { getClaudeConfigHomeDir } from '../../../utils/envUtils.js'
+import { getAhcodeConfigHomeDir } from '../../../utils/envUtils.js'
 
 mock.module('bun:bundle', () => ({
   feature: (_name: string) => true,
@@ -25,26 +25,26 @@ const origEnv: Record<string, string | undefined> = {}
 
 beforeEach(() => {
   tmpDir = mkdtempSync(join(tmpdir(), 'tui-test-'))
-  claudeDir = join(tmpDir, '.claude')
+  claudeDir = join(tmpDir, '.ahcode')
   mkdirSync(claudeDir, { recursive: true })
-  process.env.CLAUDE_CONFIG_DIR = claudeDir
-  // getClaudeConfigHomeDir is `memoize(...)` — clear its cache so this
-  // suite's CLAUDE_CONFIG_DIR overrides any value cached by an earlier
+  process.env.AHCODE_CONFIG_DIR = claudeDir
+  // getAhcodeConfigHomeDir is `memoize(...)` — clear its cache so this
+  // suite's AHCODE_CONFIG_DIR overrides any value cached by an earlier
   // test file in the same process.
-  getClaudeConfigHomeDir.cache?.clear?.()
+  getAhcodeConfigHomeDir.cache?.clear?.()
   // Save env vars we may mutate
-  origEnv.CLAUDE_CODE_NO_FLICKER = process.env.CLAUDE_CODE_NO_FLICKER
-  delete process.env.CLAUDE_CODE_NO_FLICKER
+  origEnv.AHCODE_NO_FLICKER = process.env.AHCODE_NO_FLICKER
+  delete process.env.AHCODE_NO_FLICKER
 })
 
 afterEach(() => {
   rmSync(tmpDir, { recursive: true, force: true })
-  delete process.env.CLAUDE_CONFIG_DIR
+  delete process.env.AHCODE_CONFIG_DIR
   // Restore env vars
-  if (origEnv.CLAUDE_CODE_NO_FLICKER === undefined) {
-    delete process.env.CLAUDE_CODE_NO_FLICKER
+  if (origEnv.AHCODE_NO_FLICKER === undefined) {
+    delete process.env.AHCODE_NO_FLICKER
   } else {
-    process.env.CLAUDE_CODE_NO_FLICKER = origEnv.CLAUDE_CODE_NO_FLICKER
+    process.env.AHCODE_NO_FLICKER = origEnv.AHCODE_NO_FLICKER
   }
 })
 
@@ -207,7 +207,7 @@ describe('tui unknown subcommand', () => {
 })
 
 describe('getTuiMarkerPath', () => {
-  test('returns path under CLAUDE_CONFIG_DIR', async () => {
+  test('returns path under AHCODE_CONFIG_DIR', async () => {
     const { getTuiMarkerPath } = await import('../index.js')
     const p = getTuiMarkerPath()
     expect(p).toContain(claudeDir)
@@ -216,18 +216,18 @@ describe('getTuiMarkerPath', () => {
 })
 
 describe('tui status env var display', () => {
-  test('shows forced-on when CLAUDE_CODE_NO_FLICKER=1', async () => {
-    process.env.CLAUDE_CODE_NO_FLICKER = '1'
+  test('shows forced-on when AHCODE_NO_FLICKER=1', async () => {
+    process.env.AHCODE_NO_FLICKER = '1'
     const result = await invokeCmd('status')
     expect(result.value).toContain('forced on via env var')
-    delete process.env.CLAUDE_CODE_NO_FLICKER
+    delete process.env.AHCODE_NO_FLICKER
   })
 
-  test('shows forced-off when CLAUDE_CODE_NO_FLICKER=0', async () => {
-    process.env.CLAUDE_CODE_NO_FLICKER = '0'
+  test('shows forced-off when AHCODE_NO_FLICKER=0', async () => {
+    process.env.AHCODE_NO_FLICKER = '0'
     const result = await invokeCmd('status')
     expect(result.value).toContain('forced off via env var')
-    delete process.env.CLAUDE_CODE_NO_FLICKER
+    delete process.env.AHCODE_NO_FLICKER
   })
 })
 

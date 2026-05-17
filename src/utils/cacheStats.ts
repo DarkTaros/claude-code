@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto'
 import { mkdir, readFile, rename, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
-import { getClaudeConfigHomeDir } from './envUtils.js'
+import { getAhcodeConfigHomeDir } from './envUtils.js'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -54,7 +54,7 @@ export function tokenSignature(u: CacheUsage): string {
  */
 export function getStateFilePath(sessionId: string): string {
   const hash = createHash('sha256').update(sessionId).digest('hex').slice(0, 16)
-  return join(getClaudeConfigHomeDir(), 'cache-stats', `${hash}.json`)
+  return join(getAhcodeConfigHomeDir(), 'cache-stats', `${hash}.json`)
 }
 
 const INIT_STATE: CacheStatsState = {

@@ -75,7 +75,7 @@ export async function playAnimation(skillDir: string): Promise<{
   // Both files are prerequisites for the node subprocess. Read them here
   // (not at call sites) so all callers get consistent error messaging. The
   // subprocess runs with reject: false, so a missing file would otherwise
-  // silently return success. Using readFile (not access) per CLAUDE.md.
+  // silently return success. Using readFile (not access) per AHCODE.md.
   //
   // Non-ENOENT errors (EACCES etc) are logged and returned as failures rather
   // than thrown — the old pathExists-based code never threw, and one caller
@@ -345,8 +345,8 @@ function ThinkbackMenu({
 
   return (
     <Dialog
-      title="Think Back on 2025 with Claude Code"
-      subtitle="Generate your 2025 Claude Code Think Back (takes a few minutes to run)"
+      title="Think Back on 2025 with AH Code"
+      subtitle="Generate your 2025 AH Code Think Back (takes a few minutes to run)"
       onCancel={handleCancel}
       color="claude"
     >
@@ -367,13 +367,13 @@ function ThinkbackMenu({
 }
 
 const EDIT_PROMPT =
-  'Use the Skill tool to invoke the "thinkback" skill with mode=edit to modify my existing Claude Code year in review animation. Ask me what I want to change. When the animation is ready, tell the user to run /think-back again to play it.';
+  'Use the Skill tool to invoke the "thinkback" skill with mode=edit to modify my existing AH Code year in review animation. Ask me what I want to change. When the animation is ready, tell the user to run /think-back again to play it.';
 
 const FIX_PROMPT =
-  'Use the Skill tool to invoke the "thinkback" skill with mode=fix to fix validation or rendering errors in my existing Claude Code year in review animation. Run the validator, identify errors, and fix them. When the animation is ready, tell the user to run /think-back again to play it.';
+  'Use the Skill tool to invoke the "thinkback" skill with mode=fix to fix validation or rendering errors in my existing AH Code year in review animation. Run the validator, identify errors, and fix them. When the animation is ready, tell the user to run /think-back again to play it.';
 
 const REGENERATE_PROMPT =
-  'Use the Skill tool to invoke the "thinkback" skill with mode=regenerate to create a completely new Claude Code year in review animation from scratch. Delete the existing animation and start fresh. When the animation is ready, tell the user to run /think-back again to play it.';
+  'Use the Skill tool to invoke the "thinkback" skill with mode=regenerate to create a completely new AH Code year in review animation from scratch. Delete the existing animation and start fresh. When the animation is ready, tell the user to run /think-back again to play it.';
 
 function ThinkbackFlow({
   onDone,

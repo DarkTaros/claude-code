@@ -3,7 +3,7 @@ import {
   stripHtmlComments,
   isMemoryFilePath,
   getLargeMemoryFiles,
-} from '../../src/utils/claudemd'
+} from '../../src/utils/ahcodemd'
 import { buildEffectiveSystemPrompt } from '../../src/utils/systemPrompt'
 import {
   createTempDir,
@@ -11,9 +11,9 @@ import {
   writeTempFile,
 } from '../mocks/file-system'
 
-// ─── CLAUDE.md Integration with System Prompt ─────────────────────────
+// ─── AHCODE.md Integration with System Prompt ─────────────────────────
 
-describe('Context build: CLAUDE.md + system prompt integration', () => {
+describe('Context build: AHCODE.md + system prompt integration', () => {
   test('buildEffectiveSystemPrompt passes through default prompt', () => {
     const result = buildEffectiveSystemPrompt({
       defaultSystemPrompt: 'You are Claude.',
@@ -64,12 +64,12 @@ describe('Context build: CLAUDE.md + system prompt integration', () => {
   })
 })
 
-// ─── CLAUDE.md Discovery with Real File System ───────────────────────
+// ─── AHCODE.md Discovery with Real File System ───────────────────────
 
-describe('Context build: CLAUDE.md file system integration', () => {
+describe('Context build: AHCODE.md file system integration', () => {
   let tempDir: string
 
-  test('strips HTML comments from CLAUDE.md content', () => {
+  test('strips HTML comments from AHCODE.md content', () => {
     const input = '<!-- this is a comment -->Actual content'
     const { content, stripped } = stripHtmlComments(input)
     expect(content).toBe('Actual content')
@@ -83,10 +83,10 @@ describe('Context build: CLAUDE.md file system integration', () => {
     expect(content).toContain('Real text')
   })
 
-  test('isMemoryFilePath correctly identifies CLAUDE.md paths', () => {
-    expect(isMemoryFilePath('/project/CLAUDE.md')).toBe(true)
-    expect(isMemoryFilePath('/project/CLAUDE.local.md')).toBe(true)
-    expect(isMemoryFilePath('/project/.claude/rules/file.md')).toBe(true)
+  test('isMemoryFilePath correctly identifies AHCODE.md paths', () => {
+    expect(isMemoryFilePath('/project/AHCODE.md')).toBe(true)
+    expect(isMemoryFilePath('/project/AHCODE.local.md')).toBe(true)
+    expect(isMemoryFilePath('/project/.ahcode/rules/file.md')).toBe(true)
     expect(isMemoryFilePath('/project/README.md')).toBe(false)
     expect(isMemoryFilePath('/project/src/index.ts')).toBe(false)
   })
@@ -101,8 +101,8 @@ describe('Context build: large memory file filtering', () => {
 
   test('getLargeMemoryFiles returns empty when all files are small', () => {
     const files = [
-      { path: '/a/CLAUDE.md', content: 'small' },
-      { path: '/b/CLAUDE.md', content: 'also small' },
+      { path: '/a/AHCODE.md', content: 'small' },
+      { path: '/b/AHCODE.md', content: 'also small' },
     ]
     expect(getLargeMemoryFiles(files)).toEqual([])
   })

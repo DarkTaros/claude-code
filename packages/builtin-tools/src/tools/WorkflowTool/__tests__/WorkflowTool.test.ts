@@ -13,7 +13,7 @@ beforeEach(async () => {
     tmpdir(),
     `workflow-tool-${Date.now()}-${Math.random().toString(16).slice(2)}`,
   )
-  await mkdir(join(cwd, '.claude', 'workflows'), { recursive: true })
+  await mkdir(join(cwd, '.ahcode', 'workflows'), { recursive: true })
   process.chdir(cwd)
 })
 
@@ -25,7 +25,7 @@ afterEach(async () => {
 describe('WorkflowTool', () => {
   test('starts a workflow run and persists step state', async () => {
     await writeFile(
-      join(cwd, '.claude', 'workflows', 'release.md'),
+      join(cwd, '.ahcode', 'workflows', 'release.md'),
       ['# Release', '', '- [ ] Run tests', '- [ ] Build package'].join('\n'),
     )
 
@@ -37,7 +37,7 @@ describe('WorkflowTool', () => {
     expect(match?.[1]).toBeString()
 
     const raw = await readFile(
-      join(cwd, '.claude', 'workflow-runs', `${match![1]}.json`),
+      join(cwd, '.ahcode', 'workflow-runs', `${match![1]}.json`),
       'utf-8',
     )
     const run = JSON.parse(raw)
@@ -50,7 +50,7 @@ describe('WorkflowTool', () => {
 
   test('advances a workflow run through completion', async () => {
     await writeFile(
-      join(cwd, '.claude', 'workflows', 'audit.yaml'),
+      join(cwd, '.ahcode', 'workflows', 'audit.yaml'),
       [
         'steps:',
         '  - name: Inspect',
@@ -81,7 +81,7 @@ describe('WorkflowTool', () => {
 
   test('lists and cancels workflow runs', async () => {
     await writeFile(
-      join(cwd, '.claude', 'workflows', 'cleanup.md'),
+      join(cwd, '.ahcode', 'workflows', 'cleanup.md'),
       '- Remove stale files',
     )
 

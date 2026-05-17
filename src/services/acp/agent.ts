@@ -1,5 +1,5 @@
 /**
- * ACP Agent implementation — bridges ACP protocol methods to Claude Code's
+ * ACP Agent implementation — bridges ACP protocol methods to AH Code's
  * internal QueryEngine / query() pipeline.
  *
  * Architecture: Uses internal QueryEngine (not @anthropic-ai/claude-agent-sdk)
@@ -121,7 +121,7 @@ export class AcpAgent implements Agent {
       protocolVersion: 1,
       agentInfo: {
         name: 'claude-code',
-        title: 'Claude Code',
+        title: 'AH Code',
         version:
           typeof (globalThis as unknown as Record<string, unknown>).MACRO ===
             'object' &&
@@ -959,7 +959,7 @@ function isProcessBypassPermissionModeAvailable(): boolean {
 function isAcpBypassLocallyEnabled(): boolean {
   return (
     process.env.ACP_PERMISSION_MODE === 'bypassPermissions' ||
-    isTruthyEnv(process.env.CLAUDE_CODE_ACP_ALLOW_BYPASS_PERMISSIONS)
+    isTruthyEnv(process.env.AHCODE_ACP_ALLOW_BYPASS_PERMISSIONS)
   )
 }
 

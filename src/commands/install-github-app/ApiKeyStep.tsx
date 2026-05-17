@@ -91,7 +91,7 @@ export function ApiKeyStep({
           <Box marginBottom={1}>
             <Text>
               {selectedOption === 'existing' ? color('success', theme)('> ') : '  '}
-              Use your existing Claude Code API key
+              Use your existing AH Code API key
             </Text>
           </Box>
         )}

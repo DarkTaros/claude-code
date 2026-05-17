@@ -8,7 +8,7 @@ import {
 } from 'node:fs'
 import { join } from 'node:path'
 import { getIsNonInteractiveSession } from '../../bootstrap/state.js'
-import { getClaudeConfigHomeDir } from '../../utils/envUtils.js'
+import { getAhcodeConfigHomeDir } from '../../utils/envUtils.js'
 import type { Command, LocalCommandResult } from '../../types/command.js'
 
 /**
@@ -19,7 +19,7 @@ import type { Command, LocalCommandResult } from '../../types/command.js'
  * Convention: public so other modules (e.g. claude.ts) can check it.
  */
 export function getBreakCacheMarkerPath(): string {
-  return join(getClaudeConfigHomeDir(), '.next-request-no-cache')
+  return join(getAhcodeConfigHomeDir(), '.next-request-no-cache')
 }
 
 /**
@@ -28,7 +28,7 @@ export function getBreakCacheMarkerPath(): string {
  * (instead of just the next one).
  */
 export function getBreakCacheAlwaysPath(): string {
-  return join(getClaudeConfigHomeDir(), '.break-cache-always')
+  return join(getAhcodeConfigHomeDir(), '.break-cache-always')
 }
 
 /**
@@ -38,11 +38,11 @@ export function getBreakCacheAlwaysPath(): string {
  * two concurrent `/break-cache once` invocations race. Each break appends one
  * line; `readStats()` aggregates at read time.
  *
- * Uses getClaudeConfigHomeDir() so that CLAUDE_CONFIG_DIR env var overrides
+ * Uses getAhcodeConfigHomeDir() so that AHCODE_CONFIG_DIR env var overrides
  * the path in test environments.
  */
 export function getBreakCacheStatsPath(): string {
-  return join(getClaudeConfigHomeDir(), 'break-cache-events.jsonl')
+  return join(getAhcodeConfigHomeDir(), 'break-cache-events.jsonl')
 }
 
 interface BreakCacheStats {
@@ -100,7 +100,7 @@ function readStats(): BreakCacheStats {
  */
 function appendBreakEvent(kind: BreakCacheEvent['kind']): void {
   const statsPath = getBreakCacheStatsPath()
-  mkdirSync(getClaudeConfigHomeDir(), { recursive: true })
+  mkdirSync(getAhcodeConfigHomeDir(), { recursive: true })
   const event: BreakCacheEvent = { at: new Date().toISOString(), kind }
   appendFileSync(statsPath, JSON.stringify(event) + '\n', 'utf8')
 }

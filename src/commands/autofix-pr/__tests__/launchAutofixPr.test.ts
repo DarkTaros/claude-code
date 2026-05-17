@@ -97,7 +97,7 @@ mock.module('src/bootstrap/state.js', () => ({
 }))
 
 // Mock skillDetect so initialMessage is deterministic across CI environments
-// (real existsSync would depend on .claude/skills/* in the working dir).
+// (real existsSync would depend on .ahcode/skills/* in the working dir).
 mock.module('src/commands/autofix-pr/skillDetect.js', () => ({
   detectAutofixSkills: () => [] as string[],
   formatSkillsHint: () => '',

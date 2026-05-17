@@ -35,7 +35,7 @@ export function isOpenAIThinkingEnabled(model: string): boolean {
  * 1. maxOutputTokensOverride (programmatic, from query pipeline)
  * 2. OPENAI_MAX_TOKENS env var (OpenAI-specific, useful for local models
  *    with small context windows, e.g. RTX 3060 12GB running 65536-token models)
- * 3. CLAUDE_CODE_MAX_OUTPUT_TOKENS env var (generic override)
+ * 3. AHCODE_MAX_OUTPUT_TOKENS env var (generic override)
  * 4. upperLimit default (64000)
  */
 export function resolveOpenAIMaxTokens(
@@ -47,8 +47,8 @@ export function resolveOpenAIMaxTokens(
     (process.env.OPENAI_MAX_TOKENS
       ? parseInt(process.env.OPENAI_MAX_TOKENS, 10) || undefined
       : undefined) ??
-    (process.env.CLAUDE_CODE_MAX_OUTPUT_TOKENS
-      ? parseInt(process.env.CLAUDE_CODE_MAX_OUTPUT_TOKENS, 10) || undefined
+    (process.env.AHCODE_MAX_OUTPUT_TOKENS
+      ? parseInt(process.env.AHCODE_MAX_OUTPUT_TOKENS, 10) || undefined
       : undefined) ??
     upperLimit
   )

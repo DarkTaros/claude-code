@@ -1,6 +1,6 @@
 ---
 title: "Skills 技能系统 - Prompt 即能力的架构哲学"
-description: "深入剖析 Claude Code Skills 系统的完整实现：从磁盘加载、Frontmatter 解析、预算感知描述截断、双模式执行（inline/fork）、权限白名单、条件激活、动态发现到远程技能加载，揭示一条完整的 Skill 生命周期链路。"
+description: "深入剖析 AH Code Skills 系统的完整实现：从磁盘加载、Frontmatter 解析、预算感知描述截断、双模式执行（inline/fork）、权限白名单、条件激活、动态发现到远程技能加载，揭示一条完整的 Skill 生命周期链路。"
 keywords: ["Skills", "SkillTool", "技能加载", "Frontmatter", "whenToUse", "allowedTools", "fork执行", "动态发现"]
 ---
 
@@ -32,15 +32,15 @@ Skill 的核心洞见：**复杂任务的关键不在代码逻辑，而在 Promp
 - **闭包级 memoize**：并发调用共享同一个 extraction promise，避免竞态写入
 - 来源标记为 `source: 'bundled'`，在 Prompt 预算中享有**不可截断**的特权
 
-### 3. 磁盘 Skills（`.claude/skills/`）
+### 3. 磁盘 Skills（`.ahcode/skills/`）
 
 由 `loadSkillsFromSkillsDir()`（`src/skills/loadSkillsDir.ts:407`）加载，这是最重要的加载路径：
 
 ```
-管理策略: $MANAGED_DIR/.claude/skills/     (policySettings)
-用户全局: ~/.claude/skills/                 (userSettings)
-项目级:   .claude/skills/                   (projectSettings, 向上遍历至 home)
-附加目录: --add-dir 指定的路径下 .claude/skills/
+管理策略: $MANAGED_DIR/.ahcode/skills/     (policySettings)
+用户全局: ~/.ahcode/skills/                 (userSettings)
+项目级:   .ahcode/skills/                   (projectSettings, 向上遍历至 home)
+附加目录: --add-dir 指定的路径下 .ahcode/skills/
 ```
 
 **加载协议**：只识别 `skill-name/SKILL.md` 目录格式，不再支持单文件 `.md`。加载流程：
@@ -165,7 +165,7 @@ Skill 列表注入 System Prompt 时有严格的字符预算（`prompt.ts`）：
 `discoverSkillDirsForPaths()`（`loadSkillsDir.ts:861`）在文件操作时触发：
 
 1. 从被操作的文件路径开始，**向上遍历**至 CWD（不包含 CWD 本身）
-2. 在每层查找 `.claude/skills/` 目录
+2. 在每层查找 `.ahcode/skills/` 目录
 3. 使用 `realpath` 去重，`git check-ignore` 过滤 gitignored 目录
 4. 按路径深度排序（**深层优先**），更接近文件的 Skill 优先级更高
 

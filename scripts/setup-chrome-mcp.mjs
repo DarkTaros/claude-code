@@ -14,14 +14,12 @@ import { createRequire } from 'node:module'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 
-if (process.env.CLAUDE_CODE_SKIP_CHROME_MCP_SETUP === '1') {
+if (process.env.AHCODE_SKIP_CHROME_MCP_SETUP === '1') {
   process.exit(0)
 }
 
 const require = createRequire(import.meta.url)
-const cliPath = require.resolve(
-  '@claude-code-best/mcp-chrome-bridge/dist/cli.js',
-)
+const cliPath = require.resolve('@ahcode/mcp-chrome-bridge/dist/cli.js')
 
 const userArgs = process.argv.slice(2)
 

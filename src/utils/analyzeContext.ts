@@ -32,12 +32,12 @@ import {
 import type {
   AgentDefinition,
   AgentDefinitionsResult,
-} from '@claude-code-best/builtin-tools/tools/AgentTool/loadAgentsDir.js'
-import { SKILL_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/SkillTool/constants.js'
+} from '@ahcode/builtin-tools/tools/AgentTool/loadAgentsDir.js'
+import { SKILL_TOOL_NAME } from '@ahcode/builtin-tools/tools/SkillTool/constants.js'
 import {
   getLimitedSkillToolCommands,
   getSkillToolInfo as getSlashCommandInfo,
-} from '@claude-code-best/builtin-tools/tools/SkillTool/prompt.js'
+} from '@ahcode/builtin-tools/tools/SkillTool/prompt.js'
 import type {
   AssistantMessage,
   AttachmentMessage,
@@ -47,7 +47,7 @@ import type {
   UserMessage,
 } from '../types/message.js'
 import { toolToAPISchema } from './api.js'
-import { filterInjectedMemoryFiles, getMemoryFiles } from './claudemd.js'
+import { filterInjectedMemoryFiles, getMemoryFiles } from './ahcodemd.js'
 import { getContextWindowForModel } from './context.js'
 import { getCwd } from './cwd.js'
 import { logForDebugging } from './debug.js'
@@ -325,8 +325,8 @@ async function countMemoryFileTokens(): Promise<{
   memoryFileDetails: MemoryFile[]
   claudeMdTokens: number
 }> {
-  // Simple mode disables CLAUDE.md loading, so don't report tokens for them
-  if (isEnvTruthy(process.env.CLAUDE_CODE_SIMPLE)) {
+  // Simple mode disables AHCODE.md loading, so don't report tokens for them
+  if (isEnvTruthy(process.env.AHCODE_SIMPLE)) {
     return { memoryFileDetails: [], claudeMdTokens: 0 }
   }
 
@@ -389,7 +389,7 @@ async function countBuiltInToolTokens(
   // Check if tool search is enabled
   const { isSearchExtraToolsEnabled } = await import('./searchExtraTools.js')
   const { isDeferredTool } = await import(
-    '@claude-code-best/builtin-tools/tools/SearchExtraToolsTool/prompt.js'
+    '@ahcode/builtin-tools/tools/SearchExtraToolsTool/prompt.js'
   )
   const isDeferred = await isSearchExtraToolsEnabled(
     model ?? '',
@@ -675,7 +675,7 @@ export async function countMcpToolTokens(
   // isSearchExtraToolsEnabled handles threshold calculation internally for TstAuto mode
   const { isSearchExtraToolsEnabled } = await import('./searchExtraTools.js')
   const { isDeferredTool } = await import(
-    '@claude-code-best/builtin-tools/tools/SearchExtraToolsTool/prompt.js'
+    '@ahcode/builtin-tools/tools/SearchExtraToolsTool/prompt.js'
   )
 
   const isDeferred = await isSearchExtraToolsEnabled(

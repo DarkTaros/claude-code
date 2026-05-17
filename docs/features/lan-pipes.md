@@ -2,7 +2,7 @@
 
 ## 什么是 LAN Pipes
 
-LAN Pipes 让多台机器上的 Claude Code 实例通过局域网自动发现并协作。你可以在一台机器（main）上操控其他机器（sub）上的 Claude Code，发送 prompt、查看执行结果、审批权限请求——全程零配置。
+LAN Pipes 让多台机器上的 AH Code 实例通过局域网自动发现并协作。你可以在一台机器（main）上操控其他机器（sub）上的 AH Code，发送 prompt、查看执行结果、审批权限请求——全程零配置。
 
 基于本机 Pipe IPC（`UDS_INBOX`）扩展，新增 TCP 传输层 + UDP Multicast 发现。
 

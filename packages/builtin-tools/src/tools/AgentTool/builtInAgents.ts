@@ -2,7 +2,7 @@ import { feature } from 'bun:bundle'
 import { getIsNonInteractiveSession } from 'src/bootstrap/state.js'
 import { getFeatureValue_CACHED_MAY_BE_STALE } from 'src/services/analytics/growthbook.js'
 import { isEnvTruthy } from 'src/utils/envUtils.js'
-import { CLAUDE_CODE_GUIDE_AGENT } from './built-in/claudeCodeGuideAgent.js'
+import { AHCODE_GUIDE_AGENT } from './built-in/ahcodeGuideAgent.js'
 import { EXPLORE_AGENT } from './built-in/exploreAgent.js'
 import { GENERAL_PURPOSE_AGENT } from './built-in/generalPurposeAgent.js'
 import { PLAN_AGENT } from './built-in/planAgent.js'
@@ -33,7 +33,7 @@ export function getBuiltInAgents(): AgentDefinition[] {
   // issues at module init time. The coordinatorMode module depends on tools
   // which depend on AgentTool which imports this file.
   if (feature('COORDINATOR_MODE')) {
-    if (isEnvTruthy(process.env.CLAUDE_CODE_COORDINATOR_MODE)) {
+    if (isEnvTruthy(process.env.AHCODE_COORDINATOR_MODE)) {
       /* eslint-disable @typescript-eslint/no-require-imports */
       const { getCoordinatorAgents } =
         require('src/coordinator/workerAgent.js') as typeof import('src/coordinator/workerAgent.js')
@@ -53,12 +53,12 @@ export function getBuiltInAgents(): AgentDefinition[] {
 
   // Include Code Guide agent for non-SDK entrypoints
   const isNonSdkEntrypoint =
-    process.env.CLAUDE_CODE_ENTRYPOINT !== 'sdk-ts' &&
-    process.env.CLAUDE_CODE_ENTRYPOINT !== 'sdk-py' &&
-    process.env.CLAUDE_CODE_ENTRYPOINT !== 'sdk-cli'
+    process.env.AHCODE_ENTRYPOINT !== 'sdk-ts' &&
+    process.env.AHCODE_ENTRYPOINT !== 'sdk-py' &&
+    process.env.AHCODE_ENTRYPOINT !== 'sdk-cli'
 
   if (isNonSdkEntrypoint) {
-    agents.push(CLAUDE_CODE_GUIDE_AGENT)
+    agents.push(AHCODE_GUIDE_AGENT)
   }
 
   if (

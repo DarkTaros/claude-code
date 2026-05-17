@@ -27,7 +27,7 @@ export default { isEnabled: () => false, isHidden: true, name: 'stub' };
 
 ### 1.2 用户场景
 
-用户在 fork 仓库（`feat/autonomy-lifecycle-upstream` 分支）尝试对上游 `claude-code-best/claude-code#386` 跑 `/autofix-pr 386`，多次报 `git_repository source setup error`。根因：官方派发的远程 session 落在被 MCP 拒绝访问的仓库（`amdosion/claude-code-bast`），权限/可见性问题。
+用户在 fork 仓库（`feat/autonomy-lifecycle-upstream` 分支）尝试对上游 `ahcode/ah-code#386` 跑 `/autofix-pr 386`，多次报 `git_repository source setup error`。根因：官方派发的远程 session 落在被 MCP 拒绝访问的仓库（`amdosion/claude-code-bast`），权限/可见性问题。
 
 ### 1.3 目标
 
@@ -133,7 +133,7 @@ registerRemoteAgentTask({
     parentSessionId,
   }
   ```
-- **Skills 探测**：扫项目里 autofix-related skills（如 `.claude/skills/autofix-*` 或根目录 `AUTOFIX.md`），命中后拼到 prompt：`Run X and Y for custom instructions on how to autofix.`
+- **Skills 探测**：扫项目里 autofix-related skills（如 `.ahcode/skills/autofix-*` 或根目录 `AUTOFIX.md`），命中后拼到 prompt：`Run X and Y for custom instructions on how to autofix.`
 
 ### 2.6 Telemetry
 
@@ -188,7 +188,7 @@ function cancelledResult() {
 | `RemoteSessionProgress` | `src/components/tasks/RemoteSessionProgress.tsx` | 进度面板 UI（已认 autofix-pr 类型） |
 | `detectCurrentRepositoryWithHost` | `src/utils/detectRepository.ts` | 解析 owner/repo |
 | `getDefaultBranch` / `gitExe` | `src/utils/git.ts` | git 工具 |
-| `feature('FLAG')` | `bun:bundle` | feature flag 系统（CLAUDE.md 红线：只能在 if/三元条件位置直接调用） |
+| `feature('FLAG')` | `bun:bundle` | feature flag 系统（AHCODE.md 红线：只能在 if/三元条件位置直接调用） |
 
 ### 模板答案文件
 
@@ -394,8 +394,8 @@ import { join } from 'path'
 export function detectAutofixSkills(cwd: string): string[] {
   const candidates = [
     'AUTOFIX.md',
-    '.claude/skills/autofix.md',
-    '.claude/skills/autofix-pr/SKILL.md',
+    '.ahcode/skills/autofix.md',
+    '.ahcode/skills/autofix-pr/SKILL.md',
   ]
   return candidates.filter(rel => existsSync(join(cwd, rel)))
 }
@@ -553,7 +553,7 @@ function errorResult(message: string, code: string) {
 }
 ```
 
-> **注意**：`feature('KAIROS_GITHUB_WEBHOOKS')` 必须直接放在 if 条件位置，不能赋值给变量（CLAUDE.md 红线）。
+> **注意**：`feature('KAIROS_GITHUB_WEBHOOKS')` 必须直接放在 if 条件位置，不能赋值给变量（AHCODE.md 红线）。
 
 ### 6.6 `teleport.tsx` 补 `source` 字段
 
@@ -745,7 +745,7 @@ git branch -D feat/autofix-pr
 |---|---|
 | `E:\Source_code\Claude-code-bast-autofix-pr` | 实施 worktree |
 | `C:\Users\12180\.local\bin\claude.exe` | 反编译来源（242MB Bun 编译产物） |
-| `C:\Users\12180\.claude\projects\E--Source-code-Claude-code-bast\memory\project_autofix_pr_implementation.md` | 内存备忘（精简版） |
+| `C:\Users\12180\.ahcode\projects\E--Source-code-Claude-code-bast\memory\project_autofix_pr_implementation.md` | 内存备忘（精简版） |
 | `src/commands/review/reviewRemote.ts` | 主模板 |
 | `src/utils/teleport.tsx:947` | `teleportToRemote` 入口 |
 | `src/tasks/RemoteAgentTask/RemoteAgentTask.tsx:103` | `REMOTE_TASK_TYPES` |

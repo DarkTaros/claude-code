@@ -27,8 +27,8 @@ import { generateHeatmap } from '../utils/heatmap.js';
 import { renderModelName } from '../utils/model/model.js';
 import { copyAnsiToClipboard } from '../utils/screenshotClipboard.js';
 import {
-  aggregateClaudeCodeStatsForRange,
-  type ClaudeCodeStats,
+  aggregateAhcodeStatsForRange,
+  type AhcodeStats,
   type DailyModelTokens,
   type StatsDateRange,
 } from '../utils/stats.js';
@@ -48,7 +48,7 @@ type Props = {
   onClose: (result?: string, options?: { display?: CommandResultDisplay }) => void;
 };
 
-type StatsResult = { type: 'success'; data: ClaudeCodeStats } | { type: 'error'; message: string } | { type: 'empty' };
+type StatsResult = { type: 'success'; data: AhcodeStats } | { type: 'error'; message: string } | { type: 'empty' };
 
 const DATE_RANGE_LABELS: Record<StatsDateRange, string> = {
   '7d': 'Last 7 days',
@@ -68,7 +68,7 @@ function getNextDateRange(current: StatsDateRange): StatsDateRange {
  * Always loads all-time stats for the heatmap.
  */
 function createAllTimeStatsPromise(): Promise<StatsResult> {
-  return aggregateClaudeCodeStatsForRange('all')
+  return aggregateAhcodeStatsForRange('all')
     .then((data): StatsResult => {
       if (!data || data.totalSessions === 0) {
         return { type: 'empty' };
@@ -90,7 +90,7 @@ export function Stats({ onClose }: Props): React.ReactNode {
       fallback={
         <Box marginTop={1}>
           <Spinner />
-          <Text> Loading your Claude Code stats…</Text>
+          <Text> Loading your AH Code stats…</Text>
         </Box>
       }
     >
@@ -111,7 +111,7 @@ type StatsContentProps = {
 function StatsContent({ allTimePromise, onClose }: StatsContentProps): React.ReactNode {
   const allTimeResult = use(allTimePromise);
   const [dateRange, setDateRange] = useState<StatsDateRange>('all');
-  const [statsCache, setStatsCache] = useState<Partial<Record<StatsDateRange, ClaudeCodeStats>>>({});
+  const [statsCache, setStatsCache] = useState<Partial<Record<StatsDateRange, AhcodeStats>>>({});
   const [isLoadingFiltered, setIsLoadingFiltered] = useState(false);
   const [activeTab, setActiveTab] = useState<'Overview' | 'Models'>('Overview');
   const [copyStatus, setCopyStatus] = useState<string | null>(null);
@@ -130,7 +130,7 @@ function StatsContent({ allTimePromise, onClose }: StatsContentProps): React.Rea
     let cancelled = false;
     setIsLoadingFiltered(true);
 
-    aggregateClaudeCodeStatsForRange(dateRange)
+    aggregateAhcodeStatsForRange(dateRange)
       .then(data => {
         if (!cancelled) {
           setStatsCache(prev => ({ ...prev, [dateRange]: data }));
@@ -195,7 +195,7 @@ function StatsContent({ allTimePromise, onClose }: StatsContentProps): React.Rea
   if (allTimeResult.type === 'empty') {
     return (
       <Box marginTop={1}>
-        <Text color="warning">No stats available yet. Start using Claude Code!</Text>
+        <Text color="warning">No stats available yet. Start using AH Code!</Text>
       </Box>
     );
   }
@@ -270,8 +270,8 @@ function OverviewTab({
   dateRange,
   isLoading,
 }: {
-  stats: ClaudeCodeStats;
-  allTimeStats: ClaudeCodeStats;
+  stats: AhcodeStats;
+  allTimeStats: AhcodeStats;
   dateRange: StatsDateRange;
   isLoading: boolean;
 }): React.ReactNode {
@@ -518,7 +518,7 @@ const TIME_COMPARISONS = [
   { name: 'a full night of sleep', minutes: 480 },
 ];
 
-function generateFunFactoid(stats: ClaudeCodeStats, totalTokens: number): string {
+function generateFunFactoid(stats: AhcodeStats, totalTokens: number): string {
   const factoids: string[] = [];
 
   if (totalTokens > 0) {
@@ -556,7 +556,7 @@ function ModelsTab({
   dateRange,
   isLoading,
 }: {
-  stats: ClaudeCodeStats;
+  stats: AhcodeStats;
   dateRange: StatsDateRange;
   isLoading: boolean;
 }): React.ReactNode {
@@ -820,7 +820,7 @@ function generateXAxisLabels(data: DailyModelTokens[], _chartWidth: number, yAxi
 
 // Screenshot functionality
 async function handleScreenshot(
-  stats: ClaudeCodeStats,
+  stats: AhcodeStats,
   activeTab: 'Overview' | 'Models',
   setStatus: (status: string | null) => void,
 ): Promise<void> {
@@ -835,7 +835,7 @@ async function handleScreenshot(
   setTimeout(setStatus, 2000, null);
 }
 
-function renderStatsToAnsi(stats: ClaudeCodeStats, activeTab: 'Overview' | 'Models'): string {
+function renderStatsToAnsi(stats: AhcodeStats, activeTab: 'Overview' | 'Models'): string {
   const lines: string[] = [];
 
   if (activeTab === 'Overview') {
@@ -865,7 +865,7 @@ function renderStatsToAnsi(stats: ClaudeCodeStats, activeTab: 'Overview' | 'Mode
   return lines.join('\n');
 }
 
-function renderOverviewToAnsi(stats: ClaudeCodeStats): string[] {
+function renderOverviewToAnsi(stats: AhcodeStats): string[] {
   const lines: string[] = [];
   const theme = getTheme(resolveThemeSetting(getGlobalConfig().theme));
   const h = (text: string) => applyColor(text, theme.claude as Color);
@@ -976,7 +976,7 @@ function renderOverviewToAnsi(stats: ClaudeCodeStats): string[] {
   return lines;
 }
 
-function renderModelsToAnsi(stats: ClaudeCodeStats): string[] {
+function renderModelsToAnsi(stats: AhcodeStats): string[] {
   const lines: string[] = [];
 
   const modelEntries = Object.entries(stats.modelUsage).sort(

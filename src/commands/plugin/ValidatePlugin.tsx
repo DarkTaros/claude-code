@@ -21,11 +21,11 @@ export function ValidatePlugin({ onComplete, path }: Props): React.ReactNode {
           'Usage: /plugin validate <path>\n\n' +
             'Validate a plugin or marketplace manifest file or directory.\n\n' +
             'Examples:\n' +
-            '  /plugin validate .claude-plugin/plugin.json\n' +
+            '  /plugin validate .ahcode-plugin/plugin.json\n' +
             '  /plugin validate /path/to/plugin-directory\n' +
             '  /plugin validate .\n\n' +
-            'When given a directory, automatically validates .claude-plugin/marketplace.json\n' +
-            'or .claude-plugin/plugin.json (prefers marketplace if both exist).\n\n' +
+            'When given a directory, automatically validates .ahcode-plugin/marketplace.json\n' +
+            'or .ahcode-plugin/plugin.json (prefers marketplace if both exist).\n\n' +
             'Or from the command line:\n' +
             '  claude plugin validate <path>',
         );

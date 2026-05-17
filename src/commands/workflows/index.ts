@@ -1,5 +1,5 @@
 import type { Command, LocalCommandCall } from '../../types/command.js'
-import { getWorkflowCommands } from '@claude-code-best/builtin-tools/tools/WorkflowTool/createWorkflowCommand.js'
+import { getWorkflowCommands } from '@ahcode/builtin-tools/tools/WorkflowTool/createWorkflowCommand.js'
 import { getCwd } from '../../utils/cwd.js'
 
 const call: LocalCommandCall = async (_args, _context) => {
@@ -8,7 +8,7 @@ const call: LocalCommandCall = async (_args, _context) => {
     return {
       type: 'text',
       value:
-        'No workflows found. Add workflow files to .claude/workflows/ (YAML or Markdown).',
+        'No workflows found. Add workflow files to .ahcode/workflows/ (YAML or Markdown).',
     }
   }
   const list = commands

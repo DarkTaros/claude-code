@@ -5,7 +5,7 @@ import { logEvent } from '../../services/analytics/index.js'
 import type { AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS } from '../../services/analytics/metadata.js'
 import type { ToolUseContext } from '../../Tool.js'
 import { type Tool, toolMatchesName } from '../../Tool.js'
-import { SYNTHETIC_OUTPUT_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/SyntheticOutputTool/SyntheticOutputTool.js'
+import { SYNTHETIC_OUTPUT_TOOL_NAME } from '@ahcode/builtin-tools/tools/SyntheticOutputTool/SyntheticOutputTool.js'
 import { ALL_AGENT_DISALLOWED_TOOLS } from '../../tools.js'
 import { asAgentId } from '../../types/ids.js'
 import type { Message } from '../../types/message.js'
@@ -105,7 +105,7 @@ export async function execAgentHook(
       ]
 
       const systemPrompt = asSystemPrompt([
-        `You are verifying a stop condition in Claude Code. Your task is to verify that the agent completed the given plan. The conversation transcript is available at: ${transcriptPath}\nYou can read this file to analyze the conversation history if needed.
+        `You are verifying a stop condition in AH Code. Your task is to verify that the agent completed the given plan. The conversation transcript is available at: ${transcriptPath}\nYou can read this file to analyze the conversation history if needed.
 
 Use the available tools to inspect the codebase and verify the condition.
 Use as few steps as possible - be efficient and direct.

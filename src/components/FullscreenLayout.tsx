@@ -276,8 +276,8 @@ export function computeUnseenDivider(
  * Outside fullscreen mode, renders content sequentially so the existing
  * main-screen scrollback rendering works unchanged.
  *
- * Fullscreen mode defaults on for ants (CLAUDE_CODE_NO_FLICKER=0 to opt out)
- * and off for external users (CLAUDE_CODE_NO_FLICKER=1 to opt in).
+ * Fullscreen mode defaults on for ants (AHCODE_NO_FLICKER=0 to opt out)
+ * and off for external users (AHCODE_NO_FLICKER=1 to opt in).
  * The <AlternateScreen> wrapper
  * (alt buffer + mouse tracking + height constraint) lives at REPL's root
  * so nothing can accidentally render outside it.
@@ -325,7 +325,7 @@ export function FullscreenLayout({
     const ink = instances.get(process.stdout);
     if (!ink) return;
     ink.onHyperlinkClick = url => {
-      // Most OSC 8 links emitted by Claude Code are file:// URLs from
+      // Most OSC 8 links emitted by AH Code are file:// URLs from
       // FilePathLink (FileEdit/FileWrite/FileRead tool output). openBrowser
       // rejects non-http(s) protocols — route file: to openPath instead.
       if (url.startsWith('file:')) {

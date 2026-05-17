@@ -34,7 +34,7 @@ export function registerMcpAddCommand(mcp: Command): void {
   mcp
     .command('add <name> <commandOrUrl> [args...]')
     .description(
-      'Add an MCP server to Claude Code.\n\n' +
+      'Add an MCP server to AH Code.\n\n' +
         'Examples:\n' +
         '  # Add HTTP server:\n' +
         '  claude mcp add --transport http sentry https://mcp.sentry.dev/mcp\n\n' +
@@ -103,7 +103,7 @@ export function registerMcpAddCommand(mcp: Command): void {
         // XAA fail-fast: validate at add-time, not auth-time.
         if (options.xaa && !isXaaEnabled()) {
           cliError(
-            'Error: --xaa requires CLAUDE_CODE_ENABLE_XAA=1 in your environment',
+            'Error: --xaa requires AHCODE_ENABLE_XAA=1 in your environment',
           )
         }
         const xaa = Boolean(options.xaa)

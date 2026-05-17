@@ -1,15 +1,15 @@
-# Claude Code Best V5 (CCB)
+# AH Code V5 (CCB)
 
-[![GitHub Stars](https://img.shields.io/github/stars/claude-code-best/claude-code?style=flat-square&logo=github&color=yellow)](https://github.com/claude-code-best/claude-code/stargazers)
-[![GitHub Contributors](https://img.shields.io/github/contributors/claude-code-best/claude-code?style=flat-square&color=green)](https://github.com/claude-code-best/claude-code/graphs/contributors)
-[![GitHub Issues](https://img.shields.io/github/issues/claude-code-best/claude-code?style=flat-square&color=orange)](https://github.com/claude-code-best/claude-code/issues)
-[![GitHub License](https://img.shields.io/github/license/claude-code-best/claude-code?style=flat-square)](https://github.com/claude-code-best/claude-code/blob/main/LICENSE)
-[![Last Commit](https://img.shields.io/github/last-commit/claude-code-best/claude-code?style=flat-square&color=blue)](https://github.com/claude-code-best/claude-code/commits/main)
+[![GitHub Stars](https://img.shields.io/github/stars/ahcode/ah-code?style=flat-square&logo=github&color=yellow)](https://github.com/ahcode/ah-code/stargazers)
+[![GitHub Contributors](https://img.shields.io/github/contributors/ahcode/ah-code?style=flat-square&color=green)](https://github.com/ahcode/ah-code/graphs/contributors)
+[![GitHub Issues](https://img.shields.io/github/issues/ahcode/ah-code?style=flat-square&color=orange)](https://github.com/ahcode/ah-code/issues)
+[![GitHub License](https://img.shields.io/github/license/ahcode/ah-code?style=flat-square)](https://github.com/ahcode/ah-code/blob/main/LICENSE)
+[![Last Commit](https://img.shields.io/github/last-commit/ahcode/ah-code?style=flat-square&color=blue)](https://github.com/ahcode/ah-code/commits/main)
 [![Bun](https://img.shields.io/badge/runtime-Bun-black?style=flat-square&logo=bun)](https://bun.sh/)
 
 > Which Claude do you like? The open source one is the best.
 
-A reverse-engineered / decompiled source restoration of Anthropic's official [Claude Code](https://docs.anthropic.com/en/docs/claude-code) CLI tool. The goal is to reproduce most of Claude Code's functionality and engineering capabilities. It's abbreviated as CCB.
+A reverse-engineered / decompiled source restoration of Anthropic's official [AH Code](https://docs.anthropic.com/en/docs/claude-code) CLI tool. The goal is to reproduce most of AH Code's functionality and engineering capabilities. It's abbreviated as CCB.
 
 [Documentation (Chinese)](https://ccb.agent-aura.top/) — PR contributions welcome.
 
@@ -94,7 +94,7 @@ powershell -c "irm bun.sh/install.ps1 | iex"
    bun upgrade
    ```
 
-- Standard Claude Code configuration — each provider has its own setup method
+- Standard AH Code configuration — each provider has its own setup method
 
 ### Command Execution Location
 
@@ -141,9 +141,9 @@ Fields to fill in:
 
 - **Tab / Shift+Tab** to switch fields, **Enter** to confirm and move to the next, press Enter on the last field to save
 - Model fields auto-fill from current environment variables
-- Configuration saves to `~/.claude/settings.json` under the `env` key, effective immediately
+- Configuration saves to `~/.ahcode/settings.json` under the `env` key, effective immediately
 
-You can also edit `~/.claude/settings.json` directly:
+You can also edit `~/.ahcode/settings.json` directly:
 
 ```json
 {
@@ -188,24 +188,24 @@ The TUI (REPL) mode requires a real terminal and cannot be launched directly via
 ## Documentation & Links
 
 - **Online docs (Mintlify)**: [ccb.agent-aura.top](https://ccb.agent-aura.top/) — source in [`docs/`](docs/), PR contributions welcome
-- **DeepWiki**: https://deepwiki.com/claude-code-best/claude-code
+- **DeepWiki**: https://deepwiki.com/ahcode/ah-code
 
 ## Contributors
 
-<a href="https://github.com/claude-code-best/claude-code/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=claude-code-best/claude-code" />
+<a href="https://github.com/ahcode/ah-code/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=ahcode/ah-code" />
 </a>
 
 ## Star History
 
-<a href="https://www.star-history.com/?repos=claude-code-best%2Fclaude-code&type=date&legend=top-left">
+<a href="https://www.star-history.com/?repos=ah-code%2Fclaude-code&type=date&legend=top-left">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/image?repos=claude-code-best%2Fclaude-code&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/image?repos=claude-code-best%2Fclaude-code&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/image?repos=claude-code-best%2Fclaude-code&type=date&legend=top-left" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/image?repos=ah-code%2Fclaude-code&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/image?repos=ah-code%2Fclaude-code&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/image?repos=ah-code%2Fclaude-code&type=date&legend=top-left" />
  </picture>
 </a>
 
 ## License
 
-This project is for educational and research purposes only. All rights to Claude Code belong to [Anthropic](https://www.anthropic.com/).
+This project is for educational and research purposes only. All rights to AH Code belong to [Anthropic](https://www.anthropic.com/).

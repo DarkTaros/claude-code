@@ -20,11 +20,11 @@ let rootDir: string
 beforeEach(() => {
   rootDir = mkdtempSync(join(tmpdir(), 'skill-learning-tool-hook-'))
   resetToolHookBookkeeping()
-  process.env.CLAUDE_SKILL_LEARNING_HOME = rootDir
+  process.env.AHCODE_SKILL_LEARNING_HOME = rootDir
 })
 
 afterEach(() => {
-  delete process.env.CLAUDE_SKILL_LEARNING_HOME
+  delete process.env.AHCODE_SKILL_LEARNING_HOME
   rmSync(rootDir, { recursive: true, force: true })
 })
 

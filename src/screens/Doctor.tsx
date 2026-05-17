@@ -4,7 +4,7 @@ import React, { Suspense, use, useCallback, useEffect, useMemo, useState } from 
 import { KeybindingWarnings } from 'src/components/KeybindingWarnings.js';
 import { McpParsingWarnings } from 'src/components/mcp/McpParsingWarnings.js';
 import { getModelMaxOutputTokens } from 'src/utils/context.js';
-import { getClaudeConfigHomeDir } from 'src/utils/envUtils.js';
+import { getAhcodeConfigHomeDir } from 'src/utils/envUtils.js';
 import type { SettingSource } from 'src/utils/settings/constants.js';
 import { getOriginalCwd } from '../bootstrap/state.js';
 import type { CommandResultDisplay } from '../commands.js';
@@ -113,7 +113,7 @@ export function Doctor({ onDone }: Props): React.ReactNode {
         upperLimit: TASK_MAX_OUTPUT_UPPER_LIMIT,
       },
       {
-        name: 'CLAUDE_CODE_MAX_OUTPUT_TOKENS',
+        name: 'AHCODE_MAX_OUTPUT_TOKENS',
         // Check for values against the latest supported model
         ...getModelMaxOutputTokens('claude-opus-4-7'),
       },
@@ -131,8 +131,8 @@ export function Doctor({ onDone }: Props): React.ReactNode {
     void getDoctorDiagnostic().then(setDiagnostic);
 
     void (async () => {
-      const userAgentsDir = join(getClaudeConfigHomeDir(), 'agents');
-      const projectAgentsDir = join(getOriginalCwd(), '.claude', 'agents');
+      const userAgentsDir = join(getAhcodeConfigHomeDir(), 'agents');
+      const projectAgentsDir = join(getOriginalCwd(), '.ahcode', 'agents');
 
       const { activeAgents, allAgents, failedFiles } = agentDefinitions;
 
@@ -188,7 +188,7 @@ export function Doctor({ onDone }: Props): React.ReactNode {
   }, [toolPermissionContext, tools, agentDefinitions]);
 
   const handleDismiss = useCallback(() => {
-    onDone('Claude Code diagnostics dismissed', { display: 'system' });
+    onDone('AH Code diagnostics dismissed', { display: 'system' });
   }, [onDone]);
 
   // Handle dismiss via keybindings (Enter, Escape, or Ctrl+C)
@@ -379,20 +379,20 @@ export function Doctor({ onDone }: Props): React.ReactNode {
 
       {/* Context Usage Warnings */}
       {contextWarnings &&
-        (contextWarnings.claudeMdWarning || contextWarnings.agentWarning || contextWarnings.mcpWarning) && (
+        (contextWarnings.ahcodeMdWarning || contextWarnings.agentWarning || contextWarnings.mcpWarning) && (
           <Box flexDirection="column">
             <Text bold>Context Usage Warnings</Text>
 
-            {contextWarnings.claudeMdWarning && (
+            {contextWarnings.ahcodeMdWarning && (
               <>
                 <Text>
                   └{' '}
                   <Text color="warning">
-                    {figures.warning} {contextWarnings.claudeMdWarning.message}
+                    {figures.warning} {contextWarnings.ahcodeMdWarning.message}
                   </Text>
                 </Text>
                 <Text>{'  '}└ Files:</Text>
-                {contextWarnings.claudeMdWarning.details.map((detail, i) => (
+                {contextWarnings.ahcodeMdWarning.details.map((detail, i) => (
                   <Text key={i} dimColor>
                     {'    '}└ {detail}
                   </Text>

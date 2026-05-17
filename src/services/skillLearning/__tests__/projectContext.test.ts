@@ -10,7 +10,7 @@ import {
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { execFileSync } from 'child_process'
-import { getClaudeConfigHomeDir } from '../../../utils/envUtils.js'
+import { getAhcodeConfigHomeDir } from '../../../utils/envUtils.js'
 import {
   getProjectContextPath,
   getProjectsRegistryPath,
@@ -25,7 +25,7 @@ const originalEnv = { ...process.env }
 beforeEach(() => {
   resetEnv()
   const tempHome = mkdtempSync(join(tempBase, 'home-'))
-  process.env.CLAUDE_CONFIG_DIR = tempHome
+  process.env.AHCODE_CONFIG_DIR = tempHome
 })
 
 afterAll(() => {
@@ -159,9 +159,9 @@ function resetEnv(): void {
 
 function clearConfigDirCache(): void {
   if (
-    typeof getClaudeConfigHomeDir === 'function' &&
-    'cache' in getClaudeConfigHomeDir
+    typeof getAhcodeConfigHomeDir === 'function' &&
+    'cache' in getAhcodeConfigHomeDir
   ) {
-    ;(getClaudeConfigHomeDir as any).cache.clear?.()
+    ;(getAhcodeConfigHomeDir as any).cache.clear?.()
   }
 }

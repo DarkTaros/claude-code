@@ -103,14 +103,14 @@ export async function pluginValidateHandler(
     console.log(`Validating ${result.fileType} manifest: ${result.filePath}\n`)
     printValidationResult(result)
 
-    // If this is a plugin manifest located inside a .claude-plugin directory,
+    // If this is a plugin manifest located inside a .ahcode-plugin directory,
     // also validate the plugin's content files (skills, agents, commands,
     // hooks). Works whether the user passed a directory or the plugin.json
     // path directly.
     let contentResults: ValidationResult[] = []
     if (result.fileType === 'plugin') {
       const manifestDir = dirname(result.filePath)
-      if (basename(manifestDir) === '.claude-plugin') {
+      if (basename(manifestDir) === '.ahcode-plugin') {
         contentResults = await validatePluginContents(dirname(manifestDir))
         for (const r of contentResults) {
           console.log(`Validating ${r.fileType}: ${r.filePath}\n`)

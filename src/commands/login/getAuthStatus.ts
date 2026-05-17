@@ -30,7 +30,7 @@ export interface AuthStatus {
   workspaceKey: {
     /**
      * true when a workspace API key is available from either the env var or
-     * saved settings (workspaceApiKey in ~/.claude.json).
+     * saved settings (workspaceApiKey in ~/.ahcode.json).
      */
     set: boolean
     /** true when key begins with the expected 'sk-ant-api03-' prefix */
@@ -43,7 +43,7 @@ export interface AuthStatus {
     /**
      * Where the key came from:
      *   'env'      — ANTHROPIC_API_KEY environment variable
-     *   'settings' — workspaceApiKey saved in ~/.claude.json via /login UI
+     *   'settings' — workspaceApiKey saved in ~/.ahcode.json via /login UI
      *   null       — not set
      */
     source: 'env' | 'settings' | null

@@ -8,10 +8,10 @@
 
 ## 背景
 
-Claude Code 使用三层门控系统：
+AH Code 使用三层门控系统：
 1. **编译时 feature flag** — `feature('FLAG_NAME')` from `bun:bundle`
 2. **GrowthBook 远程开关** — `tengu_*` 前缀，通过 SDK 连接 Anthropic 服务端
-3. **运行时环境变量** — `USER_TYPE`、`CLAUDE_CODE_*` 等
+3. **运行时环境变量** — `USER_TYPE`、`AHCODE_*` 等
 
 在我们的反编译版本中，GrowthBook 不启动（analytics 链空实现），导致所有 `tengu_*` 检查默认返回 `false`。
 
@@ -46,7 +46,7 @@ CLAUDE_GB_ADAPTER_KEY=sdk-xxx
 - **Gate**: `tengu_keybinding_customization_release` → `true`
 - **编译 flag**: 无（已内置）
 - **代码量**: 473 行，完整实现
-- **功能**: 加载 `~/.claude/keybindings.json`，支持热重载、重复键检测、结构验证
+- **功能**: 加载 `~/.ahcode/keybindings.json`，支持热重载、重复键检测、结构验证
 - **效果**: 用户可自定义所有快捷键
 - **风险**: 无
 
@@ -70,7 +70,7 @@ CLAUDE_GB_ADAPTER_KEY=sdk-xxx
 - **Gate**: `tengu_amber_flint` → `true`（这是 kill switch，默认已 `true`）
 - **编译 flag**: 无（已内置）
 - **代码量**: 45 行（gate 层），实际 swarm 实现在 teammate tools 中
-- **功能**: 多 agent 协作，需额外设置 `--agent-teams` 或 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`
+- **功能**: 多 agent 协作，需额外设置 `--agent-teams` 或 `AHCODE_EXPERIMENTAL_AGENT_TEAMS=1`
 - **效果**: 允许创建和管理 agent 团队
 - **风险**: 无（kill switch 默认就是 true）
 
@@ -115,7 +115,7 @@ CLAUDE_GB_ADAPTER_KEY=sdk-xxx
 - **Gate**: `tengu_passport_quail` → `true`（相关：`tengu_moth_copse`、`tengu_coral_fern`）
 - **编译 flag**: `EXTRACT_MEMORIES`（需新增）
 - **代码量**: 616 行，完整实现
-- **功能**: 对话中自动提取持久记忆到 `~/.claude/projects/<path>/memory/`
+- **功能**: 对话中自动提取持久记忆到 `~/.ahcode/projects/<path>/memory/`
 - **效果**: 自动构建项目知识库
 - **依赖**: Claude API（forked subagent）
 - **风险**: 低
@@ -197,7 +197,7 @@ CLAUDE_GB_ADAPTER_KEY=sdk-xxx
 ### P2-4. 深度链接
 - **Gate**: `tengu_lodestone_enabled` → `true`
 - **功能**: 注册 `claude://` URL 协议处理器
-- **效果**: 可从浏览器直接打开 Claude Code
+- **效果**: 可从浏览器直接打开 AH Code
 - **风险**: 低
 
 ### P2-5. Agent 自动转后台
@@ -263,7 +263,7 @@ CLAUDE_GB_ADAPTER_KEY=sdk-xxx
 | `tengu_turtle_carbon` | `true` | Ultrathink 扩展思考 |
 | `tengu_amber_stoat` | `true` | 内置 Explore/Plan agent |
 | `tengu_amber_flint` | `true` | Agent 团队/Swarm |
-| `tengu_slim_subagent_claudemd` | `true` | 子 agent 精简 CLAUDE.md |
+| `tengu_slim_subagent_ahcodemd` | `true` | 子 agent 精简 AHCODE.md |
 | `tengu_birch_trellis` | `true` | tree-sitter bash 安全分析 |
 | `tengu_collage_kaleidoscope` | `true` | macOS 剪贴板图片读取 |
 | `tengu_compact_cache_prefix` | `true` | 压缩时复用 prompt cache |

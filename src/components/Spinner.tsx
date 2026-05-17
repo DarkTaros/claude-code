@@ -79,7 +79,7 @@ export function SpinnerWithVerb(props: Props): React.ReactNode {
   // teammate view needs the real spinner (which shows teammate status).
   const viewingAgentTaskId = useAppState(s => s.viewingAgentTaskId);
   // Hoisted to mount-time — this component re-renders at animation framerate.
-  const briefEnvEnabledRaw = useMemo(() => isEnvTruthy(process.env.CLAUDE_CODE_BRIEF), []);
+  const briefEnvEnabledRaw = useMemo(() => isEnvTruthy(process.env.AHCODE_BRIEF), []);
   const briefEnvEnabled = feature('KAIROS') || feature('KAIROS_BRIEF') ? briefEnvEnabledRaw : false;
 
   // Runtime gate mirrors isBriefEnabled() but inlined — importing from

@@ -1,6 +1,6 @@
 ---
 title: "多轮对话管理 - QueryEngine 会话编排与持久化"
-description: "从源码角度解析 Claude Code 多轮对话管理：QueryEngine 的会话状态机、JSONL transcript 持久化、成本追踪模型和模型热切换机制。"
+description: "从源码角度解析 AH Code 多轮对话管理：QueryEngine 的会话状态机、JSONL transcript 持久化、成本追踪模型和模型热切换机制。"
 keywords: ["多轮对话", "会话管理", "QueryEngine", "transcript", "成本追踪"]
 sourceRef: "3ec5675 (2026-04-08)"
 ---
@@ -79,7 +79,7 @@ async *submitMessage(
 ### 存储路径
 
 ```
-~/.claude/projects/<sanitized-cwd>/<session-uuid>.jsonl
+~/.ahcode/projects/<sanitized-cwd>/<session-uuid>.jsonl
 ```
 
 - 路径由 `getProjectDir(originalCwd)` 生成，使用 `sanitizePath()` 将项目目录路径转换为安全的目录名（非 hash），同一项目目录的会话归入同一子目录

@@ -17,23 +17,23 @@ import {
 } from 'src/services/analytics/index.js'
 import { prefetchAllMcpResources } from 'src/services/mcp/client.js'
 import type { ScopedMcpServerConfig } from 'src/services/mcp/types.js'
-import { BashTool } from '@claude-code-best/builtin-tools/tools/BashTool/BashTool.js'
-import { FileEditTool } from '@claude-code-best/builtin-tools/tools/FileEditTool/FileEditTool.js'
+import { BashTool } from '@ahcode/builtin-tools/tools/BashTool/BashTool.js'
+import { FileEditTool } from '@ahcode/builtin-tools/tools/FileEditTool/FileEditTool.js'
 import {
   normalizeFileEditInput,
   stripTrailingWhitespace,
-} from '@claude-code-best/builtin-tools/tools/FileEditTool/utils.js'
-import { FileWriteTool } from '@claude-code-best/builtin-tools/tools/FileWriteTool/FileWriteTool.js'
+} from '@ahcode/builtin-tools/tools/FileEditTool/utils.js'
+import { FileWriteTool } from '@ahcode/builtin-tools/tools/FileWriteTool/FileWriteTool.js'
 import { getTools } from 'src/tools.js'
 import type { AgentId } from 'src/types/ids.js'
 import type { z } from 'zod/v4'
 import { CLI_SYSPROMPT_PREFIXES } from '../constants/system.js'
 import { roughTokenCountEstimation } from '../services/tokenEstimation.js'
 import type { Tool, ToolPermissionContext, Tools } from '../Tool.js'
-import { AGENT_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/AgentTool/constants.js'
-import type { AgentDefinition } from '@claude-code-best/builtin-tools/tools/AgentTool/loadAgentsDir.js'
-import { EXIT_PLAN_MODE_V2_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/ExitPlanModeTool/constants.js'
-import { TASK_OUTPUT_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/TaskOutputTool/constants.js'
+import { AGENT_TOOL_NAME } from '@ahcode/builtin-tools/tools/AgentTool/constants.js'
+import type { AgentDefinition } from '@ahcode/builtin-tools/tools/AgentTool/loadAgentsDir.js'
+import { EXIT_PLAN_MODE_V2_TOOL_NAME } from '@ahcode/builtin-tools/tools/ExitPlanModeTool/constants.js'
+import { TASK_OUTPUT_TOOL_NAME } from '@ahcode/builtin-tools/tools/TaskOutputTool/constants.js'
 import type { Message } from '../types/message.js'
 import { isAgentSwarmsEnabled } from './agentSwarmsEnabled.js'
 import {
@@ -200,7 +200,7 @@ export async function toolToAPISchema(
       getAPIProvider() === 'firstParty' &&
       isFirstPartyAnthropicBaseUrl() &&
       (getFeatureValue_CACHED_MAY_BE_STALE('tengu_fgts', false) ||
-        isEnvTruthy(process.env.CLAUDE_CODE_ENABLE_FINE_GRAINED_TOOL_STREAMING))
+        isEnvTruthy(process.env.AHCODE_ENABLE_FINE_GRAINED_TOOL_STREAMING))
     ) {
       base.eager_input_streaming = true
     }
@@ -229,14 +229,14 @@ export async function toolToAPISchema(
     schema.cache_control = options.cacheControl
   }
 
-  // CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS is the kill switch for beta API
+  // AHCODE_DISABLE_EXPERIMENTAL_BETAS is the kill switch for beta API
   // shapes. Strips defer_loading and other beta fields from tool schemas.
   // cache_control is allowlisted: the base {type: 'ephemeral'} shape is
   // standard prompt caching (Bedrock/Vertex supported); the beta sub-fields
   // (scope, ttl) are already gated upstream by shouldIncludeFirstPartyOnlyBetas
   // which independently respects this kill switch.
   // github.com/anthropics/claude-code/issues/20031
-  if (isEnvTruthy(process.env.CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS)) {
+  if (isEnvTruthy(process.env.AHCODE_DISABLE_EXPERIMENTAL_BETAS)) {
     const allowed = new Set([
       'name',
       'description',
@@ -266,7 +266,7 @@ function logStripOnce(stripped: string[]): void {
   if (loggedStrip) return
   loggedStrip = true
   logForDebugging(
-    `[betas] Stripped from tool schemas: [${stripped.join(', ')}] (CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1)`,
+    `[betas] Stripped from tool schemas: [${stripped.join(', ')}] (AHCODE_DISABLE_EXPERIMENTAL_BETAS=1)`,
   )
 }
 
@@ -452,16 +452,16 @@ export function prependUserContext(
     return messages
   }
 
-  // Extract claudeMd as a dedicated high-weight user message so it isn't
+  // Extract ahcodeMd as a dedicated high-weight user message so it isn't
   // buried inside the generic <system-reminder> with the "may or may not be
   // relevant" disclaimer, which would degrade its instructional weight.
-  const { claudeMd, ...rest } = context
+  const { ahcodeMd, ...rest } = context
   const result: Message[] = []
 
-  if (claudeMd) {
+  if (ahcodeMd) {
     result.push(
       createUserMessage({
-        content: `<project-instructions>\n${claudeMd}\n</project-instructions>\n`,
+        content: `<project-instructions>\n${ahcodeMd}\n</project-instructions>\n`,
         isMeta: true,
       }),
     )
@@ -504,7 +504,7 @@ export async function logContextMetrics(
     ])
   // Extract individual context sizes and calculate total
   const gitStatusSize = systemContext.gitStatus?.length ?? 0
-  const claudeMdSize = userContext.claudeMd?.length ?? 0
+  const claudeMdSize = userContext.ahcodeMd?.length ?? 0
 
   // Calculate total context size
   const totalContextSize = gitStatusSize + claudeMdSize
@@ -610,7 +610,7 @@ export function normalizeToolInput<T extends Tool>(
         logEvent('tengu_bash_tool_simple_echo', {})
       }
 
-      // Check for run_in_background (may not exist in schema if CLAUDE_CODE_DISABLE_BACKGROUND_TASKS is set)
+      // Check for run_in_background (may not exist in schema if AHCODE_DISABLE_BACKGROUND_TASKS is set)
       const run_in_background =
         'run_in_background' in parsed ? parsed.run_in_background : undefined
 

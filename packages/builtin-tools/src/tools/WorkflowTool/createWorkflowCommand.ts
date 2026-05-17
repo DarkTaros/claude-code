@@ -4,7 +4,7 @@ import type { Command } from 'src/types/command.js'
 import { WORKFLOW_DIR_NAME, WORKFLOW_FILE_EXTENSIONS } from './constants.js'
 
 /**
- * Scans .claude/workflows/ directory and creates Command objects for each workflow file.
+ * Scans .ahcode/workflows/ directory and creates Command objects for each workflow file.
  * Each workflow file becomes a slash command (e.g. /workflow-name).
  */
 export async function getWorkflowCommands(cwd: string): Promise<Command[]> {

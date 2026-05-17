@@ -4,9 +4,9 @@ import { spawnSync } from 'child_process'
 import { findGitRoot } from '../utils/git.js'
 
 /**
- * `claude up` — run the "# claude up" section from the nearest CLAUDE.md.
+ * `claude up` — run the "# claude up" section from the nearest AHCODE.md.
  *
- * Walks up from CWD looking for CLAUDE.md files, extracts the section
+ * Walks up from CWD looking for AHCODE.md files, extracts the section
  * under the `# claude up` heading, and executes it as a shell script.
  *
  * ANT-only command (USER_TYPE === "ant").
@@ -19,7 +19,7 @@ export async function up(): Promise<void> {
   let upSection: string | null = null
 
   for (const dir of searchDirs) {
-    const claudeMdPath = join(dir, 'CLAUDE.md')
+    const claudeMdPath = join(dir, 'AHCODE.md')
     try {
       const content = readFileSync(claudeMdPath, 'utf-8')
       upSection = extractUpSection(content)
@@ -34,7 +34,7 @@ export async function up(): Promise<void> {
 
   if (!upSection) {
     console.log(
-      'No "# claude up" section found in CLAUDE.md.\n' +
+      'No "# claude up" section found in AHCODE.md.\n' +
         'Add a section like:\n\n' +
         '  # claude up\n' +
         '  ```bash\n' +

@@ -1,11 +1,11 @@
-import { BASH_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/BashTool/toolName.js'
-import { EXIT_PLAN_MODE_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/ExitPlanModeTool/constants.js'
-import { FILE_EDIT_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/FileEditTool/constants.js'
-import { FILE_READ_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/FileReadTool/prompt.js'
-import { FILE_WRITE_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/FileWriteTool/prompt.js'
-import { GLOB_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/GlobTool/prompt.js'
-import { GREP_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/GrepTool/prompt.js'
-import { NOTEBOOK_EDIT_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/NotebookEditTool/constants.js'
+import { BASH_TOOL_NAME } from '@ahcode/builtin-tools/tools/BashTool/toolName.js'
+import { EXIT_PLAN_MODE_TOOL_NAME } from '@ahcode/builtin-tools/tools/ExitPlanModeTool/constants.js'
+import { FILE_EDIT_TOOL_NAME } from '@ahcode/builtin-tools/tools/FileEditTool/constants.js'
+import { FILE_READ_TOOL_NAME } from '@ahcode/builtin-tools/tools/FileReadTool/prompt.js'
+import { FILE_WRITE_TOOL_NAME } from '@ahcode/builtin-tools/tools/FileWriteTool/prompt.js'
+import { GLOB_TOOL_NAME } from '@ahcode/builtin-tools/tools/GlobTool/prompt.js'
+import { GREP_TOOL_NAME } from '@ahcode/builtin-tools/tools/GrepTool/prompt.js'
+import { NOTEBOOK_EDIT_TOOL_NAME } from '@ahcode/builtin-tools/tools/NotebookEditTool/constants.js'
 import { hasEmbeddedSearchTools } from 'src/utils/embeddedTools.js'
 import { AGENT_TOOL_NAME } from '../constants.js'
 import type { BuiltInAgentDefinition } from '../loadAgentsDir.js'
@@ -21,7 +21,7 @@ function getExploreSystemPrompt(): string {
     ? `- Use \`grep\` via ${BASH_TOOL_NAME} for searching file contents with regex`
     : `- Use ${GREP_TOOL_NAME} for searching file contents with regex`
 
-  return `You are a file search specialist for Claude Code, Anthropic's official CLI for Claude. You excel at thoroughly navigating and exploring codebases.
+  return `You are a file search specialist for AH Code, Anthropic's official CLI for Claude. You excel at thoroughly navigating and exploring codebases.
 
 === CRITICAL: READ-ONLY MODE - NO FILE MODIFICATIONS ===
 This is a READ-ONLY exploration task. You are STRICTLY PROHIBITED from:
@@ -77,7 +77,7 @@ export const EXPLORE_AGENT: BuiltInAgentDefinition = {
   // Note: For ants, getAgentModel() checks tengu_explore_agent GrowthBook flag at runtime
   model: process.env.USER_TYPE === 'ant' ? 'inherit' : 'haiku',
   // Explore is a fast read-only search agent — it doesn't need commit/PR/lint
-  // rules from CLAUDE.md. The main agent has full context and interprets results.
-  omitClaudeMd: true,
+  // rules from AHCODE.md. The main agent has full context and interprets results.
+  omitAhcodeMd: true,
   getSystemPrompt: () => getExploreSystemPrompt(),
 }

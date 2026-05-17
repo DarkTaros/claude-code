@@ -29,7 +29,7 @@ import type {
 import type {
   AgentDefinition,
   AgentDefinitionsResult,
-} from '@claude-code-best/builtin-tools/tools/AgentTool/loadAgentsDir.js'
+} from '@ahcode/builtin-tools/tools/AgentTool/loadAgentsDir.js'
 import type {
   AssistantMessage,
   AttachmentMessage,
@@ -229,10 +229,10 @@ export type ToolUseContext = {
   }) => void
   nestedMemoryAttachmentTriggers?: Set<string>
   /**
-   * CLAUDE.md paths already injected as nested_memory attachments this
+   * AHCODE.md paths already injected as nested_memory attachments this
    * session. Dedup for memoryFilesToAttachments — readFileState is an LRU
    * that evicts entries in busy sessions, so its .has() check alone can
-   * re-inject the same CLAUDE.md dozens of times.
+   * re-inject the same AHCODE.md dozens of times.
    */
   loadedNestedMemoryPaths?: Set<string>
   dynamicSkillDirTriggers?: Set<string>

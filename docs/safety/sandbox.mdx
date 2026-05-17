@@ -1,6 +1,6 @@
 ---
 title: "沙箱机制 - 权限系统之外的第二道防线"
-description: "系统性梳理 Claude Code 的沙箱设计：什么时候会进沙箱、什么时候不会、如何与权限系统联动、默认限制了什么、不同平台下行为有什么差异，以及用户在被拦截时会看到什么。"
+description: "系统性梳理 AH Code 的沙箱设计：什么时候会进沙箱、什么时候不会、如何与权限系统联动、默认限制了什么、不同平台下行为有什么差异，以及用户在被拦截时会看到什么。"
 keywords: ["沙箱", "sandbox", "权限", "Bash", "PowerShell", "bubblewrap", "sandbox-exec", "纵深防御"]
 ---
 
@@ -20,7 +20,7 @@ keywords: ["沙箱", "sandbox", "权限", "Bash", "PowerShell", "bubblewrap", "s
 - 这一层仓库自己负责：策略、配置转换、启停判断、命令包裹、清理和权限联动
 - 真正做 OS 级隔离的是外部运行时 `@anthropic-ai/sandbox-runtime`
 
-在 `src/utils/sandbox/sandbox-adapter.ts` 里，可以很清楚地看到这条边界：项目导入 `SandboxManager as BaseSandboxManager`、`SandboxViolationStore` 等运行时对象，然后在外面再包一层符合 Claude Code 自身权限模型的适配器。
+在 `src/utils/sandbox/sandbox-adapter.ts` 里，可以很清楚地看到这条边界：项目导入 `SandboxManager as BaseSandboxManager`、`SandboxViolationStore` 等运行时对象，然后在外面再包一层符合 AH Code 自身权限模型的适配器。
 
 底层隔离在不同平台上的落地也不是同一套实现：
 
@@ -32,7 +32,7 @@ keywords: ["沙箱", "sandbox", "权限", "Bash", "PowerShell", "bubblewrap", "s
 
 ## 它到底解决什么问题
 
-如果只有应用层权限系统，Claude Code 需要在命令执行前尽量判断：
+如果只有应用层权限系统，AH Code 需要在命令执行前尽量判断：
 
 - 这条命令是不是只读
 - 会不会写危险路径
@@ -109,7 +109,7 @@ keywords: ["沙箱", "sandbox", "权限", "Bash", "PowerShell", "bubblewrap", "s
 这个仓库在 `src/utils/sandbox/sandbox-adapter.ts` 里专门把一些高风险路径额外加入 `denyWrite`，例如：
 
 - `settings.json`
-- `.claude/skills`
+- `.ahcode/skills`
 - 一些 bare git repo 相关路径
 
 它还专门处理 bare git repo 逃逸这一类攻击面。它们的意义不是“让更多命令通过”，而是“即使命令已经执行，也别让它顺手把护栏本身拆掉”，避免通过改配置、改技能、改 git 结构来扩大后续权限。
@@ -281,7 +281,7 @@ REPL / CLI 启动
 
 沙箱运行时配置最终由 `convertToSandboxRuntimeConfig()` 生成。它会把项目自己的设置、权限规则和安全加固逻辑，转换成底层运行时需要的配置。
 
-这一步很关键，因为这个项目的沙箱配置不是一份静态表，而是从 Claude Code 自己的权限系统里“翻译”出来的。
+这一步很关键，因为这个项目的沙箱配置不是一份静态表，而是从 AH Code 自己的权限系统里“翻译”出来的。
 
 ### 这些限制是怎么从权限系统推导出来的
 
@@ -319,10 +319,10 @@ REPL / CLI 启动
 即使有别的配置，项目还会额外加固一些高风险路径，例如：
 
 - settings 文件
-- `.claude/skills`
+- `.ahcode/skills`
 - 一些 bare git repo 相关路径
 
-这样做的原因是：这些路径一旦可写，攻击者可能反过来修改 Claude Code 自己的配置、技能或 git 行为，从而扩大权限。
+这样做的原因是：这些路径一旦可写，攻击者可能反过来修改 AH Code 自己的配置、技能或 git 行为，从而扩大权限。
 
 ### 网络限制
 
@@ -362,7 +362,7 @@ REPL / CLI 启动
 
 前面的“四个核心价值”解释的是原理，这里把结论再落回最常见的直觉疑问上：为什么一个默认不让你写 `/etc` 的系统，反而更值得信任？
 
-因为 Claude Code 日常最常跑的不是系统管理命令，而是开发命令。例如：
+因为 AH Code 日常最常跑的不是系统管理命令，而是开发命令。例如：
 
 - `npm test`
 - `npm install`

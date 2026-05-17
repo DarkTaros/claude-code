@@ -24,11 +24,11 @@ afterAll(() => {
 // src/utils/model/model.ts's getDefaultOpusModel().
 function resolveDefaultOpusModelForTests(): string {
   // Highest priority: provider-specific env override.
-  if (process.env.CLAUDE_CODE_USE_OPENAI === '1') {
+  if (process.env.AHCODE_USE_OPENAI === '1') {
     if (process.env.OPENAI_DEFAULT_OPUS_MODEL)
       return process.env.OPENAI_DEFAULT_OPUS_MODEL
   }
-  if (process.env.CLAUDE_CODE_USE_GEMINI === '1') {
+  if (process.env.AHCODE_USE_GEMINI === '1') {
     if (process.env.GEMINI_DEFAULT_OPUS_MODEL)
       return process.env.GEMINI_DEFAULT_OPUS_MODEL
   }
@@ -37,10 +37,10 @@ function resolveDefaultOpusModelForTests(): string {
     return process.env.ANTHROPIC_DEFAULT_OPUS_MODEL
   // Provider-specific Opus 4.7 IDs (must match
   // src/utils/model/configs.ts CLAUDE_OPUS_4_7_CONFIG).
-  if (process.env.CLAUDE_CODE_USE_BEDROCK === '1')
+  if (process.env.AHCODE_USE_BEDROCK === '1')
     return 'us.anthropic.claude-opus-4-7-v1'
-  if (process.env.CLAUDE_CODE_USE_VERTEX === '1') return 'claude-opus-4-7'
-  if (process.env.CLAUDE_CODE_USE_FOUNDRY === '1') return 'claude-opus-4-7'
+  if (process.env.AHCODE_USE_VERTEX === '1') return 'claude-opus-4-7'
+  if (process.env.AHCODE_USE_FOUNDRY === '1') return 'claude-opus-4-7'
   return 'claude-opus-4-7'
 }
 
@@ -153,8 +153,8 @@ mock.module('src/utils/effort.js', () => ({
 // Use REAL semantics for non-overridden envUtils exports — this mock is
 // process-global, so envUtils.test.ts and other consumers running in the
 // same process must see correct behavior for hasNodeOption, isBareMode,
-// parseEnvVars, getVertexRegionForModel, etc. Only getClaudeConfigHomeDir
-// is overridden to '/mock/home/.claude' while this suite runs.
+// parseEnvVars, getVertexRegionForModel, etc. Only getAhcodeConfigHomeDir
+// is overridden to '/mock/home/.ahcode' while this suite runs.
 const realIsEnvDefinedFalsy = (v: string | boolean | undefined): boolean => {
   if (v === undefined) return false
   if (typeof v === 'boolean') return !v
@@ -175,22 +175,22 @@ const VERTEX_REGION_OVERRIDES: ReadonlyArray<[string, string]> = [
   ['claude-sonnet-4', 'VERTEX_REGION_CLAUDE_4_0_SONNET'],
 ]
 
-// Real getClaudeConfigHomeDir is memoized via lodash, so consumers may call
+// Real getAhcodeConfigHomeDir is memoized via lodash, so consumers may call
 // `.cache.clear()` on it. Provide a no-op .cache stub.
 const mockedGetClaudeConfigHomeDirMD: (() => string) & {
   cache: { clear: () => void; get: (k: unknown) => unknown }
 } = Object.assign(
   () =>
     useMockForMagicDocs
-      ? '/mock/home/.claude'
-      : (process.env.CLAUDE_CONFIG_DIR ?? join(homedir(), '.claude')).normalize(
+      ? '/mock/home/.ahcode'
+      : (process.env.AHCODE_CONFIG_DIR ?? join(homedir(), '.ahcode')).normalize(
           'NFC',
         ),
   { cache: { clear: () => {}, get: (_k: unknown) => undefined } },
 )
 
 mock.module('src/utils/envUtils.js', () => ({
-  getClaudeConfigHomeDir: mockedGetClaudeConfigHomeDirMD,
+  getAhcodeConfigHomeDir: mockedGetClaudeConfigHomeDirMD,
   isEnvTruthy: realIsEnvTruthy,
   getEnvBool: () => false,
   getEnvNumber: () => undefined,
@@ -208,8 +208,8 @@ mock.module('src/utils/envUtils.js', () => ({
   getTeamsDir: () =>
     join(
       useMockForMagicDocs
-        ? '/mock/home/.claude'
-        : (process.env.CLAUDE_CONFIG_DIR ?? join(homedir(), '.claude')),
+        ? '/mock/home/.ahcode'
+        : (process.env.AHCODE_CONFIG_DIR ?? join(homedir(), '.ahcode')),
       'teams',
     ),
   hasNodeOption: (flag: string) => {
@@ -218,7 +218,7 @@ mock.module('src/utils/envUtils.js', () => ({
   },
   isEnvDefinedFalsy: realIsEnvDefinedFalsy,
   isBareMode: () =>
-    realIsEnvTruthy(process.env.CLAUDE_CODE_SIMPLE) ||
+    realIsEnvTruthy(process.env.AHCODE_SIMPLE) ||
     process.argv.includes('--bare'),
   parseEnvVars: (rawEnvArgs: string[] | undefined) => {
     const parsed: Record<string, string> = {}
@@ -255,7 +255,7 @@ const mockReadFile = mock(
 
 // IMPORTANT: this file used to mock fsOperations wholesale (readdir → [],
 // exists → false, …), which silently broke sibling tests that walk
-// .claude/skills (skill prefetch, skillLearning smoke). After this suite
+// .ahcode/skills (skill prefetch, skillLearning smoke). After this suite
 // finishes (useMockForMagicDocs flips to false), construct a minimal real
 // fs adapter inline using node:fs/promises so cross-file consumers see real
 // disk state — without pre-importing the heavy fsOperations module (its

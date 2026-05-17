@@ -6,7 +6,7 @@
 
 ## 一、功能概述
 
-DAEMON 将 Claude Code 变为后台守护进程。主进程（supervisor）管理多个 worker 子进程的生命周期，通过文件系统状态文件进行通信。适用于持续运行的后台服务场景（如配合 BRIDGE_MODE 提供远程控制服务）。
+DAEMON 将 AH Code 变为后台守护进程。主进程（supervisor）管理多个 worker 子进程的生命周期，通过文件系统状态文件进行通信。适用于持续运行的后台服务场景（如配合 BRIDGE_MODE 提供远程控制服务）。
 
 ## 二、实现架构
 

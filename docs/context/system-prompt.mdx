@@ -1,12 +1,12 @@
 ---
 title: "System Prompt 动态组装 - AI 工作记忆构建"
-description: "深入解析 Claude Code 的 System Prompt 动态组装过程：缓存策略、分界标记、Section 注册表、CLAUDE.md 多级合并，以及如何将零散上下文拼装为 API 可消费的缓存友好结构。"
-keywords: ["System Prompt", "系统提示词", "动态组装", "CLAUDE.md", "Prompt Cache", "缓存策略"]
+description: "深入解析 AH Code 的 System Prompt 动态组装过程：缓存策略、分界标记、Section 注册表、AHCODE.md 多级合并，以及如何将零散上下文拼装为 API 可消费的缓存友好结构。"
+keywords: ["System Prompt", "系统提示词", "动态组装", "AHCODE.md", "Prompt Cache", "缓存策略"]
 ---
 
 ## 从数组到 API 调用：System Prompt 的完整链路
 
-System Prompt 在 Claude Code 中不是一段写死的文本，而是一个 **`string[]` 数组**（品牌类型 `SystemPrompt`，定义于 `src/utils/systemPromptType.ts:8`），经过组装、分块、缓存标记后发送给 API。
+System Prompt 在 AH Code 中不是一段写死的文本，而是一个 **`string[]` 数组**（品牌类型 `SystemPrompt`，定义于 `src/utils/systemPromptType.ts:8`），经过组装、分块、缓存标记后发送给 API。
 
 ### 三阶段管道
 
@@ -66,12 +66,12 @@ DANGEROUS_uncachedSystemPromptSection(
 
 `resolveSystemPromptSections()` 在每轮查询时解析所有 Section，对于 `cacheBreak: false` 的 Section，优先使用 `getSystemPromptSectionCache()` 中的缓存值。只有 MCP 指令等真正动态的内容使用 `DANGEROUS_uncachedSystemPromptSection`。
 
-### `CLAUDE_CODE_SIMPLE` 快速路径
+### `AHCODE_SIMPLE` 快速路径
 
-当环境变量 `CLAUDE_CODE_SIMPLE` 为真时，整个 System Prompt 缩减为一行：
+当环境变量 `AHCODE_SIMPLE` 为真时，整个 System Prompt 缩减为一行：
 
 ```typescript
-`You are Claude Code, Anthropic's official CLI for Claude.\n\nCWD: ${getCwd()}\nDate: ${getSessionStartDate()}`
+`You are AH Code, Anthropic's official CLI for Claude.\n\nCWD: ${getCwd()}\nDate: ${getSessionStartDate()}`
 ```
 
 跳过所有 Section 注册、缓存分块、动态组装——用于最小化 token 消耗的测试场景。
@@ -92,16 +92,16 @@ DANGEROUS_uncachedSystemPromptSection(
 
 ## Provider 系统概述
 
-Claude Code 支持多种 API 提供商，分为两大类：
+AH Code 支持多种 API 提供商，分为两大类：
 
 | 类别 | Provider | 环境变量 | 说明 |
 |------|----------|---------|------|
 | **1P (First Party)** | `firstParty` | 默认 | Anthropic 官方 API 直连 |
-| **3P (Third Party)** | `bedrock` | `CLAUDE_CODE_USE_BEDROCK=1` | AWS Bedrock 托管服务 |
-| **3P** | `vertex` | `CLAUDE_CODE_USE_VERTEX=1` | Google Vertex AI |
-| **3P** | `openai` | `CLAUDE_CODE_USE_OPENAI=1` | OpenAI 兼容层（Ollama/DeepSeek/vLLM） |
-| **3P** | `gemini` | `CLAUDE_CODE_USE_GEMINI=1` | Google Gemini API |
-| **3P** | `grok` | `CLAUDE_CODE_USE_GROK=1` | xAI Grok |
+| **3P (Third Party)** | `bedrock` | `AHCODE_USE_BEDROCK=1` | AWS Bedrock 托管服务 |
+| **3P** | `vertex` | `AHCODE_USE_VERTEX=1` | Google Vertex AI |
+| **3P** | `openai` | `AHCODE_USE_OPENAI=1` | OpenAI 兼容层（Ollama/DeepSeek/vLLM） |
+| **3P** | `gemini` | `AHCODE_USE_GEMINI=1` | Google Gemini API |
+| **3P** | `grok` | `AHCODE_USE_GROK=1` | xAI Grok |
 
 Provider 决定了：
 - **可用的 beta headers**：部分 beta 功能仅限 1P 用户
@@ -160,7 +160,7 @@ MCP 工具列表在会话中可能变化（连接/断开），破坏了跨组织
 export function shouldUseGlobalCacheScope(): boolean {
   return (
     getAPIProvider() === 'firstParty' &&
-    !isEnvTruthy(process.env.CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS)
+    !isEnvTruthy(process.env.AHCODE_DISABLE_EXPERIMENTAL_BETAS)
   )
 }
 ```
@@ -172,7 +172,7 @@ export function shouldUseGlobalCacheScope(): boolean {
 
 这意味着：
 - **3P 用户（Bedrock/Vertex/OpenAI/Gemini）**：Boundary 永远不存在，始终使用模式 3
-- **1P 用户禁用实验性功能**：设置 `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1`，Boundary 不插入
+- **1P 用户禁用实验性功能**：设置 `AHCODE_DISABLE_EXPERIMENTAL_BETAS=1`，Boundary 不插入
 - **1P 用户默认**：Boundary 存在，使用模式 2（最高缓存效率）
 
 #### 模式 3：默认（3P 提供商 或 Boundary 缺失）
@@ -211,17 +211,17 @@ export function shouldUseGlobalCacheScope(): boolean {
 
 > Each conditional here is a runtime bit that would otherwise multiply the Blake2b prefix hash variants (2^N). See PR #24490, #24171 for the same bug class.
 
-### `CLAUDE_CODE_SIMPLE` 模式
+### `AHCODE_SIMPLE` 模式
 
-当设置了 `CLAUDE_CODE_SIMPLE` 环境变量时，整个系统提示词会大幅缩减：
+当设置了 `AHCODE_SIMPLE` 环境变量时，整个系统提示词会大幅缩减：
 
 ```typescript
-return [`You are Claude Code, Anthropic's official CLI for Claude.\n\nCWD: ${getCwd()}\nDate: ${getSessionStartDate()}`]
+return [`You are AH Code, Anthropic's official CLI for Claude.\n\nCWD: ${getCwd()}\nDate: ${getSessionStartDate()}`]
 ```
 
 ## 上下文注入：System Context 与 User Context
 
-System Prompt 数组本身不包含运行时上下文（git 状态、CLAUDE.md 内容）。上下文通过两个独立的管道注入：
+System Prompt 数组本身不包含运行时上下文（git 状态、AHCODE.md 内容）。上下文通过两个独立的管道注入：
 
 ### System Context（`src/context.ts:116`）
 
@@ -244,13 +244,13 @@ export const getSystemContext = memoize(async () => {
 ```typescript
 export const getUserContext = memoize(async () => {
   return {
-    claudeMd,            // 合并后的 CLAUDE.md 内容
+    claudeMd,            // 合并后的 AHCODE.md 内容
     currentDate,         // "Today's date is YYYY-MM-DD."
   }
 })
 ```
 
-- **CLAUDE.md 禁用条件**：`CLAUDE_CODE_DISABLE_CLAUDE_MDS` 环境变量，或 `--bare` 模式（除非通过 `--add-dir` 显式指定目录）
+- **AHCODE.md 禁用条件**：`AHCODE_DISABLE_AHCODE_MDS` 环境变量，或 `--bare` 模式（除非通过 `--add-dir` 显式指定目录）
 - `--bare` 模式的语义是"跳过我没要求的东西"而非"忽略所有"
 
 ### 注入位置
@@ -269,30 +269,30 @@ User Context 通过 `prependUserContext()`（`src/utils/api.ts:449`）注入为 
 ## Attribution Header：计费与安全
 
 每个 API 请求的 System Prompt 首块是 Attribution Header（`src/constants/system.ts:30`），包含：
-- **`cc_version`**：Claude Code 版本 + 指纹
+- **`cc_version`**：AH Code 版本 + 指纹
 - **`cc_entrypoint`**：入口点标识（REPL / SDK / pipe 等）
-- **`cch=00000`**（NATIVE_CLIENT_ATTESTATION 启用时）：Bun 原生 HTTP 层在发送前将零替换为计算出的哈希值，服务器验证此 token 确认请求来自真实 Claude Code 客户端
+- **`cch=00000`**（NATIVE_CLIENT_ATTESTATION 启用时）：Bun 原生 HTTP 层在发送前将零替换为计算出的哈希值，服务器验证此 token 确认请求来自真实 AH Code 客户端
 
 Header 始终 `cacheScope: null`——它因版本和指纹不同而变化，不适合缓存。
 
-## CLAUDE.md：项目级知识注入
+## AHCODE.md：项目级知识注入
 
-这是 Claude Code 最巧妙的设计之一。在项目根目录放一个 `CLAUDE.md` 文件，就能让 AI "理解" 你的项目：
+这是 AH Code 最巧妙的设计之一。在项目根目录放一个 `AHCODE.md` 文件，就能让 AI "理解" 你的项目：
 
 - **项目概述**：这个项目做什么、用了什么技术栈
 - **开发约定**：代码风格、命名规范、分支策略
 - **常用命令**：怎么构建、怎么测试、怎么部署
 - **注意事项**：已知的坑、特殊的配置
 
-系统会自动发现并合并多级 CLAUDE.md：
+系统会自动发现并合并多级 AHCODE.md：
 
 ```
-~/.claude/CLAUDE.md              ← 用户全局（个人偏好）
-  └── /project/CLAUDE.md         ← 项目根目录（团队共享）
-        └── /project/src/CLAUDE.md  ← 子目录（模块特定）
+~/.ahcode/AHCODE.md              ← 用户全局（个人偏好）
+  └── /project/AHCODE.md         ← 项目根目录（团队共享）
+        └── /project/src/AHCODE.md  ← 子目录（模块特定）
 ```
 
-加载逻辑在 `src/utils/claudemd.ts` 中的 `getClaudeMds()` 和 `getMemoryFiles()` 实现——从 CWD 向上遍历目录树，合并所有匹配的 CLAUDE.md 文件内容。
+加载逻辑在 `src/utils/ahcodemd.ts` 中的 `getAhcodeMds()` 和 `getMemoryFiles()` 实现——从 CWD 向上遍历目录树，合并所有匹配的 AHCODE.md 文件内容。
 
 ## 设计洞察：为什么是 `string[]` 而非单个 `string`
 
@@ -303,15 +303,15 @@ Header 始终 `cacheScope: null`——它因版本和指纹不同而变化，不
 3. 如果是单个 `string`，任何一个字符变化（如日期更新）都会导致整个 System Prompt 的缓存失效
 4. `SYSTEM_PROMPT_DYNAMIC_BOUNDARY` 标记允许 `splitSysPromptPrefix()` 精确地将静态区标记为 `scope: 'global'`，动态区不标记或标记为 `scope: 'org'`
 
-这是 Claude Code 在 token 成本优化上的核心设计——一次典型的 System Prompt 约 20K+ tokens，通过缓存分块可以节省 30-50% 的输入 token 费用。
+这是 AH Code 在 token 成本优化上的核心设计——一次典型的 System Prompt 约 20K+ tokens，通过缓存分块可以节省 30-50% 的输入 token 费用。
 
 ## 兼容层：OpenAI 与 Gemini
 
-Claude Code 提供了 OpenAI 和 Gemini 协议的兼容层，允许使用非 Anthropic 端点。
+AH Code 提供了 OpenAI 和 Gemini 协议的兼容层，允许使用非 Anthropic 端点。
 
 ### OpenAI 兼容层
 
-通过 `CLAUDE_CODE_USE_OPENAI=1` 启用，支持任意 OpenAI Chat Completions 协议端点（Ollama、DeepSeek、vLLM 等）。
+通过 `AHCODE_USE_OPENAI=1` 启用，支持任意 OpenAI Chat Completions 协议端点（Ollama、DeepSeek、vLLM 等）。
 
 实现采用**流适配器模式**：
 1. 将 Anthropic 格式请求转换为 OpenAI 格式
@@ -330,14 +330,14 @@ src/services/api/openai/
 ```
 
 关键环境变量：
-- `CLAUDE_CODE_USE_OPENAI=1` — 启用 OpenAI provider
+- `AHCODE_USE_OPENAI=1` — 启用 OpenAI provider
 - `OPENAI_API_KEY` — API 密钥
 - `OPENAI_BASE_URL` — API 端点（默认 `https://api.openai.com/v1`）
 - `OPENAI_MODEL` — 直接指定模型名
 
 ### Gemini 兼容层
 
-通过 `CLAUDE_CODE_USE_GEMINI=1` 启用，支持 Google Gemini API。
+通过 `AHCODE_USE_GEMINI=1` 启用，支持 Google Gemini API。
 
 ```
 src/services/api/gemini/
@@ -351,7 +351,7 @@ src/services/api/gemini/
 ```
 
 关键环境变量：
-- `CLAUDE_CODE_USE_GEMINI=1` — 启用 Gemini provider
+- `AHCODE_USE_GEMINI=1` — 启用 Gemini provider
 - `GEMINI_API_KEY` — API 密钥
 - `GEMINI_BASE_URL` — API 端点（默认 `https://generativelanguage.googleapis.com/v1beta`）
 - `GEMINI_MODEL` — 直接指定模型名
@@ -364,5 +364,5 @@ src/services/api/gemini/
 - **无全局缓存**：只能使用组织级缓存 `scope: 'org'`
 - **部分 beta 功能不可用**：依赖 Anthropic 特有 beta headers 的功能受限
 
-详见 `docs/plans/openai-compatibility.md` 和 `CLAUDE.md` 中的相关章节。
+详见 `docs/plans/openai-compatibility.md` 和 `AHCODE.md` 中的相关章节。
 

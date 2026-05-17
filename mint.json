@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "name": "Claude Code Architecture",
+  "name": "AH Code Architecture",
   "logo": {
     "dark": "/docs/logo/dark.svg",
     "light": "/docs/logo/light.svg"
@@ -22,10 +22,10 @@
   },
   "topbarCtaButton": {
     "type": "github",
-    "url": "https://github.com/claude-code-best/claude-code"
+    "url": "https://github.com/ahcode/ah-code"
   },
   "search": {
-    "prompt": "搜索 Claude Code 架构文档..."
+    "prompt": "搜索 AH Code 架构文档..."
   },
   "redirects": [
     {

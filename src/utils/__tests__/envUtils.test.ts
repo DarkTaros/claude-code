@@ -9,7 +9,7 @@ import {
   getVertexRegionForModel,
   isBareMode,
   shouldMaintainProjectWorkingDir,
-  getClaudeConfigHomeDir,
+  getAhcodeConfigHomeDir,
 } from '../envUtils'
 
 // ─── isEnvTruthy ───────────────────────────────────────────────────────
@@ -269,18 +269,18 @@ describe('getVertexRegionForModel', () => {
 // ─── isBareMode ────────────────────────────────────────────────────────
 
 describe('isBareMode', () => {
-  const saved = process.env.CLAUDE_CODE_SIMPLE
+  const saved = process.env.AHCODE_SIMPLE
   const originalArgv = [...process.argv]
 
   afterEach(() => {
-    if (saved === undefined) delete process.env.CLAUDE_CODE_SIMPLE
-    else process.env.CLAUDE_CODE_SIMPLE = saved
+    if (saved === undefined) delete process.env.AHCODE_SIMPLE
+    else process.env.AHCODE_SIMPLE = saved
     process.argv.length = 0
     process.argv.push(...originalArgv)
   })
 
-  test('returns true when CLAUDE_CODE_SIMPLE=1', () => {
-    process.env.CLAUDE_CODE_SIMPLE = '1'
+  test('returns true when AHCODE_SIMPLE=1', () => {
+    process.env.AHCODE_SIMPLE = '1'
     expect(isBareMode()).toBe(true)
   })
 
@@ -290,7 +290,7 @@ describe('isBareMode', () => {
   })
 
   test('returns false when neither set', () => {
-    delete process.env.CLAUDE_CODE_SIMPLE
+    delete process.env.AHCODE_SIMPLE
     // argv doesn't have --bare by default
     expect(isBareMode()).toBe(false)
   })
@@ -318,25 +318,25 @@ describe('shouldMaintainProjectWorkingDir', () => {
   })
 })
 
-// ─── getClaudeConfigHomeDir ────────────────────────────────────────────
+// ─── getAhcodeConfigHomeDir ────────────────────────────────────────────
 
-describe('getClaudeConfigHomeDir', () => {
-  const saved = process.env.CLAUDE_CONFIG_DIR
+describe('getAhcodeConfigHomeDir', () => {
+  const saved = process.env.AHCODE_CONFIG_DIR
 
   afterEach(() => {
-    if (saved === undefined) delete process.env.CLAUDE_CONFIG_DIR
-    else process.env.CLAUDE_CONFIG_DIR = saved
+    if (saved === undefined) delete process.env.AHCODE_CONFIG_DIR
+    else process.env.AHCODE_CONFIG_DIR = saved
   })
 
-  test('uses CLAUDE_CONFIG_DIR when set', () => {
-    process.env.CLAUDE_CONFIG_DIR = '/tmp/test-claude'
-    // Memoized by CLAUDE_CONFIG_DIR key, so changing env gives fresh value
-    expect(getClaudeConfigHomeDir()).toBe('/tmp/test-claude')
+  test('uses AHCODE_CONFIG_DIR when set', () => {
+    process.env.AHCODE_CONFIG_DIR = '/tmp/test-claude'
+    // Memoized by AHCODE_CONFIG_DIR key, so changing env gives fresh value
+    expect(getAhcodeConfigHomeDir()).toBe('/tmp/test-claude')
   })
 
-  test('returns a string ending with .claude by default', () => {
-    delete process.env.CLAUDE_CONFIG_DIR
-    const result = getClaudeConfigHomeDir()
-    expect(result).toMatch(/\.claude$/)
+  test('returns a string ending with .ahcode by default', () => {
+    delete process.env.AHCODE_CONFIG_DIR
+    const result = getAhcodeConfigHomeDir()
+    expect(result).toMatch(/\.ahcode$/)
   })
 })

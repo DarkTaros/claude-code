@@ -535,10 +535,10 @@ function InstallGitHubApp(props: { onDone: (message: string) => void }): React.R
         ...prev,
         apiKeyOrOAuthToken: token,
         useExistingKey: false,
-        secretName: 'CLAUDE_CODE_OAUTH_TOKEN',
+        secretName: 'AHCODE_OAUTH_TOKEN',
         authType: 'oauth_token',
       }));
-      void runSetupGitHubActions(token, 'CLAUDE_CODE_OAUTH_TOKEN');
+      void runSetupGitHubActions(token, 'AHCODE_OAUTH_TOKEN');
     },
     [runSetupGitHubActions],
   );

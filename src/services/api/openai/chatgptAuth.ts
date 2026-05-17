@@ -40,12 +40,12 @@ type StoredAuthFile = {
 }
 
 function authFilePath(): string {
-  return join(getClaudeConfigHomeDirLocal(), AUTH_FILE)
+  return join(getAhcodeConfigHomeDirLocal(), AUTH_FILE)
 }
 
-function getClaudeConfigHomeDirLocal(): string {
+function getAhcodeConfigHomeDirLocal(): string {
   return (
-    process.env.CLAUDE_CONFIG_DIR ?? join(homedir(), '.claude')
+    process.env.AHCODE_CONFIG_DIR ?? join(homedir(), '.ahcode')
   ).normalize('NFC')
 }
 
@@ -147,7 +147,7 @@ async function readStoredAuth(path: string): Promise<ChatGPTAuthTokens | null> {
 
 async function saveStoredAuth(tokens: ChatGPTAuthTokens): Promise<void> {
   const path = authFilePath()
-  await mkdir(getClaudeConfigHomeDirLocal(), { recursive: true })
+  await mkdir(getAhcodeConfigHomeDirLocal(), { recursive: true })
   const body: StoredAuthFile = {
     auth_mode: 'chatgpt',
     tokens: {

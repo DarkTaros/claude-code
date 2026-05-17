@@ -10,7 +10,7 @@ import { isEnvTruthy } from '../utils/envUtils.js';
 // This happens when running cli.tsx directly (not via `bun run dev` or built dist/).
 if (typeof globalThis.MACRO === 'undefined') {
   (globalThis as any).MACRO = {
-    VERSION: process.env.CLAUDE_CODE_VERSION || '2.1.888',
+    VERSION: process.env.AHCODE_VERSION || '2.1.888',
     BUILD_TIME: new Date().toISOString(),
     FEEDBACK_CHANNEL: '',
     ISSUES_EXPLAINER: '',
@@ -20,7 +20,7 @@ if (typeof globalThis.MACRO === 'undefined') {
   };
 }
 
-if (isEnvTruthy(process.env.CLAUDE_CODE_FORCE_INTERACTIVE)) {
+if (isEnvTruthy(process.env.AHCODE_FORCE_INTERACTIVE)) {
   for (const stream of [process.stdin, process.stdout, process.stderr]) {
     if (!stream.isTTY) {
       try {
@@ -41,7 +41,7 @@ process.env.COREPACK_ENABLE_AUTO_PIN = '0';
 
 // Set max heap size for child processes in CCR environments (containers have 16GB)
 // eslint-disable-next-line custom-rules/no-top-level-side-effects, custom-rules/no-process-env-top-level, custom-rules/safe-env-boolean-check
-if (process.env.CLAUDE_CODE_REMOTE === 'true') {
+if (process.env.AHCODE_REMOTE === 'true') {
   // eslint-disable-next-line custom-rules/no-top-level-side-effects, custom-rules/no-process-env-top-level
   const existing = process.env.NODE_OPTIONS || '';
   // eslint-disable-next-line custom-rules/no-top-level-side-effects, custom-rules/no-process-env-top-level
@@ -53,15 +53,15 @@ if (process.env.CLAUDE_CODE_REMOTE === 'true') {
 // module-level consts at import time — init() runs too late. feature() gate
 // DCEs this entire block from external builds.
 // eslint-disable-next-line custom-rules/no-top-level-side-effects, custom-rules/no-process-env-top-level
-if (feature('ABLATION_BASELINE') && process.env.CLAUDE_CODE_ABLATION_BASELINE) {
+if (feature('ABLATION_BASELINE') && process.env.AHCODE_ABLATION_BASELINE) {
   for (const k of [
-    'CLAUDE_CODE_SIMPLE',
-    'CLAUDE_CODE_DISABLE_THINKING',
+    'AHCODE_SIMPLE',
+    'AHCODE_DISABLE_THINKING',
     'DISABLE_INTERLEAVED_THINKING',
     'DISABLE_COMPACT',
     'DISABLE_AUTO_COMPACT',
-    'CLAUDE_CODE_DISABLE_AUTO_MEMORY',
-    'CLAUDE_CODE_DISABLE_BACKGROUND_TASKS',
+    'AHCODE_DISABLE_AUTO_MEMORY',
+    'AHCODE_DISABLE_BACKGROUND_TASKS',
   ]) {
     // eslint-disable-next-line custom-rules/no-top-level-side-effects, custom-rules/no-process-env-top-level
     process.env[k] ??= '1';
@@ -79,7 +79,7 @@ async function main(): Promise<void> {
   // Fast-path for --version/-v: zero module loading needed
   if (args.length === 1 && (args[0] === '--version' || args[0] === '-v' || args[0] === '-V')) {
     // MACRO.VERSION is inlined at build time
-    console.log(`${MACRO.VERSION} (Claude Code)`);
+    console.log(`${MACRO.VERSION} (AH Code)`);
     return;
   }
 
@@ -130,7 +130,7 @@ async function main(): Promise<void> {
 
   if (args[0] === 'weixin') {
     profileCheckpoint('cli_weixin_path');
-    const { handleWeixinCli } = await import('@claude-code-best/weixin');
+    const { handleWeixinCli } = await import('@ahcode/weixin');
     const { enableConfigs } = await import('../utils/config.js');
     const { initializeAnalyticsSink } = await import('../services/analytics/sink.js');
     const { shutdownDatadog } = await import('../services/analytics/datadog.js');
@@ -365,7 +365,7 @@ async function main(): Promise<void> {
   // --bare: set SIMPLE early so gates fire during module eval / commander
   // option building (not just inside the action handler).
   if (args.includes('--bare')) {
-    process.env.CLAUDE_CODE_SIMPLE = '1';
+    process.env.AHCODE_SIMPLE = '1';
   }
 
   // No special flags detected, load and run the full CLI

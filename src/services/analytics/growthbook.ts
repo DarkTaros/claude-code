@@ -334,7 +334,7 @@ async function processRemoteEvalPayload(
   // Empty object is truthy — without the length check, `{features: {}}`
   // (transient server bug, truncated response) would pass, clear the maps
   // below, return true, and syncRemoteEvalToDisk would wholesale-write `{}`
-  // to disk: total flag blackout for every process sharing ~/.claude.json.
+  // to disk: total flag blackout for every process sharing ~/.ahcode.json.
   if (!payload?.features || Object.keys(payload.features).length === 0) {
     return false
   }
@@ -424,7 +424,7 @@ function syncRemoteEvalToDisk(): void {
  * This allows enabling features that have real implementations without
  * requiring a GrowthBook server connection.
  *
- * Set CLAUDE_CODE_DISABLE_LOCAL_GATES=1 to bypass these defaults.
+ * Set AHCODE_DISABLE_LOCAL_GATES=1 to bypass these defaults.
  *
  * Categories:
  *   P0 — Pure local features (no external dependencies)
@@ -462,7 +462,7 @@ const LOCAL_GATE_DEFAULTS: Record<string, unknown> = {
   tengu_turtle_carbon: true, // Ultrathink extended thinking
   tengu_amber_stoat: true, // Built-in Explore/Plan agents
   tengu_amber_flint: true, // Agent teams/swarms
-  tengu_slim_subagent_claudemd: true, // Slim CLAUDE.md for subagents
+  tengu_slim_subagent_ahcodemd: true, // Slim AHCODE.md for subagents
   tengu_birch_trellis: true, // Tree-sitter bash security analysis
   tengu_collage_kaleidoscope: true, // macOS clipboard image reading
   tengu_compact_cache_prefix: true, // Reuse prompt cache during compaction
@@ -481,7 +481,7 @@ const LOCAL_GATE_DEFAULTS: Record<string, unknown> = {
  * allowing the caller to fall through to the original defaultValue.
  */
 function getLocalGateDefault(feature: string): unknown | undefined {
-  if (process.env.CLAUDE_CODE_DISABLE_LOCAL_GATES) {
+  if (process.env.AHCODE_DISABLE_LOCAL_GATES) {
     return undefined
   }
   return LOCAL_GATE_DEFAULTS[feature]
@@ -573,7 +573,7 @@ const getGrowthBookClient = memoize(
     const baseUrl =
       process.env.CLAUDE_GB_ADAPTER_URL ||
       (process.env.USER_TYPE === 'ant'
-        ? process.env.CLAUDE_CODE_GB_BASE_URL || 'https://api.anthropic.com/'
+        ? process.env.AHCODE_GB_BASE_URL || 'https://api.anthropic.com/'
         : 'https://api.anthropic.com/')
     const isAdapterMode = !!(
       process.env.CLAUDE_GB_ADAPTER_URL && process.env.CLAUDE_GB_ADAPTER_KEY

@@ -16,8 +16,8 @@ const originalEnv = { ...process.env }
 beforeEach(() => {
   root = mkdtempSync(join(tmpdir(), 'skill-learning-command-'))
   process.env = { ...originalEnv }
-  process.env.CLAUDE_SKILL_LEARNING_HOME = root
-  process.env.CLAUDE_CONFIG_DIR = join(root, 'config')
+  process.env.AHCODE_SKILL_LEARNING_HOME = root
+  process.env.AHCODE_CONFIG_DIR = join(root, 'config')
   process.env.SKILL_LEARNING_ENABLED = '1'
 })
 

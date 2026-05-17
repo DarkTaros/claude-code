@@ -120,7 +120,7 @@ export function LogoV2(): React.ReactNode {
   // In condensed mode (early-return below renders <CondensedLogo/>),
   // CondensedLogo's own useEffect handles the impression count. Skipping
   // here avoids double-counting since hooks fire before the early return.
-  const isCondensedMode = !hasReleaseNotes && !showOnboarding && !isEnvTruthy(process.env.CLAUDE_CODE_FORCE_FULL_LOGO);
+  const isCondensedMode = !hasReleaseNotes && !showOnboarding && !isEnvTruthy(process.env.AHCODE_FORCE_FULL_LOGO);
 
   useEffect(() => {
     if (showGuestPassesUpsell && !showOnboarding && !isCondensedMode) {
@@ -144,7 +144,7 @@ export function LogoV2(): React.ReactNode {
   const modelDisplayName = truncate(fullModelDisplayName + effortSuffix, LEFT_PANEL_MAX_WIDTH - 20);
 
   // Show condensed logo if no new changelog and not showing onboarding and not forcing full logo
-  if (!hasReleaseNotes && !showOnboarding && !isEnvTruthy(process.env.CLAUDE_CODE_FORCE_FULL_LOGO)) {
+  if (!hasReleaseNotes && !showOnboarding && !isEnvTruthy(process.env.AHCODE_FORCE_FULL_LOGO)) {
     return (
       <>
         <CondensedLogo />
@@ -158,13 +158,13 @@ export function LogoV2(): React.ReactNode {
           </Box>
         )}
         <EmergencyTip />
-        {process.env.CLAUDE_CODE_TMUX_SESSION && (
+        {process.env.AHCODE_TMUX_SESSION && (
           <Box paddingLeft={2} flexDirection="column">
-            <Text dimColor>tmux session: {process.env.CLAUDE_CODE_TMUX_SESSION}</Text>
+            <Text dimColor>tmux session: {process.env.AHCODE_TMUX_SESSION}</Text>
             <Text dimColor>
-              {process.env.CLAUDE_CODE_TMUX_PREFIX_CONFLICTS
-                ? `Detach: ${process.env.CLAUDE_CODE_TMUX_PREFIX} ${process.env.CLAUDE_CODE_TMUX_PREFIX} d (press prefix twice - Claude uses ${process.env.CLAUDE_CODE_TMUX_PREFIX})`
-                : `Detach: ${process.env.CLAUDE_CODE_TMUX_PREFIX} d`}
+              {process.env.AHCODE_TMUX_PREFIX_CONFLICTS
+                ? `Detach: ${process.env.AHCODE_TMUX_PREFIX} ${process.env.AHCODE_TMUX_PREFIX} d (press prefix twice - Claude uses ${process.env.AHCODE_TMUX_PREFIX})`
+                : `Detach: ${process.env.AHCODE_TMUX_PREFIX} d`}
             </Text>
           </Box>
         )}
@@ -201,8 +201,8 @@ export function LogoV2(): React.ReactNode {
   const layoutMode = getLayoutMode(columns);
 
   const userTheme = resolveThemeSetting(getGlobalConfig().theme);
-  const borderTitle = ` ${color('claude', userTheme)('Claude Code')} ${color('inactive', userTheme)(`v${version}`)} `;
-  const compactBorderTitle = color('claude', userTheme)(' Claude Code ');
+  const borderTitle = ` ${color('claude', userTheme)('AH Code')} ${color('inactive', userTheme)(`v${version}`)} `;
+  const compactBorderTitle = color('claude', userTheme)(' AH Code ');
 
   // Early return for compact mode
   if (layoutMode === 'compact') {
@@ -358,13 +358,13 @@ export function LogoV2(): React.ReactNode {
         </Box>
       )}
       <EmergencyTip />
-      {process.env.CLAUDE_CODE_TMUX_SESSION && (
+      {process.env.AHCODE_TMUX_SESSION && (
         <Box paddingLeft={2} flexDirection="column">
-          <Text dimColor>tmux session: {process.env.CLAUDE_CODE_TMUX_SESSION}</Text>
+          <Text dimColor>tmux session: {process.env.AHCODE_TMUX_SESSION}</Text>
           <Text dimColor>
-            {process.env.CLAUDE_CODE_TMUX_PREFIX_CONFLICTS
-              ? `Detach: ${process.env.CLAUDE_CODE_TMUX_PREFIX} ${process.env.CLAUDE_CODE_TMUX_PREFIX} d (press prefix twice - Claude uses ${process.env.CLAUDE_CODE_TMUX_PREFIX})`
-              : `Detach: ${process.env.CLAUDE_CODE_TMUX_PREFIX} d`}
+            {process.env.AHCODE_TMUX_PREFIX_CONFLICTS
+              ? `Detach: ${process.env.AHCODE_TMUX_PREFIX} ${process.env.AHCODE_TMUX_PREFIX} d (press prefix twice - Claude uses ${process.env.AHCODE_TMUX_PREFIX})`
+              : `Detach: ${process.env.AHCODE_TMUX_PREFIX} d`}
           </Text>
         </Box>
       )}

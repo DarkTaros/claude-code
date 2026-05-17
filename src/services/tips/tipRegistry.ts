@@ -11,7 +11,7 @@ import { getDesktopUpsellConfig } from '../../components/DesktopUpsell/DesktopUp
 import { color } from '@anthropic/ink'
 import { shouldShowOverageCreditUpsell } from '../../components/LogoV2/OverageCreditUpsell.js'
 import { getShortcutDisplay } from '../../keybindings/shortcutFormat.js'
-import { isKairosCronEnabled } from '@claude-code-best/builtin-tools/tools/ScheduleCronTool/prompt.js'
+import { isKairosCronEnabled } from '@ahcode/builtin-tools/tools/ScheduleCronTool/prompt.js'
 import { is1PApiCustomer } from '../../utils/auth.js'
 import { countConcurrentSessions } from '../../utils/concurrentSessions.js'
 import { getGlobalConfig } from '../../utils/config.js'
@@ -238,11 +238,11 @@ const externalTips: Tip[] = [
   {
     id: 'powershell-tool-env',
     content: async () =>
-      'Set CLAUDE_CODE_USE_POWERSHELL_TOOL=1 to enable the PowerShell tool (preview)',
+      'Set AHCODE_USE_POWERSHELL_TOOL=1 to enable the PowerShell tool (preview)',
     cooldownSessions: 10,
     isRelevant: async () =>
       getPlatform() === 'windows' &&
-      process.env.CLAUDE_CODE_USE_POWERSHELL_TOOL === undefined,
+      process.env.AHCODE_USE_POWERSHELL_TOOL === undefined,
   },
   {
     id: 'status-line',
@@ -354,7 +354,7 @@ const externalTips: Tip[] = [
   {
     id: 'paste-images-mac',
     content: async () =>
-      'Paste images into Claude Code using control+v (not cmd+v!)',
+      'Paste images into AH Code using control+v (not cmd+v!)',
     cooldownSessions: 10,
     isRelevant: async () => getPlatform() === 'macos',
   },
@@ -390,7 +390,7 @@ const externalTips: Tip[] = [
   {
     id: 'custom-commands',
     content: async () =>
-      'Create skills by adding .md files to .claude/skills/ in your project or ~/.claude/skills/ for skills that work in any project',
+      'Create skills by adding .md files to .ahcode/skills/ in your project or ~/.ahcode/skills/ for skills that work in any project',
     cooldownSessions: 15,
     async isRelevant() {
       const config = getGlobalConfig()
@@ -434,7 +434,7 @@ const externalTips: Tip[] = [
   {
     id: 'desktop-app',
     content: async () =>
-      'Run Claude Code locally or remotely using the Claude desktop app: clau.de/desktop',
+      'Run AH Code locally or remotely using the Claude desktop app: clau.de/desktop',
     cooldownSessions: 15,
     isRelevant: async () => getPlatform() !== 'linux',
   },
@@ -442,7 +442,7 @@ const externalTips: Tip[] = [
     id: 'desktop-shortcut',
     content: async (ctx: TipContext) => {
       const blue = color('suggestion', ctx.theme)
-      return `Continue your session in Claude Code Desktop with ${blue('/desktop')}`
+      return `Continue your session in AH Code Desktop with ${blue('/desktop')}`
     },
     cooldownSessions: 15,
     isRelevant: async () => {
@@ -463,7 +463,7 @@ const externalTips: Tip[] = [
   {
     id: 'mobile-app',
     content: async () =>
-      '/mobile to use Claude Code from the Claude app on your phone',
+      '/mobile to use AH Code from the Claude app on your phone',
     cooldownSessions: 15,
     isRelevant: async () => true,
   },
@@ -590,7 +590,7 @@ const externalTips: Tip[] = [
       const claude = color('claude', ctx.theme)
       const reward = getCachedReferrerReward()
       return reward
-        ? `Share Claude Code and earn ${claude(formatCreditAmount(reward))} of extra usage · ${claude('/passes')}`
+        ? `Share AH Code and earn ${claude(formatCreditAmount(reward))} of extra usage · ${claude('/passes')}`
         : `You have free guest passes to share · ${claude('/passes')}`
     },
     cooldownSessions: 3,
@@ -633,9 +633,9 @@ const internalOnlyTips: Tip[] =
   process.env.USER_TYPE === 'ant'
     ? [
         {
-          id: 'important-claudemd',
+          id: 'important-ahcodemd',
           content: async () =>
-            '[ANT-ONLY] Use "IMPORTANT:" prefix for must-follow CLAUDE.md rules',
+            '[ANT-ONLY] Use "IMPORTANT:" prefix for must-follow AHCODE.md rules',
           cooldownSessions: 30,
           isRelevant: async () => true,
         },

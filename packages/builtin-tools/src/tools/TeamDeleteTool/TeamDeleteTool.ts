@@ -91,7 +91,7 @@ export const TeamDeleteTool: Tool<InputSchema, Output> = buildTool({
   async call(input, context) {
     if (!isAgentSwarmsEnabled()) {
       throw new Error(
-        'Agent Teams 功能未启用。请确保未设置 CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS_DISABLED 环境变量。',
+        'Agent Teams 功能未启用。请确保未设置 AHCODE_EXPERIMENTAL_AGENT_TEAMS_DISABLED 环境变量。',
       )
     }
 

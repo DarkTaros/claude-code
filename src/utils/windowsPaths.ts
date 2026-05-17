@@ -86,7 +86,7 @@ export function setShellIfWindows(): void {
     const gitBashPath = findGitBashPath()
     process.env.SHELL = gitBashPath
     // Propagate to child processes so they skip filesystem probing
-    process.env.CLAUDE_CODE_GIT_BASH_PATH = gitBashPath
+    process.env.AHCODE_GIT_BASH_PATH = gitBashPath
     logForDebugging(`Using bash path: "${gitBashPath}"`)
   }
 }
@@ -95,12 +95,12 @@ export function setShellIfWindows(): void {
  * Find the path where `bash.exe` included with git-bash exists, exiting the process if not found.
  */
 export const findGitBashPath = memoize((): string => {
-  if (process.env.CLAUDE_CODE_GIT_BASH_PATH) {
-    if (checkPathExists(process.env.CLAUDE_CODE_GIT_BASH_PATH)) {
-      return process.env.CLAUDE_CODE_GIT_BASH_PATH
+  if (process.env.AHCODE_GIT_BASH_PATH) {
+    if (checkPathExists(process.env.AHCODE_GIT_BASH_PATH)) {
+      return process.env.AHCODE_GIT_BASH_PATH
     }
     console.error(
-      `Claude Code was unable to find CLAUDE_CODE_GIT_BASH_PATH path "${process.env.CLAUDE_CODE_GIT_BASH_PATH}"`,
+      `AH Code was unable to find AHCODE_GIT_BASH_PATH path "${process.env.AHCODE_GIT_BASH_PATH}"`,
     )
     // eslint-disable-next-line custom-rules/no-process-exit
     process.exit(1)
@@ -115,7 +115,7 @@ export const findGitBashPath = memoize((): string => {
   }
 
   console.error(
-    'Claude Code on Windows requires git-bash (https://git-scm.com/downloads/win). If installed but not in PATH, set environment variable pointing to your bash.exe, similar to: CLAUDE_CODE_GIT_BASH_PATH=C:\\Program Files\\Git\\bin\\bash.exe',
+    'AH Code on Windows requires git-bash (https://git-scm.com/downloads/win). If installed but not in PATH, set environment variable pointing to your bash.exe, similar to: AHCODE_GIT_BASH_PATH=C:\\Program Files\\Git\\bin\\bash.exe',
   )
   // eslint-disable-next-line custom-rules/no-process-exit
   process.exit(1)

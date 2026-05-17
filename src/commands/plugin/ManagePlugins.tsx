@@ -47,6 +47,7 @@ import { logError } from '../../utils/log.js';
 import { clearAllCaches } from '../../utils/plugins/cacheUtils.js';
 import { loadInstalledPluginsV2 } from '../../utils/plugins/installedPluginsManager.js';
 import { getMarketplace } from '../../utils/plugins/marketplaceManager.js';
+import { getPluginManifestCandidatePaths } from '../../utils/plugins/manifestPaths.js';
 import {
   isMcpbSource,
   loadMcpbFile,
@@ -918,9 +919,16 @@ export function ManagePlugins({
       if (!hasMcpb) {
         try {
           const marketplaceDir = path.join(selectedPlugin!.plugin.path, '..');
-          const marketplaceJsonPath = path.join(marketplaceDir, '.claude-plugin', 'marketplace.json');
-
-          const content = await fs.readFile(marketplaceJsonPath, 'utf-8');
+          let content: string | undefined;
+          for (const marketplaceJsonPath of getPluginManifestCandidatePaths(marketplaceDir, 'marketplace.json')) {
+            try {
+              content = await fs.readFile(marketplaceJsonPath, 'utf-8');
+              break;
+            } catch {
+              // Try the next manifest directory.
+            }
+          }
+          if (!content) return;
           const marketplace = jsonParse(content);
 
           const entry = marketplace.plugins?.find((p: { name: string }) => p.name === selectedPlugin!.plugin.name);
@@ -1128,7 +1136,7 @@ export function ManagePlugins({
         case 'uninstall': {
           if (isBuiltin) break; // guarded above; narrows pluginScope
           if (!isInstallableScope(pluginScope)) break;
-          // If the plugin is enabled in .claude/settings.json (shared with the
+          // If the plugin is enabled in .ahcode/settings.json (shared with the
           // team), divert to a confirmation dialog that offers to disable in
           // settings.local.json instead. Check the settings file directly —
           // `pluginScope` (from installed_plugins.json) can be 'user' even when
@@ -1650,7 +1658,7 @@ export function ManagePlugins({
         }
         clearAllCaches();
         setResult(
-          `✓ Disabled ${selectedPlugin.plugin.name} in .claude/settings.local.json. Run /reload-plugins to apply.`,
+          `✓ Disabled ${selectedPlugin.plugin.name} in .ahcode/settings.local.json. Run /reload-plugins to apply.`,
         );
         if (onManageComplete) void onManageComplete();
         setParentViewState({ type: 'menu' });
@@ -1924,16 +1932,16 @@ export function ManagePlugins({
     );
   }
 
-  // Confirm-project-uninstall: warn about shared .claude/settings.json,
+  // Confirm-project-uninstall: warn about shared .ahcode/settings.json,
   // offer to disable in settings.local.json instead.
   if (viewState === 'confirm-project-uninstall' && selectedPlugin) {
     return (
       <Box flexDirection="column">
         <Text bold color="warning">
-          {selectedPlugin.plugin.name} is enabled in .claude/settings.json (shared with your team)
+          {selectedPlugin.plugin.name} is enabled in .ahcode/settings.json (shared with your team)
         </Text>
         <Box marginTop={1} flexDirection="column">
-          <Text>Disable it just for you in .claude/settings.local.json?</Text>
+          <Text>Disable it just for you in .ahcode/settings.local.json?</Text>
           <Text dimColor>This has the same effect as uninstalling, without affecting other contributors.</Text>
         </Box>
         {processError && (

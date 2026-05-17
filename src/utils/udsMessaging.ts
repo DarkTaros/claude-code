@@ -1,5 +1,5 @@
 /**
- * UDS Messaging Layer — Unix Domain Socket IPC for Claude Code instances.
+ * UDS Messaging Layer — Unix Domain Socket IPC for AH Code instances.
  *
  * Each session auto-creates a UDS server so peer sessions can send messages.
  * Protocol: newline-delimited JSON (NDJSON), one message per line.
@@ -24,7 +24,7 @@ import { tmpdir } from 'os'
 import { registerCleanup } from './cleanupRegistry.js'
 import { logForDebugging } from './debug.js'
 import { errorMessage } from './errors.js'
-import { getClaudeConfigHomeDir } from './envUtils.js'
+import { getAhcodeConfigHomeDir } from './envUtils.js'
 import { attachNdjsonFramer } from './ndjsonFramer.js'
 import { attachUdsResponseReader } from './udsResponseReader.js'
 import { logError } from './log.js'
@@ -91,7 +91,7 @@ export const UDS_IDLE_TIMEOUT_MS = 30_000
 
 /**
  * Default socket path based on PID, placed in a tmpdir subdirectory so it
- * survives across config-home changes and avoids polluting ~/.claude.
+ * survives across config-home changes and avoids polluting ~/.ahcode.
  *
  * On Windows, Node.js requires named pipe paths in the `\\.\pipe\` namespace;
  * file-system paths like `C:\...\Temp\x.sock` cause EACCES. Bun handles both
@@ -137,7 +137,7 @@ export function parseUdsTarget(target: string): {
 }
 
 function getCapabilityDir(): string {
-  return join(getClaudeConfigHomeDir(), 'messaging-capabilities')
+  return join(getAhcodeConfigHomeDir(), 'messaging-capabilities')
 }
 
 function getCapabilityPath(socket: string): string {
@@ -404,7 +404,7 @@ function withRequestAuthToken(message: UdsMessage, token: string): UdsMessage {
 /**
  * Start the UDS messaging server on the given socket path.
  *
- * Exports `CLAUDE_CODE_MESSAGING_SOCKET` into `process.env` so child
+ * Exports `AHCODE_MESSAGING_SOCKET` into `process.env` so child
  * processes (hooks, spawned agents) can discover and connect back.
  */
 export async function startUdsMessaging(
@@ -609,7 +609,7 @@ export async function startUdsMessaging(
     socketPath = path
     // Export so child processes can discover the socket only after the
     // capability file exists and the listener is ready.
-    process.env.CLAUDE_CODE_MESSAGING_SOCKET = path
+    process.env.AHCODE_MESSAGING_SOCKET = path
     exportedSocketEnv = true
     logForDebugging(
       `[udsMessaging] server listening on ${path}${opts?.isExplicit ? ' (explicit)' : ''}`,
@@ -631,7 +631,7 @@ export async function startUdsMessaging(
     }
     await removeSocketPath(path)
     if (exportedSocketEnv) {
-      delete process.env.CLAUDE_CODE_MESSAGING_SOCKET
+      delete process.env.AHCODE_MESSAGING_SOCKET
     }
     socketPath = null
     defaultSocketPath = null
@@ -669,7 +669,7 @@ export async function stopUdsMessaging(): Promise<void> {
   // Remove socket file (skip on Windows — pipe paths aren't files)
   if (socketPath) {
     await removeSocketPath(socketPath)
-    delete process.env.CLAUDE_CODE_MESSAGING_SOCKET
+    delete process.env.AHCODE_MESSAGING_SOCKET
     logForDebugging(
       `[udsMessaging] server stopped, socket removed: ${socketPath}`,
     )

@@ -1,6 +1,6 @@
 /**
  * Extracts durable memories from the current session transcript
- * and writes them to the auto-memory directory (~/.claude/projects/<path>/memory/).
+ * and writes them to the auto-memory directory (~/.ahcode/projects/<path>/memory/).
  *
  * It runs once at the end of each complete query loop (when the model produces
  * a final response with no tool calls) via handleStopHooks in stopHooks.ts.
@@ -28,13 +28,13 @@ import {
   isAutoMemPath,
 } from '../../memdir/paths.js'
 import type { Tool } from '../../Tool.js'
-import { BASH_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/BashTool/toolName.js'
-import { FILE_EDIT_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/FileEditTool/constants.js'
-import { FILE_READ_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/FileReadTool/prompt.js'
-import { FILE_WRITE_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/FileWriteTool/prompt.js'
-import { GLOB_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/GlobTool/prompt.js'
-import { GREP_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/GrepTool/prompt.js'
-import { REPL_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/REPLTool/constants.js'
+import { BASH_TOOL_NAME } from '@ahcode/builtin-tools/tools/BashTool/toolName.js'
+import { FILE_EDIT_TOOL_NAME } from '@ahcode/builtin-tools/tools/FileEditTool/constants.js'
+import { FILE_READ_TOOL_NAME } from '@ahcode/builtin-tools/tools/FileReadTool/prompt.js'
+import { FILE_WRITE_TOOL_NAME } from '@ahcode/builtin-tools/tools/FileWriteTool/prompt.js'
+import { GLOB_TOOL_NAME } from '@ahcode/builtin-tools/tools/GlobTool/prompt.js'
+import { GREP_TOOL_NAME } from '@ahcode/builtin-tools/tools/GrepTool/prompt.js'
+import { REPL_TOOL_NAME } from '@ahcode/builtin-tools/tools/REPLTool/constants.js'
 import type {
   AssistantMessage,
   Message,

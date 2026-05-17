@@ -14,12 +14,12 @@ import type { QuerySource } from '../../constants/querySource.js'
 import type { CanUseToolFn } from '../../hooks/useCanUseTool.js'
 import type { Tool, ToolUseContext } from '../../Tool.js'
 import type { LocalAgentTaskState } from '../../tasks/LocalAgentTask/LocalAgentTask.js'
-import { FileReadTool } from '@claude-code-best/builtin-tools/tools/FileReadTool/FileReadTool.js'
+import { FileReadTool } from '@ahcode/builtin-tools/tools/FileReadTool/FileReadTool.js'
 import {
   FILE_READ_TOOL_NAME,
   FILE_UNCHANGED_STUB,
-} from '@claude-code-best/builtin-tools/tools/FileReadTool/prompt.js'
-import { SearchExtraToolsTool } from '@claude-code-best/builtin-tools/tools/SearchExtraToolsTool/SearchExtraToolsTool.js'
+} from '@ahcode/builtin-tools/tools/FileReadTool/prompt.js'
+import { SearchExtraToolsTool } from '@ahcode/builtin-tools/tools/SearchExtraToolsTool/SearchExtraToolsTool.js'
 import type { AgentId } from '../../types/ids.js'
 import type {
   AssistantMessage,
@@ -1733,8 +1733,8 @@ function shouldExcludeFromPostCompactRestore(
   }
 
   // Exclude all types of claude.md files
-  // TODO: Refactor to use isMemoryFilePath() from claudemd.ts for consistency
-  // and to also match child directory memory files (.claude/rules/*.md, etc.)
+  // TODO: Refactor to use isMemoryFilePath() from ahcodemd.ts for consistency
+  // and to also match child directory memory files (.ahcode/rules/*.md, etc.)
   try {
     const normalizedMemoryPaths = new Set(
       MEMORY_TYPE_VALUES.map(type => expandPath(getMemoryPath(type))),

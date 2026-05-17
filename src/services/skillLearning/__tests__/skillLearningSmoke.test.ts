@@ -26,8 +26,8 @@ beforeEach(() => {
   previousCwd = process.cwd()
   process.chdir(root)
   process.env = { ...originalEnv }
-  process.env.CLAUDE_SKILL_LEARNING_HOME = join(root, 'learning-home')
-  process.env.CLAUDE_CONFIG_DIR = join(root, 'config')
+  process.env.AHCODE_SKILL_LEARNING_HOME = join(root, 'learning-home')
+  process.env.AHCODE_CONFIG_DIR = join(root, 'config')
   process.env.SKILL_LEARNING_ENABLED = '1'
   process.env.ANTHROPIC_API_KEY = 'test-key'
   process.env.NODE_ENV = 'test'
@@ -69,14 +69,14 @@ describe('skillLearning smoke', () => {
     }
 
     const options = {
-      rootDir: process.env.CLAUDE_SKILL_LEARNING_HOME,
+      rootDir: process.env.AHCODE_SKILL_LEARNING_HOME,
       project: {
         projectId: 'global',
         projectName: 'global',
         cwd: root,
         scope: 'global' as const,
         source: 'global' as const,
-        storageDir: join(process.env.CLAUDE_SKILL_LEARNING_HOME!, 'global'),
+        storageDir: join(process.env.AHCODE_SKILL_LEARNING_HOME!, 'global'),
       },
     }
     const observations = await readObservations(options)
@@ -98,7 +98,7 @@ describe('skillLearning smoke', () => {
     }
 
     const skillName = 'testing-choosing-between-mock-testing-library'
-    const skillFile = join(root, '.claude', 'skills', skillName, 'SKILL.md')
+    const skillFile = join(root, '.ahcode', 'skills', skillName, 'SKILL.md')
     expect(existsSync(skillFile)).toBe(true)
     expect(readFileSync(skillFile, 'utf8')).toContain('Prefer testing-library')
 

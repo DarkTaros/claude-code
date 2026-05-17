@@ -8,11 +8,11 @@ import {
 } from '../constants/product.js'
 import { TERMINAL_OUTPUT_TAGS } from '../constants/xml.js'
 import type { AppState } from '../state/AppState.js'
-import { FILE_EDIT_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/FileEditTool/constants.js'
-import { FILE_READ_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/FileReadTool/prompt.js'
-import { FILE_WRITE_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/FileWriteTool/prompt.js'
-import { GLOB_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/GlobTool/prompt.js'
-import { GREP_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/GrepTool/prompt.js'
+import { FILE_EDIT_TOOL_NAME } from '@ahcode/builtin-tools/tools/FileEditTool/constants.js'
+import { FILE_READ_TOOL_NAME } from '@ahcode/builtin-tools/tools/FileReadTool/prompt.js'
+import { FILE_WRITE_TOOL_NAME } from '@ahcode/builtin-tools/tools/FileWriteTool/prompt.js'
+import { GLOB_TOOL_NAME } from '@ahcode/builtin-tools/tools/GlobTool/prompt.js'
+import { GREP_TOOL_NAME } from '@ahcode/builtin-tools/tools/GrepTool/prompt.js'
 import type { Entry } from '../types/logs.js'
 import {
   type AttributionData,
@@ -50,7 +50,7 @@ export function getAttributionTexts(): AttributionTexts {
   }
 
   if (getClientType() === 'remote') {
-    const remoteSessionId = process.env.CLAUDE_CODE_REMOTE_SESSION_ID
+    const remoteSessionId = process.env.AHCODE_REMOTE_SESSION_ID
     if (remoteSessionId) {
       const ingressUrl = process.env.SESSION_INGRESS_URL
       // Skip for local dev - URLs won't persist
@@ -64,7 +64,7 @@ export function getAttributionTexts(): AttributionTexts {
 
   const modelName = getRealModelName()
   const email = getAttributionEmail(modelName)
-  const defaultAttribution = `🤖 Generated with [Claude Code Best](${PRODUCT_URL})`
+  const defaultAttribution = `🤖 Generated with [AH Code](${PRODUCT_URL})`
   const defaultCommit = `Co-Authored-By: ${modelName} <${email}>`
 
   const settings = getInitialSettings()
@@ -270,12 +270,12 @@ async function getTranscriptStats(): Promise<{
 }
 
 /**
- * Get enhanced PR attribution text with Claude contribution stats.
+ * Get enhanced PR attribution text with AH Code contribution stats.
  *
- * Format: "🤖 Generated with Claude Code (93% 3-shotted by claude-opus-4-5)"
+ * Format: "🤖 Generated with AH Code (93% 3-shotted by claude-opus-4-5)"
  *
  * Rules:
- * - Shows Claude contribution percentage from commit attribution
+ * - Shows AH Code contribution percentage from commit attribution
  * - Shows N-shotted where N is the prompt count (1-shotted, 2-shotted, etc.)
  * - Shows short model name (e.g., claude-opus-4-5)
  * - Returns default attribution if stats can't be computed
@@ -290,7 +290,7 @@ export async function getEnhancedPRAttribution(
   }
 
   if (getClientType() === 'remote') {
-    const remoteSessionId = process.env.CLAUDE_CODE_REMOTE_SESSION_ID
+    const remoteSessionId = process.env.AHCODE_REMOTE_SESSION_ID
     if (remoteSessionId) {
       const ingressUrl = process.env.SESSION_INGRESS_URL
       // Skip for local dev - URLs won't persist
@@ -313,7 +313,7 @@ export async function getEnhancedPRAttribution(
     return ''
   }
 
-  const defaultAttribution = `🤖 Generated with [Claude Code](${PRODUCT_URL})`
+  const defaultAttribution = `🤖 Generated with [AH Code](${PRODUCT_URL})`
 
   // Get AppState first
   const appState = getAppState()
@@ -336,27 +336,27 @@ export async function getEnhancedPRAttribution(
       isInternalModelRepo(),
     ])
 
-  const claudePercent = attributionData?.summary.claudePercent ?? 0
+  const ahcodePercent = attributionData?.summary.ahcodePercent ?? 0
 
   logForDebugging(
-    `PR Attribution: claudePercent: ${claudePercent}, promptCount: ${promptCount}, memoryAccessCount: ${memoryAccessCount}`,
+    `PR Attribution: ahcodePercent: ${ahcodePercent}, promptCount: ${promptCount}, memoryAccessCount: ${memoryAccessCount}`,
   )
 
   // Get real model name for attribution
   const realModelName = getRealModelName()
 
   // If no attribution data, return default
-  if (claudePercent === 0 && promptCount === 0 && memoryAccessCount === 0) {
+  if (ahcodePercent === 0 && promptCount === 0 && memoryAccessCount === 0) {
     logForDebugging('PR Attribution: returning default (no data)')
     return defaultAttribution
   }
 
-  // Build the enhanced attribution: "🤖 Generated with Claude Code (93% 3-shotted by claude-opus-4-5, 2 memories recalled)"
+  // Build the enhanced attribution: "🤖 Generated with AH Code (93% 3-shotted by claude-opus-4-5, 2 memories recalled)"
   const memSuffix =
     memoryAccessCount > 0
       ? `, ${memoryAccessCount} ${memoryAccessCount === 1 ? 'memory' : 'memories'} recalled`
       : ''
-  const summary = `🤖 Generated with [Claude Code Best](${PRODUCT_URL}) (${claudePercent}% ${promptCount}-shotted by ${realModelName}${memSuffix})`
+  const summary = `🤖 Generated with [AH Code](${PRODUCT_URL}) (${ahcodePercent}% ${promptCount}-shotted by ${realModelName}${memSuffix})`
 
   // Append trailer lines for squash-merge survival. Only for allowlisted repos
   // (INTERNAL_MODEL_REPOS) and only in builds with COMMIT_ATTRIBUTION enabled —

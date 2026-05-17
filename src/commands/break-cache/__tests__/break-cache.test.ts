@@ -22,15 +22,15 @@ mock.module('src/services/analytics/index.js', () => ({
 let tmpDir: string
 let claudeDir: string
 
-// Dynamic envUtils mock — reads CLAUDE_CONFIG_DIR from process.env at call
+// Dynamic envUtils mock — reads AHCODE_CONFIG_DIR from process.env at call
 // time so it stays compatible across the full suite when other test files
 // also drive their own dirs via process.env.
 mock.module('src/utils/envUtils.js', () => ({
-  getClaudeConfigHomeDir: () =>
-    process.env.CLAUDE_CONFIG_DIR ?? `${tmpdir()}/dummy-claude`,
+  getAhcodeConfigHomeDir: () =>
+    process.env.AHCODE_CONFIG_DIR ?? `${tmpdir()}/dummy-claude`,
   isEnvTruthy: (v: unknown) => Boolean(v),
   getTeamsDir: () =>
-    join(process.env.CLAUDE_CONFIG_DIR ?? `${tmpdir()}/dummy-claude`, 'teams'),
+    join(process.env.AHCODE_CONFIG_DIR ?? `${tmpdir()}/dummy-claude`, 'teams'),
   hasNodeOption: () => false,
   isEnvDefinedFalsy: () => false,
   isBareMode: () => false,
@@ -49,9 +49,9 @@ async function invokeBreakCache(
 
 beforeEach(() => {
   tmpDir = mkdtempSync(join(tmpdir(), 'break-cache-test-'))
-  claudeDir = join(tmpDir, '.claude')
+  claudeDir = join(tmpDir, '.ahcode')
   mkdirSync(claudeDir, { recursive: true })
-  process.env.CLAUDE_CONFIG_DIR = claudeDir
+  process.env.AHCODE_CONFIG_DIR = claudeDir
 })
 
 afterEach(() => {
@@ -64,7 +64,7 @@ afterEach(() => {
     // ignore
   }
   rmSync(tmpDir, { recursive: true, force: true })
-  delete process.env.CLAUDE_CONFIG_DIR
+  delete process.env.AHCODE_CONFIG_DIR
 })
 
 describe('break-cache command', () => {
@@ -104,7 +104,7 @@ describe('break-cache command', () => {
       expect(result.value).toContain('next API call')
     }
 
-    // Marker file must exist under CLAUDE_CONFIG_DIR
+    // Marker file must exist under AHCODE_CONFIG_DIR
     const markerPath = getBreakCacheMarkerPath()
     expect(markerPath).toContain('.next-request-no-cache')
     expect(existsSync(markerPath)).toBe(true)
@@ -146,11 +146,11 @@ describe('break-cache command', () => {
     }
   })
 
-  test('getBreakCacheMarkerPath points inside CLAUDE_CONFIG_DIR', async () => {
+  test('getBreakCacheMarkerPath points inside AHCODE_CONFIG_DIR', async () => {
     const { getBreakCacheMarkerPath } = await import('../index.js')
     const path = getBreakCacheMarkerPath()
     expect(path).toContain('.next-request-no-cache')
-    // The path should be under claudeDir (CLAUDE_CONFIG_DIR)
+    // The path should be under claudeDir (AHCODE_CONFIG_DIR)
     expect(path.startsWith(claudeDir)).toBe(true)
   })
 

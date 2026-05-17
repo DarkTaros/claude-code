@@ -41,8 +41,8 @@ async function callAutonomy(args = ''): Promise<{
 
 beforeEach(async () => {
   tempDir = await createTempDir('autonomy-command-')
-  previousConfigDir = process.env.CLAUDE_CONFIG_DIR
-  process.env.CLAUDE_CONFIG_DIR = join(tempDir, 'config')
+  previousConfigDir = process.env.AHCODE_CONFIG_DIR
+  process.env.AHCODE_CONFIG_DIR = join(tempDir, 'config')
   resetStateForTests()
   resetCommandQueue()
   setOriginalCwd(tempDir)
@@ -53,9 +53,9 @@ afterEach(async () => {
   resetStateForTests()
   resetCommandQueue()
   if (previousConfigDir === undefined) {
-    delete process.env.CLAUDE_CONFIG_DIR
+    delete process.env.AHCODE_CONFIG_DIR
   } else {
-    process.env.CLAUDE_CONFIG_DIR = previousConfigDir
+    process.env.AHCODE_CONFIG_DIR = previousConfigDir
   }
   if (tempDir) {
     await cleanupTempDir(tempDir)
@@ -269,9 +269,9 @@ describe('/autonomy', () => {
     })
     expect(run).not.toBeNull()
 
-    await mkdir(join(tempDir, '.claude'), { recursive: true })
+    await mkdir(join(tempDir, '.ahcode'), { recursive: true })
     await writeFile(
-      join(tempDir, '.claude', 'scheduled_tasks.json'),
+      join(tempDir, '.ahcode', 'scheduled_tasks.json'),
       JSON.stringify({
         tasks: [
           {
@@ -284,11 +284,11 @@ describe('/autonomy', () => {
         ],
       }),
     )
-    await mkdir(join(tempDir, '.claude', 'workflow-runs'), {
+    await mkdir(join(tempDir, '.ahcode', 'workflow-runs'), {
       recursive: true,
     })
     await writeFile(
-      join(tempDir, '.claude', 'workflow-runs', 'workflow-1.json'),
+      join(tempDir, '.ahcode', 'workflow-runs', 'workflow-1.json'),
       JSON.stringify({
         runId: 'workflow-1',
         workflow: 'release',
@@ -307,7 +307,7 @@ describe('/autonomy', () => {
       }),
     )
 
-    const teamDir = join(process.env.CLAUDE_CONFIG_DIR ?? '', 'teams', 'alpha')
+    const teamDir = join(process.env.AHCODE_CONFIG_DIR ?? '', 'teams', 'alpha')
     await mkdir(teamDir, { recursive: true })
     await writeFile(
       join(teamDir, 'config.json'),

@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from 'fs'
 import { join, basename } from 'path'
 import { parseFrontmatter } from '../utils/frontmatterParser.js'
 import type { FrontmatterData } from '../utils/frontmatterParser.js'
-import { getClaudeConfigHomeDir } from '../utils/envUtils.js'
+import { getAhcodeConfigHomeDir } from '../utils/envUtils.js'
 import {
   getProjectDirsUpToHome,
   extractDescriptionFromMarkdown,
@@ -18,8 +18,8 @@ export interface TemplateInfo {
 }
 
 /**
- * Discover .claude/templates directories from CWD up to git root,
- * plus the user-level ~/.claude/templates.
+ * Discover .ahcode/templates directories from CWD up to git root,
+ * plus the user-level ~/.ahcode/templates.
  */
 function getTemplatesDirs(): string[] {
   const projectDirs = getProjectDirsUpToHome(
@@ -28,7 +28,7 @@ function getTemplatesDirs(): string[] {
   )
 
   // User-level dir (getProjectDirsUpToHome stops before home)
-  const userDir = join(getClaudeConfigHomeDir(), 'templates')
+  const userDir = join(getAhcodeConfigHomeDir(), 'templates')
   try {
     readdirSync(userDir)
     return [...projectDirs, userDir]

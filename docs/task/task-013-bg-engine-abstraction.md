@@ -137,12 +137,12 @@ export async function selectEngine(): Promise<BgEngine> {
 export async function handleBgStart(args: string[]): Promise<void> {
   const engine = await selectEngine()
   const sessionName = `claude-bg-${randomUUID().slice(0, 8)}`
-  const logPath = join(getClaudeConfigHomeDir(), 'sessions', 'logs', `${sessionName}.log`)
+  const logPath = join(getAhcodeConfigHomeDir(), 'sessions', 'logs', `${sessionName}.log`)
 
   const result = await engine.start({
     sessionName,
     args: filteredArgs,
-    env: { ...process.env, CLAUDE_CODE_SESSION_KIND: 'bg', ... },
+    env: { ...process.env, AHCODE_SESSION_KIND: 'bg', ... },
     logPath,
     cwd: process.cwd(),
   })
@@ -176,7 +176,7 @@ export async function attachHandler(target: string | undefined): Promise<void> {
 {
   "pid": 12345,
   "engine": "detached",
-  "logPath": "~/.claude/sessions/logs/claude-bg-a1b2c3d4.log",
+  "logPath": "~/.ahcode/sessions/logs/claude-bg-a1b2c3d4.log",
   "sessionId": "...",
   "cwd": "..."
 }

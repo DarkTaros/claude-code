@@ -1,12 +1,12 @@
 # Remote Control Server (RCS)
 
-Remote Control Server 是 Claude Code 的远程控制后端，允许你通过浏览器 Web UI 远程监控和操作 Claude Code 会话。
+Remote Control Server 是 AH Code 的远程控制后端，允许你通过浏览器 Web UI 远程监控和操作 AH Code 会话。
 
 ## 功能
 
-- **会话管理** — 创建、监控、归档 Claude Code 会话
+- **会话管理** — 创建、监控、归档 AH Code 会话
 - **实时消息流** — WebSocket / SSE 双向传输，实时查看对话和工具调用
-- **权限审批** — 在 Web UI 中审批 Claude Code 的工具权限请求
+- **权限审批** — 在 Web UI 中审批 AH Code 的工具权限请求
 - **多环境管理** — 注册多个运行环境，支持心跳和断线重连
 - **认证安全** — API Key + JWT 双层认证
 
@@ -20,7 +20,7 @@ docker run -d \
   -p 3000:3000 \
   -e RCS_API_KEYS=your-api-key-here \
   -v rcs-data:/app/data \
-  ghcr.io/claude-code-best/remote-control-server:latest
+  ghcr.io/ah-code/remote-control-server:latest
 ```
 
 ## 环境变量
@@ -44,11 +44,11 @@ docker run -d \
 | `RCS_JWT_EXPIRES_IN` | `3600` | JWT 令牌有效期（秒） |
 | `RCS_DISCONNECT_TIMEOUT` | `300` | 断线判定超时（秒） |
 
-## Claude Code 客户端配置
+## AH Code 客户端配置
 
 ### 连接到自托管服务器
 
-在 Claude Code 所在环境设置以下变量：
+在 AH Code 所在环境设置以下变量：
 
 ```bash
 # 指向你的 RCS 服务器地址
@@ -73,7 +73,7 @@ ccb --remote-control
 | `CLAUDE_BRIDGE_BASE_URL` | RCS 服务器地址，覆盖默认的 Anthropic 云端地址 |
 | `CLAUDE_BRIDGE_OAUTH_TOKEN` | 认证令牌，用于连接 RCS 服务器 |
 | `CLAUDE_BRIDGE_SESSION_INGRESS_URL` | WebSocket 入口地址（默认与 BASE_URL 相同） |
-| `CLAUDE_CODE_REMOTE` | 设为 `1` 时标记为远程执行模式 |
+| `AHCODE_REMOTE` | 设为 `1` 时标记为远程执行模式 |
 
 ## Docker Compose 示例
 
@@ -139,7 +139,7 @@ rcs.example.com {
 
 ```
 ┌─────────────┐     WebSocket/SSE      ┌──────────────────┐
-│  Claude Code │ ◄──────────────────► │  Remote Control  │
+│  AH Code │ ◄──────────────────► │  Remote Control  │
 │  (Bridge CLI)│     HTTP API          │     Server       │
 └─────────────┘                        │                  │
                                        │  ┌────────────┐  │

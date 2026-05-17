@@ -1,17 +1,17 @@
 ---
-title: "什么是 Claude Code - Terminal Native Agentic Coding System"
-description: "Claude Code 是运行在终端中的 agentic coding system，直接在你的项目目录中读代码、改文件、跑命令、调试程序。了解它的技术定位、架构差异和核心能力。"
-keywords: ["Claude Code", "AI 编程助手", "Agentic Coding", "终端 AI", "CLI AI"]
+title: "什么是 AH Code - Terminal Native Agentic Coding System"
+description: "AH Code 是运行在终端中的 agentic coding system，直接在你的项目目录中读代码、改文件、跑命令、调试程序。了解它的技术定位、架构差异和核心能力。"
+keywords: ["AH Code", "AI 编程助手", "Agentic Coding", "终端 AI", "CLI AI"]
 og:image: "https://ccb.agent-aura.top/docs/images/og-cover.png"
 ---
 
 ## 一句话定义
 
-Claude Code 是一个**运行在本地终端中的 agentic coding system**。它不是给建议的聊天机器人——它直接在你的项目目录中读代码、改文件、跑命令、调试程序，拥有完整的 shell 能力。
+AH Code 是一个**运行在本地终端中的 agentic coding system**。它不是给建议的聊天机器人——它直接在你的项目目录中读代码、改文件、跑命令、调试程序，拥有完整的 shell 能力。
 
 ## 技术定位：terminal-native agentic system
 
-理解 Claude Code 的关键在于三个词：
+理解 AH Code 的关键在于三个词：
 
 | 定位关键词 | 含义 |
 |-----------|------|
@@ -23,12 +23,12 @@ Claude Code 是一个**运行在本地终端中的 agentic coding system**。它
 
 | 工具 | 架构模式 | 运行位置 | 工具执行 |
 |------|----------|----------|----------|
-| **Claude Code** | Terminal-native agentic loop | 本地进程 | 直接 shell 执行 |
+| **AH Code** | Terminal-native agentic loop | 本地进程 | 直接 shell 执行 |
 | Cursor / Copilot | IDE-integrated autocomplete + chat | IDE 进程内 | LSP / IDE API |
 | Aider | CLI chat → git patch | 本地进程 | 文件操作为主 |
 | ChatGPT / Claude.ai | Cloud chat + artifacts | 浏览器/云端 | 沙箱容器 |
 
-核心差异：Claude Code 拥有**完整的 shell 访问权**——这意味着它可以做任何你在终端里能做的事，但也需要对应的安全机制来约束这个能力。
+核心差异：AH Code 拥有**完整的 shell 访问权**——这意味着它可以做任何你在终端里能做的事，但也需要对应的安全机制来约束这个能力。
 
 ## 端到端示例：从输入到输出
 

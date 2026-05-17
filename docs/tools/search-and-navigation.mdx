@@ -1,6 +1,6 @@
 ---
 title: "搜索与导航工具 - 代码库精准定位"
-description: "解析 Claude Code 的搜索导航工具：Glob 文件匹配、Grep 内容搜索，基于 ripgrep 的高性能代码检索，帮助 AI 在百万行代码中精准定位。"
+description: "解析 AH Code 的搜索导航工具：Glob 文件匹配、Grep 内容搜索，基于 ripgrep 的高性能代码检索，帮助 AI 在百万行代码中精准定位。"
 keywords: ["代码搜索", "Glob", "Grep", "ripgrep", "文件搜索"]
 ---
 
@@ -15,7 +15,7 @@ keywords: ["代码搜索", "Glob", "Grep", "ripgrep", "文件搜索"]
 
 ## ripgrep 的内嵌方式
 
-Claude Code 不依赖系统安装的 ripgrep——它在 `src/utils/ripgrep.ts` 中实现了三级降级策略：
+AH Code 不依赖系统安装的 ripgrep——它在 `src/utils/ripgrep.ts` 中实现了三级降级策略：
 
 ```
 优先级 1: 系统 ripgrep (USE_BUILTIN_RIPGREP=false)

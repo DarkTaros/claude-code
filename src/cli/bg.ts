@@ -1,7 +1,7 @@
 import { readdir, readFile, unlink } from 'fs/promises'
 import { join } from 'path'
 import { randomUUID } from 'crypto'
-import { getClaudeConfigHomeDir } from '../utils/envUtils.js'
+import { getAhcodeConfigHomeDir } from '../utils/envUtils.js'
 import { isProcessRunning } from '../utils/genericProcessUtils.js'
 import { jsonParse } from '../utils/slowOperations.js'
 import { selectEngine } from './bg/engines/index.js'
@@ -10,7 +10,7 @@ import type { SessionEntry } from './bg/engine.js'
 export type { SessionEntry } from './bg/engine.js'
 
 function getSessionsDir(): string {
-  return join(getClaudeConfigHomeDir(), 'sessions')
+  return join(getAhcodeConfigHomeDir(), 'sessions')
 }
 
 export async function listLiveSessions(): Promise<SessionEntry[]> {
@@ -307,7 +307,7 @@ export async function handleBgStart(args: string[]): Promise<void> {
 
   const sessionName = `claude-bg-${randomUUID().slice(0, 8)}`
   const logPath = join(
-    getClaudeConfigHomeDir(),
+    getAhcodeConfigHomeDir(),
     'sessions',
     'logs',
     `${sessionName}.log`,

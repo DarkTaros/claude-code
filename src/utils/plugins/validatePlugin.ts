@@ -12,6 +12,11 @@ import {
   PluginMarketplaceEntrySchema,
   PluginMarketplaceSchema,
 } from './schemas.js'
+import {
+  LEGACY_CLAUDE_PLUGIN_MANIFEST_DIR,
+  PLUGIN_MANIFEST_DIR,
+  findPluginManifestPath,
+} from './manifestPaths.js'
 
 /**
  * Fields that belong in marketplace.json entries (PluginMarketplaceEntrySchema)
@@ -61,8 +66,11 @@ function detectManifestType(
   if (fileName === 'plugin.json') return 'plugin'
   if (fileName === 'marketplace.json') return 'marketplace'
 
-  // Check if it's in .claude-plugin directory
-  if (dirName === '.claude-plugin') {
+  // Check if it's in .ahcode-plugin directory
+  if (
+    dirName === PLUGIN_MANIFEST_DIR ||
+    dirName === LEGACY_CLAUDE_PLUGIN_MANIFEST_DIR
+  ) {
     return 'plugin' // Most likely plugin.json
   }
 
@@ -86,7 +94,7 @@ function formatZodErrors(zodError: z.ZodError): ValidationError[] {
  * For plugin.json component paths this is a security concern (escaping the plugin dir).
  * For marketplace.json source paths it's almost always a resolution-base misunderstanding:
  * paths resolve from the marketplace repo root, not from marketplace.json itself, so the
- * '..' a user added to "climb out of .claude-plugin/" is unnecessary. Callers pass `hint`
+ * '..' a user added to "climb out of .ahcode-plugin/" is unnecessary. Callers pass `hint`
  * to attach the right explanation.
  */
 function checkPathTraversal(
@@ -106,19 +114,19 @@ function checkPathTraversal(
 }
 
 // Shown when a marketplace plugin source contains '..'. Most users hit this because
-// they expect paths to resolve relative to marketplace.json (inside .claude-plugin/),
+// they expect paths to resolve relative to marketplace.json (inside .ahcode-plugin/),
 // but resolution actually starts at the marketplace repo root — see gh-29485.
 // Computes a tailored "use X instead of Y" suggestion from the user's actual path
 // rather than a hardcoded example (review feedback on #20895).
 function marketplaceSourceHint(p: string): string {
   // Strip leading ../ segments: the '..' a user added to "climb out of
-  // .claude-plugin/" is unnecessary since paths already start at the repo root.
+  // .ahcode-plugin/" is unnecessary since paths already start at the repo root.
   // If '..' appears mid-path (rare), fall back to a generic example.
   const stripped = p.replace(/^(\.\.\/)+/, '')
   const corrected = stripped !== p ? `./${stripped}` : './plugins/my-plugin'
   return (
     'Plugin source paths are resolved relative to the marketplace root (the directory ' +
-    'containing .claude-plugin/), not relative to marketplace.json. ' +
+    'containing .ahcode-plugin/), not relative to marketplace.json. ' +
     `Use "${corrected}" instead of "${p}".`
   )
 }
@@ -232,7 +240,7 @@ export async function validatePluginManifest(
           path: key,
           message:
             `Field '${key}' belongs in the marketplace entry (marketplace.json), ` +
-            `not plugin.json. It's harmless here but unused — Claude Code ` +
+            `not plugin.json. It's harmless here but unused — AH Code ` +
             `ignores it at load time.`,
         })
       }
@@ -261,7 +269,7 @@ export async function validatePluginManifest(
       warnings.push({
         path: 'name',
         message:
-          `Plugin name "${manifest.name}" is not kebab-case. Claude Code accepts ` +
+          `Plugin name "${manifest.name}" is not kebab-case. AH Code accepts ` +
           `it, but the Claude.ai marketplace sync requires kebab-case ` +
           `(lowercase letters, digits, and hyphens only, e.g., "my-plugin").`,
       })
@@ -446,10 +454,12 @@ export async function validateMarketplaceManifest(
       // shows one version, /status shows another after install).
       // Only local sources: remote sources would need cloning to check.
       const manifestDir = path.dirname(absolutePath)
-      const marketplaceRoot =
-        path.basename(manifestDir) === '.claude-plugin'
-          ? path.dirname(manifestDir)
-          : manifestDir
+      const isManifestDir =
+        path.basename(manifestDir) === PLUGIN_MANIFEST_DIR ||
+        path.basename(manifestDir) === LEGACY_CLAUDE_PLUGIN_MANIFEST_DIR
+      const marketplaceRoot = isManifestDir
+        ? path.dirname(manifestDir)
+        : manifestDir
       for (const [i, entry] of marketplace.plugins.entries()) {
         if (
           !entry.version ||
@@ -458,10 +468,8 @@ export async function validateMarketplaceManifest(
         ) {
           continue
         }
-        const pluginJsonPath = path.join(
-          marketplaceRoot,
-          entry.source,
-          '.claude-plugin',
+        const pluginJsonPath = await findPluginManifestPath(
+          path.join(marketplaceRoot, entry.source),
           'plugin.json',
         )
         let manifestVersion: string | undefined
@@ -479,7 +487,7 @@ export async function validateMarketplaceManifest(
           warnings.push({
             path: `plugins[${i}].version`,
             message:
-              `Entry declares version "${entry.version}" but ${entry.source}/.claude-plugin/plugin.json says "${manifestVersion}". ` +
+              `Entry declares version "${entry.version}" but ${entry.source}/.ahcode-plugin/plugin.json says "${manifestVersion}". ` +
               `At install time, plugin.json wins (calculatePluginVersion precedence) — the entry version is silently ignored. ` +
               `Update this entry to "${manifestVersion}" to match.`,
           })
@@ -827,11 +835,10 @@ export async function validateManifest(
   }
 
   if (stats?.isDirectory()) {
-    // Look for manifest files in .claude-plugin directory
+    // Look for manifest files in .ahcode-plugin directory
     // Prefer marketplace.json over plugin.json
-    const marketplacePath = path.join(
+    const marketplacePath = await findPluginManifestPath(
       absolutePath,
-      '.claude-plugin',
       'marketplace.json',
     )
     const marketplaceResult = await validateMarketplaceManifest(marketplacePath)
@@ -840,7 +847,7 @@ export async function validateManifest(
       return marketplaceResult
     }
 
-    const pluginPath = path.join(absolutePath, '.claude-plugin', 'plugin.json')
+    const pluginPath = await findPluginManifestPath(absolutePath, 'plugin.json')
     const pluginResult = await validatePluginManifest(pluginPath)
     if (pluginResult.errors[0]?.code !== 'ENOENT') {
       return pluginResult
@@ -851,7 +858,7 @@ export async function validateManifest(
       errors: [
         {
           path: 'directory',
-          message: `No manifest found in directory. Expected .claude-plugin/marketplace.json or .claude-plugin/plugin.json`,
+          message: `No manifest found in directory. Expected .ahcode-plugin/marketplace.json or .ahcode-plugin/plugin.json`,
         },
       ],
       warnings: [],

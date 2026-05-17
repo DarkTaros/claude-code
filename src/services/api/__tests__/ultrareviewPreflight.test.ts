@@ -41,7 +41,7 @@ mock.module('src/utils/teleport/api.js', () => ({
 }))
 
 // We'll mock axios at module level.
-// Typed as any in test code (CLAUDE.md: mock data may use as any).
+// Typed as any in test code (AHCODE.md: mock data may use as any).
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockAxiosPost = mock(async (..._args: any[]): Promise<any> => {
   throw new Error('not configured')

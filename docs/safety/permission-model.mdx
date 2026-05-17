@@ -1,6 +1,6 @@
 ---
 title: "权限模型 - Allow/Ask/Deny 三级权限体系"
-description: "详解 Claude Code 的三级权限模型实现：基于 src/utils/permissions/permissions.ts 的规则匹配引擎、五层规则来源优先级、工具名/命令/路径三维度匹配、Denial Tracking 死循环防护、权限模式切换机制。"
+description: "详解 AH Code 的三级权限模型实现：基于 src/utils/permissions/permissions.ts 的规则匹配引擎、五层规则来源优先级、工具名/命令/路径三维度匹配、Denial Tracking 死循环防护、权限模式切换机制。"
 keywords: ["权限模型", "Allow Ask Deny", "PermissionRule", "checkPermissions", "Denial Tracking", "权限规则"]
 ---
 
@@ -23,9 +23,9 @@ keywords: ["权限模型", "Allow Ask Deny", "PermissionRule", "checkPermissions
 规则从 8 个来源汇聚（`PERMISSION_RULE_SOURCES`，`permissions.ts:109`），优先级从低到高（后者覆盖前者）：
 
 ```
-1. userSettings   — ~/.claude/settings.json（跨项目）
-2. projectSettings — .claude/settings.json（团队共享）
-3. localSettings  — .claude/settings.local.json（gitignored，个人覆盖）
+1. userSettings   — ~/.ahcode/settings.json（跨项目）
+2. projectSettings — .ahcode/settings.json（团队共享）
+3. localSettings  — .ahcode/settings.local.json（gitignored，个人覆盖）
 4. flagSettings   — --settings 命令行参数
 5. policySettings — 企业管理员下发的策略（用户不可覆盖）
 6. cliArg         — 命令行 --allow/--deny 参数

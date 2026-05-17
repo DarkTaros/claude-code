@@ -46,7 +46,7 @@ export type OfficialMarketplaceSkipReason =
  */
 export function isOfficialMarketplaceAutoInstallDisabled(): boolean {
   return isEnvTruthy(
-    process.env.CLAUDE_CODE_DISABLE_OFFICIAL_MARKETPLACE_AUTOINSTALL,
+    process.env.AHCODE_DISABLE_OFFICIAL_MARKETPLACE_AUTOINSTALL,
   )
 }
 
@@ -101,19 +101,22 @@ function shouldRetryInstallation(
     return false
   }
 
+  // A previous build may have recorded gcs_unavailable/unknown because the
+  // official Anthropic marketplace mirror URL was unreachable. Retry these
+  // classes immediately so fixed builds recover without asking users to clear
+  // config or wait for the old exponential backoff window.
+  if (failReason === 'gcs_unavailable' || failReason === 'unknown') {
+    return true
+  }
+
   // Check if enough time has passed for next retry
   if (nextRetryTime && now < nextRetryTime) {
     return false
   }
 
-  // Retry for temporary failures (unknown), semi-permanent (git_unavailable),
-  // and legacy state (undefined failReason from before retry logic existed)
-  return (
-    failReason === 'unknown' ||
-    failReason === 'git_unavailable' ||
-    failReason === 'gcs_unavailable' ||
-    failReason === undefined
-  )
+  // Retry for semi-permanent git_unavailable and legacy state
+  // (undefined failReason from before retry logic existed).
+  return failReason === 'git_unavailable' || failReason === undefined
 }
 
 /**

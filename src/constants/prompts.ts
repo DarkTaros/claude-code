@@ -11,52 +11,52 @@ import { isPoorModeActive } from '../commands/poor/poorMode.js'
 import {
   AGENT_TOOL_NAME,
   VERIFICATION_AGENT_TYPE,
-} from '@claude-code-best/builtin-tools/tools/AgentTool/constants.js'
-import { FILE_WRITE_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/FileWriteTool/prompt.js'
-import { FILE_READ_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/FileReadTool/prompt.js'
-import { FILE_EDIT_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/FileEditTool/constants.js'
-import { TODO_WRITE_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/TodoWriteTool/constants.js'
-import { TASK_CREATE_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/TaskCreateTool/constants.js'
+} from '@ahcode/builtin-tools/tools/AgentTool/constants.js'
+import { FILE_WRITE_TOOL_NAME } from '@ahcode/builtin-tools/tools/FileWriteTool/prompt.js'
+import { FILE_READ_TOOL_NAME } from '@ahcode/builtin-tools/tools/FileReadTool/prompt.js'
+import { FILE_EDIT_TOOL_NAME } from '@ahcode/builtin-tools/tools/FileEditTool/constants.js'
+import { TODO_WRITE_TOOL_NAME } from '@ahcode/builtin-tools/tools/TodoWriteTool/constants.js'
+import { TASK_CREATE_TOOL_NAME } from '@ahcode/builtin-tools/tools/TaskCreateTool/constants.js'
 import type { Tools } from '../Tool.js'
 import type { Command } from '../types/command.js'
-import { BASH_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/BashTool/toolName.js'
+import { BASH_TOOL_NAME } from '@ahcode/builtin-tools/tools/BashTool/toolName.js'
 import {
   getCanonicalName,
   getMarketingNameForModel,
 } from '../utils/model/model.js'
 import { getSkillToolCommands } from 'src/commands.js'
-import { SKILL_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/SkillTool/constants.js'
-import { EXECUTE_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/ExecuteTool/constants.js'
+import { SKILL_TOOL_NAME } from '@ahcode/builtin-tools/tools/SkillTool/constants.js'
+import { EXECUTE_TOOL_NAME } from '@ahcode/builtin-tools/tools/ExecuteTool/constants.js'
 import { getOutputStyleConfig } from './outputStyles.js'
 import type {
   MCPServerConnection,
   ConnectedMCPServer,
 } from '../services/mcp/types.js'
-import { GLOB_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/GlobTool/prompt.js'
-import { GREP_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/GrepTool/prompt.js'
+import { GLOB_TOOL_NAME } from '@ahcode/builtin-tools/tools/GlobTool/prompt.js'
+import { GREP_TOOL_NAME } from '@ahcode/builtin-tools/tools/GrepTool/prompt.js'
 import { hasEmbeddedSearchTools } from 'src/utils/embeddedTools.js'
-import { ASK_USER_QUESTION_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/AskUserQuestionTool/prompt.js'
+import { ASK_USER_QUESTION_TOOL_NAME } from '@ahcode/builtin-tools/tools/AskUserQuestionTool/prompt.js'
 import {
   EXPLORE_AGENT,
   EXPLORE_AGENT_MIN_QUERIES,
-} from '@claude-code-best/builtin-tools/tools/AgentTool/built-in/exploreAgent.js'
-import { areExplorePlanAgentsEnabled } from '@claude-code-best/builtin-tools/tools/AgentTool/builtInAgents.js'
+} from '@ahcode/builtin-tools/tools/AgentTool/built-in/exploreAgent.js'
+import { areExplorePlanAgentsEnabled } from '@ahcode/builtin-tools/tools/AgentTool/builtInAgents.js'
 import {
   isScratchpadEnabled,
   getScratchpadDir,
 } from '../utils/permissions/filesystem.js'
 import { isEnvTruthy } from '../utils/envUtils.js'
-import { isReplModeEnabled } from '@claude-code-best/builtin-tools/tools/REPLTool/constants.js'
+import { isReplModeEnabled } from '@ahcode/builtin-tools/tools/REPLTool/constants.js'
 import { feature } from 'bun:bundle'
 import { getFeatureValue_CACHED_MAY_BE_STALE } from 'src/services/analytics/growthbook.js'
 import { shouldUseGlobalCacheScope } from '../utils/betas.js'
-import { isForkSubagentEnabled } from '@claude-code-best/builtin-tools/tools/AgentTool/forkSubagent.js'
+import { isForkSubagentEnabled } from '@ahcode/builtin-tools/tools/AgentTool/forkSubagent.js'
 import {
   systemPromptSection,
   DANGEROUS_uncachedSystemPromptSection,
   resolveSystemPromptSections,
 } from './systemPromptSections.js'
-import { SLEEP_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/SleepTool/prompt.js'
+import { SLEEP_TOOL_NAME } from '@ahcode/builtin-tools/tools/SleepTool/prompt.js'
 import { TICK_TAG } from './xml.js'
 import { logForDebugging } from '../utils/debug.js'
 import { loadMemoryPrompt } from '../memdir/memdir.js'
@@ -79,12 +79,12 @@ const proactiveModule =
 const BRIEF_PROACTIVE_SECTION: string | null =
   feature('KAIROS') || feature('KAIROS_BRIEF')
     ? (
-        require('@claude-code-best/builtin-tools/tools/BriefTool/prompt.js') as typeof import('@claude-code-best/builtin-tools/tools/BriefTool/prompt.js')
+        require('@ahcode/builtin-tools/tools/BriefTool/prompt.js') as typeof import('@ahcode/builtin-tools/tools/BriefTool/prompt.js')
       ).BRIEF_PROACTIVE_SECTION
     : null
 const briefToolModule =
   feature('KAIROS') || feature('KAIROS_BRIEF')
-    ? (require('@claude-code-best/builtin-tools/tools/BriefTool/BriefTool.js') as typeof import('@claude-code-best/builtin-tools/tools/BriefTool/BriefTool.js'))
+    ? (require('@ahcode/builtin-tools/tools/BriefTool/BriefTool.js') as typeof import('@ahcode/builtin-tools/tools/BriefTool/BriefTool.js'))
     : null
 function isBriefToolEnabled(): boolean {
   return typeof briefToolModule?.isBriefEnabled === 'function'
@@ -95,7 +95,7 @@ const DISCOVER_SKILLS_TOOL_NAME: string | null = feature(
   'EXPERIMENTAL_SKILL_SEARCH',
 )
   ? (
-      require('@claude-code-best/builtin-tools/tools/DiscoverSkillsTool/prompt.js') as typeof import('@claude-code-best/builtin-tools/tools/DiscoverSkillsTool/prompt.js')
+      require('@ahcode/builtin-tools/tools/DiscoverSkillsTool/prompt.js') as typeof import('@ahcode/builtin-tools/tools/DiscoverSkillsTool/prompt.js')
     ).DISCOVER_SKILLS_TOOL_NAME
   : null
 // Capture the module (not .isSkillSearchEnabled directly) so spyOn() in tests
@@ -107,7 +107,7 @@ const skillSearchFeatureCheck = feature('EXPERIMENTAL_SKILL_SEARCH')
 import type { OutputStyleConfig } from './outputStyles.js'
 import { CYBER_RISK_INSTRUCTION } from './cyberRiskInstruction.js'
 
-export const CLAUDE_CODE_DOCS_MAP_URL =
+export const AHCODE_DOCS_MAP_URL =
   'https://code.claude.com/docs/en/claude_code_docs_map.md'
 
 /**
@@ -220,7 +220,7 @@ function getSimpleDoingTasksSection(): string {
   ]
 
   const userHelpSubitems = [
-    `/help: Get help with using Claude Code`,
+    `/help: Get help with using AH Code`,
     `To give feedback, users should ${MACRO.ISSUES_EXPLAINER}`,
   ]
 
@@ -242,7 +242,7 @@ function getSimpleDoingTasksSection(): string {
     `Take accountability for mistakes without collapsing into over-apology, self-abasement, or surrender. If the user pushes back repeatedly or becomes harsh, stay steady and honest rather than becoming increasingly agreeable to appease them. Acknowledge what went wrong, stay focused on solving the problem, and maintain self-respect — don't abandon a correct position just because the user is frustrated.`,
     `Don't proactively mention your knowledge cutoff date or a lack of real-time data unless the user's message makes it directly relevant. Cutoff information is already in the environment section — you don't need to repeat it in responses.`,
     // TODO: Customize for our fork — replace /share + Slack channel with our own feedback channel
-    `If the user reports a bug, slowness, or unexpected behavior with Claude Code itself (as opposed to asking you to fix their own code), recommend the appropriate slash command: /issue for model-related problems (odd outputs, wrong tool choices, hallucinations, refusals), or /share to upload the full session transcript for product bugs, crashes, slowness, or general issues. Only recommend these when the user is describing a problem with Claude Code. After /share produces a ccshare link, if you have a Slack MCP tool available, offer to post the link to #claude-code-feedback (channel ID C07VBSHV7EV) for the user.`,
+    `If the user reports a bug, slowness, or unexpected behavior with AH Code itself (as opposed to asking you to fix their own code), recommend the appropriate slash command: /issue for model-related problems (odd outputs, wrong tool choices, hallucinations, refusals), or /share to upload the full session transcript for product bugs, crashes, slowness, or general issues. Only recommend these when the user is describing a problem with AH Code. After /share produces a ccshare link, if you have a Slack MCP tool available, offer to post the link to #claude-code-feedback (channel ID C07VBSHV7EV) for the user.`,
     `If the user asks for help or wants to give feedback inform them of the following:`,
     userHelpSubitems,
   ]
@@ -253,7 +253,7 @@ function getSimpleDoingTasksSection(): string {
 function getActionsSection(): string {
   return `# Executing actions with care
 
-Carefully consider the reversibility and blast radius of actions. Generally you can freely take local, reversible actions like editing files or running tests. But for actions that are hard to reverse, affect shared systems beyond your local environment, or could otherwise be risky or destructive, check with the user before proceeding. The cost of pausing to confirm is low, while the cost of an unwanted action (lost work, unintended messages sent, deleted branches) can be very high. For actions like these, consider the context, the action, and user instructions, and by default transparently communicate the action and ask for confirmation before proceeding. This default can be changed by user instructions - if explicitly asked to operate more autonomously, then you may proceed without confirmation, but still attend to the risks and consequences when taking actions. A user approving an action (like a git push) once does NOT mean that they approve it in all contexts, so unless actions are authorized in advance in durable instructions like CLAUDE.md files, always confirm first. Authorization stands for the scope specified, not beyond. Match the scope of your actions to what was actually requested.
+Carefully consider the reversibility and blast radius of actions. Generally you can freely take local, reversible actions like editing files or running tests. But for actions that are hard to reverse, affect shared systems beyond your local environment, or could otherwise be risky or destructive, check with the user before proceeding. The cost of pausing to confirm is low, while the cost of an unwanted action (lost work, unintended messages sent, deleted branches) can be very high. For actions like these, consider the context, the action, and user instructions, and by default transparently communicate the action and ask for confirmation before proceeding. This default can be changed by user instructions - if explicitly asked to operate more autonomously, then you may proceed without confirmation, but still attend to the risks and consequences when taking actions. A user approving an action (like a git push) once does NOT mean that they approve it in all contexts, so unless actions are authorized in advance in durable instructions like AHCODE.md files, always confirm first. Authorization stands for the scope specified, not beyond. Match the scope of your actions to what was actually requested.
 
 Examples of the kind of risky actions that warrant user confirmation:
 - Destructive operations: deleting files/branches, dropping database tables, killing processes, rm -rf, overwriting uncommitted changes
@@ -416,9 +416,9 @@ export async function getSystemPrompt(
   additionalWorkingDirectories?: string[],
   mcpClients?: MCPServerConnection[],
 ): Promise<string[]> {
-  if (isEnvTruthy(process.env.CLAUDE_CODE_SIMPLE)) {
+  if (isEnvTruthy(process.env.AHCODE_SIMPLE)) {
     return [
-      `You are Claude Code, Anthropic's official CLI for Claude.\n\nCWD: ${getCwd()}\nDate: ${getSessionStartDate()}`,
+      `You are AH Code, Anthropic's official CLI for Claude.\n\nCWD: ${getCwd()}\nDate: ${getSessionStartDate()}`,
     ]
   }
 
@@ -653,10 +653,10 @@ export async function computeSimpleEnvInfo(
       : `The most recent Claude model family is Claude 4.5/4.6/4.7. Model IDs — Opus 4.7: '${CLAUDE_LATEST_MODEL_IDS.opus}', Sonnet 4.6: '${CLAUDE_LATEST_MODEL_IDS.sonnet}', Haiku 4.5: '${CLAUDE_LATEST_MODEL_IDS.haiku}'. When building AI applications, default to the latest and most capable Claude models.`,
     process.env.USER_TYPE === 'ant' && isUndercover()
       ? null
-      : `Claude Code is available as a CLI in the terminal, desktop app (Mac/Windows), web app (claude.ai/code), and IDE extensions (VS Code, JetBrains). Claude is also accessible via Claude in Chrome (a browsing agent), Claude in Excel (a spreadsheet agent), and Cowork (desktop automation for non-developers).`,
+      : `AH Code is available as a CLI in the terminal, desktop app (Mac/Windows), web app (claude.ai/code), and IDE extensions (VS Code, JetBrains). Claude is also accessible via Claude in Chrome (a browsing agent), Claude in Excel (a spreadsheet agent), and Cowork (desktop automation for non-developers).`,
     process.env.USER_TYPE === 'ant' && isUndercover()
       ? null
-      : `Fast mode for Claude Code uses the same ${FRONTIER_MODEL_NAME} model with faster output. It does NOT switch to a different model. It can be toggled with /fast.`,
+      : `Fast mode for AH Code uses the same ${FRONTIER_MODEL_NAME} model with faster output. It does NOT switch to a different model. It can be toggled with /fast.`,
   ].filter(item => item !== null)
 
   return [
@@ -714,7 +714,7 @@ export function getUnameSR(): string {
   return `${osType()} ${osRelease()}`
 }
 
-export const DEFAULT_AGENT_PROMPT = `You are an agent for Claude Code, Anthropic's official CLI for Claude. Given the user's message, you should use the tools available to complete the task. Complete the task fully—don't gold-plate, but don't leave it half-done. When you complete the task, respond with a concise report covering what was done and any key findings — the caller will relay this to the user, so it only needs the essentials.`
+export const DEFAULT_AGENT_PROMPT = `You are an agent for AH Code, Anthropic's official CLI for Claude. Given the user's message, you should use the tools available to complete the task. Complete the task fully—don't gold-plate, but don't leave it half-done. When you complete the task, respond with a concise report covering what was done and any key findings — the caller will relay this to the user, so it only needs the essentials.`
 
 export async function enhanceSystemPromptWithEnvDetails(
   existingSystemPrompt: string[],

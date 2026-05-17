@@ -1,21 +1,21 @@
 ---
 title: "MCP 配置 - 多来源合并、作用域与策略管控"
-description: "详细说明 Claude Code MCP 配置的来源层次、合并优先级、传输类型、企业策略管控、插件集成和保留名称机制。"
+description: "详细说明 AH Code MCP 配置的来源层次、合并优先级、传输类型、企业策略管控、插件集成和保留名称机制。"
 keywords: ["MCP", "配置", "settings.json", ".mcp.json", "企业策略", "插件"]
 ---
 
 ## 配置来源与作用域
 
-Claude Code 的 MCP 配置来自多个来源，每个来源对应一个 `scope`（作用域）。配置按优先级合并，高优先级来源的同名配置覆盖低优先级。
+AH Code 的 MCP 配置来自多个来源，每个来源对应一个 `scope`（作用域）。配置按优先级合并，高优先级来源的同名配置覆盖低优先级。
 
 ### 来源列表
 
 | 来源 | Scope | 文件/接口 | 说明 |
 |------|-------|----------|------|
 | 企业管控 | `enterprise` | 系统管理路径 `managed-mcp.json` | **排他模式**：存在时忽略所有其他来源 |
-| 本地项目 | `local` | `<project>/.claude/settings.local.json` | 项目级私有配置（不提交到 VCS） |
+| 本地项目 | `local` | `<project>/.ahcode/settings.local.json` | 项目级私有配置（不提交到 VCS） |
 | 项目配置 | `project` | `<project>/.mcp.json` | 项目级共享配置（可提交到 VCS） |
-| 用户全局 | `user` | `~/.claude/settings.json` | 用户级配置，所有项目共享 |
+| 用户全局 | `user` | `~/.ahcode/settings.json` | 用户级配置，所有项目共享 |
 | 插件 | `dynamic` | 插件 manifest 中 `.mcp.json` / `.mcpb` | 插件提供的 MCP 服务器 |
 | claude.ai | `claudeai` | 通过 API 获取 | claude.ai 网页端配置的连接器 |
 | 内置动态 | `dynamic` | 代码中注册 | Computer Use / Chrome 等内置服务器 |
@@ -190,7 +190,7 @@ for (const [name, config] of Object.entries(projectServers)) {
 }
 ```
 
-首次打开项目时，Claude Code 会提示用户审批 `.mcp.json` 中的每个服务器。审批状态持久化在本地配置中。
+首次打开项目时，AH Code 会提示用户审批 `.mcp.json` 中的每个服务器。审批状态持久化在本地配置中。
 
 ## 插件 MCP 集成
 

@@ -13,7 +13,7 @@ import {
 import {
   SETTING_SOURCES,
   SOURCES,
-  CLAUDE_CODE_SETTINGS_SCHEMA_URL,
+  AHCODE_SETTINGS_SCHEMA_URL,
   getSettingSourceName,
   getSourceDisplayName,
   getSettingSourceDisplayNameLowercase,
@@ -96,7 +96,7 @@ describe('SettingsSchema', () => {
 
   test('accepts $schema field', () => {
     const result = SettingsSchema().safeParse({
-      $schema: CLAUDE_CODE_SETTINGS_SCHEMA_URL,
+      $schema: AHCODE_SETTINGS_SCHEMA_URL,
     })
     expect(result.success).toBe(true)
   })

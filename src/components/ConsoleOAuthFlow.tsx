@@ -269,7 +269,7 @@ export function ConsoleOAuthFlow({
 
       if (mode === 'setup-token') {
         // For setup-token mode, return the OAuth access token directly (it can be used as an API key)
-        // Don't save to keychain - the token is displayed for manual use with CLAUDE_CODE_OAUTH_TOKEN
+        // Don't save to keychain - the token is displayed for manual use with AHCODE_OAUTH_TOKEN
         setOAuthStatus({ state: 'success', token: result.accessToken });
       } else {
         await installOAuthTokens(result);
@@ -284,7 +284,7 @@ export function ConsoleOAuthFlow({
         setOAuthStatus({ state: 'success' });
         void sendNotification(
           {
-            message: 'Claude Code login successful',
+            message: 'AH Code login successful',
             notificationType: 'auth_success',
           },
           terminal,
@@ -370,7 +370,7 @@ export function ConsoleOAuthFlow({
             <Text>Your OAuth token (valid for 1 year):</Text>
             <Text color="warning">{oauthStatus.token}</Text>
             <Text dimColor>Store this token securely. You won&apos;t be able to see it again.</Text>
-            <Text dimColor>Use this token by setting: export CLAUDE_CODE_OAUTH_TOKEN=&lt;token&gt;</Text>
+            <Text dimColor>Use this token by setting: export AHCODE_OAUTH_TOKEN=&lt;token&gt;</Text>
           </Box>
         </Box>
       )}
@@ -436,7 +436,7 @@ function OAuthStatusMessage({
           <Text bold>
             {startingMessage
               ? startingMessage
-              : `Claude Code can be used with your Claude subscription or billed based on API usage through your Console account.`}
+              : `AH Code can be used with your Claude subscription or billed based on API usage through your Console account.`}
           </Text>
 
           <Text>Select login method:</Text>
@@ -1421,8 +1421,8 @@ function OAuthStatusMessage({
 
           <Box flexDirection="column" gap={1}>
             <Text>
-              Claude Code supports Amazon Bedrock, Microsoft Foundry, and Vertex AI. Set the required environment
-              variables, then restart Claude Code.
+              AH Code supports Amazon Bedrock, Microsoft Foundry, and Vertex AI. Set the required environment variables,
+              then restart AH Code.
             </Text>
 
             <Text>
@@ -1498,7 +1498,7 @@ function OAuthStatusMessage({
         <Box flexDirection="column" gap={1}>
           <Box>
             <Spinner />
-            <Text>Creating API key for Claude Code…</Text>
+            <Text>Creating API key for AH Code…</Text>
           </Box>
         </Box>
       );

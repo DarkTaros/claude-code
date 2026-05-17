@@ -6,7 +6,7 @@
 
 ## 一、功能概述
 
-KAIROS 将 Claude Code CLI 从"问答工具"转变为"常驻助手"。开启后，CLI 持续运行在后台，支持：
+KAIROS 将 AH Code CLI 从"问答工具"转变为"常驻助手"。开启后，CLI 持续运行在后台，支持：
 
 - **持久化 bridge 会话**：跨终端重启复用 session，通过 Anthropic OAuth 连接 claude.ai
 - **后台执行任务**：用户离开终端时继续工作（配合 PROACTIVE feature）

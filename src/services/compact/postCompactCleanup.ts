@@ -2,9 +2,9 @@ import { feature } from 'bun:bundle'
 import type { QuerySource } from '../../constants/querySource.js'
 import { clearSystemPromptSections } from '../../constants/systemPromptSections.js'
 import { getUserContext } from '../../context.js'
-import { clearSpeculativeChecks } from '@claude-code-best/builtin-tools/tools/BashTool/bashPermissions.js'
+import { clearSpeculativeChecks } from '@ahcode/builtin-tools/tools/BashTool/bashPermissions.js'
 import { clearClassifierApprovals } from '../../utils/classifierApprovals.js'
-import { resetGetMemoryFilesCache } from '../../utils/claudemd.js'
+import { resetGetMemoryFilesCache } from '../../utils/ahcodemd.js'
 import { logError } from '../../utils/log.js'
 import { clearSessionMessagesCache } from '../../utils/sessionStorage.js'
 import { clearBetaTracingState } from '../../utils/telemetry/betaSessionTracing.js'
@@ -61,7 +61,7 @@ export function runPostCompactCleanup(querySource?: QuerySource): void {
     }
   }
   if (isMainThreadCompact) {
-    // getUserContext is a memoized outer layer wrapping getClaudeMds() →
+    // getUserContext is a memoized outer layer wrapping getAhcodeMds() →
     // getMemoryFiles(). If only the inner getMemoryFiles cache is cleared,
     // the next turn hits the getUserContext cache and never reaches
     // getMemoryFiles(), so the armed InstructionsLoaded hook never fires.

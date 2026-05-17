@@ -49,7 +49,7 @@ export function BackgroundHint({ onBackground }: { onBackground?: () => void } =
   const shortcut = env.terminal === 'tmux' && baseShortcut === 'ctrl+b' ? 'ctrl+b ctrl+b (twice)' : baseShortcut;
 
   // Don't show background hint if background tasks are disabled
-  if (isEnvTruthy(process.env.CLAUDE_CODE_DISABLE_BACKGROUND_TASKS)) {
+  if (isEnvTruthy(process.env.AHCODE_DISABLE_BACKGROUND_TASKS)) {
     return null;
   }
 

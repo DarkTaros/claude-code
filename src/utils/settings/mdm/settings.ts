@@ -1,5 +1,5 @@
 /**
- * MDM (Mobile Device Management) profile enforcement for Claude Code managed settings.
+ * MDM (Mobile Device Management) profile enforcement for AH Code managed settings.
  *
  * Reads enterprise settings from OS-level MDM configuration:
  * - macOS: `com.anthropic.claudecode` preference domain

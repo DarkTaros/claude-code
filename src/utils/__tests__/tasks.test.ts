@@ -49,29 +49,29 @@ import {
   type Task,
 } from '../tasks'
 
-// Use a temp dir as CLAUDE_CONFIG_DIR for isolation
+// Use a temp dir as AHCODE_CONFIG_DIR for isolation
 let configDir: string
-const ORIGINAL_CONFIG_DIR = process.env.CLAUDE_CONFIG_DIR
+const ORIGINAL_CONFIG_DIR = process.env.AHCODE_CONFIG_DIR
 
 beforeEach(async () => {
   configDir = join(
     tmpdir(),
     `claude-test-tasks-${Date.now()}-${Math.random().toString(36).slice(2)}`,
   )
-  process.env.CLAUDE_CONFIG_DIR = configDir
+  process.env.AHCODE_CONFIG_DIR = configDir
   // Reset memoize cache by changing env
-  const { getClaudeConfigHomeDir } = await import('src/utils/envUtils')
-  getClaudeConfigHomeDir.cache.clear?.()
+  const { getAhcodeConfigHomeDir } = await import('src/utils/envUtils')
+  getAhcodeConfigHomeDir.cache.clear?.()
 })
 
 afterEach(async () => {
   if (ORIGINAL_CONFIG_DIR !== undefined) {
-    process.env.CLAUDE_CONFIG_DIR = ORIGINAL_CONFIG_DIR
+    process.env.AHCODE_CONFIG_DIR = ORIGINAL_CONFIG_DIR
   } else {
-    delete process.env.CLAUDE_CONFIG_DIR
+    delete process.env.AHCODE_CONFIG_DIR
   }
-  const { getClaudeConfigHomeDir } = await import('src/utils/envUtils')
-  getClaudeConfigHomeDir.cache.clear?.()
+  const { getAhcodeConfigHomeDir } = await import('src/utils/envUtils')
+  getAhcodeConfigHomeDir.cache.clear?.()
   await rm(configDir, { recursive: true, force: true }).catch(() => {})
 })
 
@@ -602,17 +602,17 @@ describe('task notifications', () => {
 // isTodoV2Enabled
 // ---------------------------------------------------------------------------
 describe('isTodoV2Enabled', () => {
-  test('returns true when CLAUDE_CODE_ENABLE_TASKS is set', () => {
-    process.env.CLAUDE_CODE_ENABLE_TASKS = '1'
+  test('returns true when AHCODE_ENABLE_TASKS is set', () => {
+    process.env.AHCODE_ENABLE_TASKS = '1'
     try {
       expect(isTodoV2Enabled()).toBe(true)
     } finally {
-      delete process.env.CLAUDE_CODE_ENABLE_TASKS
+      delete process.env.AHCODE_ENABLE_TASKS
     }
   })
 
   test('returns true in interactive sessions by default', () => {
-    delete process.env.CLAUDE_CODE_ENABLE_TASKS
+    delete process.env.AHCODE_ENABLE_TASKS
     // getIsNonInteractiveSession is mocked to return false
     expect(isTodoV2Enabled()).toBe(true)
   })

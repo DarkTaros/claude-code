@@ -1,12 +1,12 @@
 # Remote Control Server 私有化部署指南
 
-本指南说明如何将 Remote Control Server (RCS) 部署到私有环境，并通过 Claude Code CLI 连接使用。
+本指南说明如何将 Remote Control Server (RCS) 部署到私有环境，并通过 AH Code CLI 连接使用。
 
 ## 架构概览
 
 ```
 ┌──────────────────┐                    ┌──────────────────────┐
-│  Claude Code CLI  │ ◄── HTTP/SSE/WS ─►│  Remote Control      │
+│  AH Code CLI  │ ◄── HTTP/SSE/WS ─►│  Remote Control      │
 │  (Bridge Worker)  │     长轮询 + 心跳   │  Server (RCS)        │
 └──────────────────┘                    │                      │
                                         │  ┌──────────────┐    │
@@ -23,7 +23,7 @@
 ```
 
 **RCS 是一个纯内存的中间服务**，它的职责是：
-- 接收 Claude Code CLI 的环境注册和工作轮询
+- 接收 AH Code CLI 的环境注册和工作轮询
 - 接收 acp-link 的 ACP agent 注册，支持 WebSocket relay 桥接
 - 提供 Web UI 供操作者远程监控和审批
 - 通过 WebSocket/SSE 双向传输消息
@@ -32,9 +32,9 @@
 
 ## 前置条件
 
-- 一台可被 Claude Code CLI 和 Web 浏览器同时访问的服务器（物理机、VM、容器均可）
+- 一台可被 AH Code CLI 和 Web 浏览器同时访问的服务器（物理机、VM、容器均可）
 - [Docker](https://www.docker.com/)
-- 启用 `BRIDGE_MODE` feature flag 的 Claude Code 构建
+- 启用 `BRIDGE_MODE` feature flag 的 AH Code 构建
 
 ## 部署
 
@@ -107,27 +107,27 @@ docker compose up -d
 | `RCS_WS_IDLE_TIMEOUT` | 否 | `30` | WebSocket 空闲超时（秒），Bun 发送协议级 ping |
 | `RCS_WS_KEEPALIVE_INTERVAL` | 否 | `20` | 服务端→客户端 keep_alive 帧间隔（秒），防止反向代理关闭空闲连接 |
 
-### 客户端（Claude Code CLI）
+### 客户端（AH Code CLI）
 
 | 变量 | 必填 | 说明 |
 |------|------|------|
 | `CLAUDE_BRIDGE_BASE_URL` | **是** | RCS 服务器地址，例如 `https://rcs.example.com`。设置此变量即启用自托管模式，跳过 GrowthBook 门控 |
 | `CLAUDE_BRIDGE_OAUTH_TOKEN` | **是** | 认证令牌，必须与服务器端 `RCS_API_KEYS` 中的某个值匹配 |
 | `CLAUDE_BRIDGE_SESSION_INGRESS_URL` | 否 | WebSocket 入口地址（默认与 `CLAUDE_BRIDGE_BASE_URL` 相同） |
-| `CLAUDE_CODE_REMOTE` | 否 | 设为 `1` 时标记为远程执行模式 |
+| `AHCODE_REMOTE` | 否 | 设为 `1` 时标记为远程执行模式 |
 
-## Claude Code 客户端连接
+## AH Code 客户端连接
 
 ### 1. 设置环境变量
 
-在运行 Claude Code 的机器上设置：
+在运行 AH Code 的机器上设置：
 
 ```bash
 export CLAUDE_BRIDGE_BASE_URL="https://rcs.example.com"
 export CLAUDE_BRIDGE_OAUTH_TOKEN="sk-rcs-your-secret-key-here"
 ```
 
-### 2. 启动 Claude Code
+### 2. 启动 AH Code
 
 ```bash
 # 使用 dev 模式（BRIDGE_MODE 默认启用）
@@ -139,7 +139,7 @@ bun run dist/cli.js
 
 ### 3. 执行 /remote-control 命令
 
-在 Claude Code 的 REPL 中输入：
+在 AH Code 的 REPL 中输入：
 
 ```
 /remote-control
@@ -191,12 +191,12 @@ Web UI 已从原生 JS 重构为 **React + Vite + Radix UI**：
 
 ### 功能
 
-- 查看已注册的运行环境（environment 模式），区分 ACP Agent 和 Claude Code 类型
+- 查看已注册的运行环境（environment 模式），区分 ACP Agent 和 AH Code 类型
 - 创建和管理会话
 - 实时查看对话消息和工具调用
 - 查看 Autopilot 状态（`standby` / `sleeping`）和自动运行指示
 - 查看 authoritative task snapshots 驱动的 Tasks 面板
-- 审批 Claude Code 的工具权限请求
+- 审批 AH Code 的工具权限请求
 - 权限模式选择器（6 种模式：默认/自动接受编辑/跳过权限/规划/不询问/自动判断）
 - 模型选择器（可选可用模型）
 - Plan 可视化（进度条、状态图标、优先级标签）
@@ -242,7 +242,7 @@ ACP_RCS_TOKEN=sk-rcs-your-key \
 acp-link ccb-bun -- --acp
 ```
 
-ACP session 在 Web UI 中显示品牌色标签，与普通 Claude Code session 区分。
+ACP session 在 Web UI 中显示品牌色标签，与普通 AH Code session 区分。
 
 ## 工作流程详解
 
@@ -251,7 +251,7 @@ ACP session 在 Web UI 中显示品牌色标签，与普通 Claude Code session 
 │                    完整工作流程                            │
 └──────────────────────────────────────────────────────────┘
 
- 1. Claude Code CLI 启动，设置环境变量指向自托管 RCS
+ 1. AH Code CLI 启动，设置环境变量指向自托管 RCS
 
  2. 用户执行 /remote-control 命令
 

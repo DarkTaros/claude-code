@@ -6,7 +6,7 @@ import {
   logEvent,
 } from '../../services/analytics/index.js';
 import type { LocalJSXCommandCall } from '../../types/command.js';
-import { getClaudeConfigHomeDir } from '../../utils/envUtils.js';
+import { getAhcodeConfigHomeDir } from '../../utils/envUtils.js';
 import { createSkill, deleteSkill, getSkill, getSkillVersion, getSkillVersions, listSkills } from './skillsApi.js';
 import { SkillStoreView } from './SkillStoreView.js';
 import { parseSkillStoreArgs } from './parseArgs.js';
@@ -214,7 +214,7 @@ export const callSkillStore: LocalJSXCommandCall = async (onDone, _context, args
     // Sanitize skill name to a safe directory name
     const safeName = skillName.replace(/[^a-zA-Z0-9_-]/g, '-').replace(/^-+|-+$/g, '') || id;
 
-    const skillDir = join(getClaudeConfigHomeDir(), 'skills', safeName);
+    const skillDir = join(getAhcodeConfigHomeDir(), 'skills', safeName);
     const skillPath = join(skillDir, 'SKILL.md');
 
     await mkdir(skillDir, { recursive: true });

@@ -6,7 +6,7 @@ keywords: ["buddy", "宠物", "companion", "伴侣", "虚拟宠物"]
 
 ## 概述
 
-Buddy 是 Claude Code 内置的虚拟宠物系统。在 REPL 中通过 `/buddy` 命令可以孵化一只随机生成的宠物伴侣，它会出现在输入框旁边，陪伴你的编码过程。
+Buddy 是 AH Code 内置的虚拟宠物系统。在 REPL 中通过 `/buddy` 命令可以孵化一只随机生成的宠物伴侣，它会出现在输入框旁边，陪伴你的编码过程。
 
 > Feature Flag: `FEATURE_BUDDY=1`
 
@@ -72,7 +72,7 @@ FEATURE_BUDDY=1 bun run dev
 
 ## 数据存储
 
-宠物信息存储在 `~/.claude.json` 的 `companion` 字段中。宠物的外观属性（物种、稀有度、属性值等）基于用户 ID 的哈希确定性生成，不可通过编辑配置文件来篡改稀有度。
+宠物信息存储在 `~/.ahcode.json` 的 `companion` 字段中。宠物的外观属性（物种、稀有度、属性值等）基于用户 ID 的哈希确定性生成，不可通过编辑配置文件来篡改稀有度。
 
 ## 相关源码
 

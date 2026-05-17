@@ -13,7 +13,7 @@ Establish a stable baseline around the parts of `Claude-code-bast` that later au
 - proactive state handling
 - cron task storage semantics
 - cron scheduler helper semantics
-- user-context cache and `CLAUDE.md` injection behavior
+- user-context cache and `AHCODE.md` injection behavior
 
 ## Out of Scope for This Baseline Round
 
@@ -51,7 +51,7 @@ Establish a stable baseline around the parts of `Claude-code-bast` that later au
 ### Cron task storage
 
 1. Session-only cron tasks remain in memory only.
-2. Durable cron tasks are persisted to `.claude/scheduled_tasks.json`.
+2. Durable cron tasks are persisted to `.ahcode/scheduled_tasks.json`.
 3. Daemon-style `dir`-scoped reads exclude session-only cron tasks.
 4. `removeCronTasks()` without `dir` can remove session-only tasks.
 5. `removeCronTasks()` with `dir` does not mutate session-only task storage.
@@ -66,7 +66,7 @@ Establish a stable baseline around the parts of `Claude-code-bast` that later au
 
 1. `getUserContext()` includes `currentDate`.
 2. `getUserContext()` includes mocked `claudeMd` content when memory loading is enabled.
-3. `CLAUDE_CODE_DISABLE_CLAUDE_MDS` suppresses `claudeMd`.
+3. `AHCODE_DISABLE_AHCODE_MDS` suppresses `claudeMd`.
 4. `setSystemPromptInjection()` clears the memoized user-context cache.
 5. `getSystemContext()` reflects the injection after cache invalidation.
 

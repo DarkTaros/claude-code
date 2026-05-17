@@ -24,9 +24,9 @@ export type {
  */
 function isThirdPartyProvider(): boolean {
   return !!(
-    process.env.CLAUDE_CODE_USE_OPENAI ||
-    process.env.CLAUDE_CODE_USE_GEMINI ||
-    process.env.CLAUDE_CODE_USE_GROK
+    process.env.AHCODE_USE_OPENAI ||
+    process.env.AHCODE_USE_GEMINI ||
+    process.env.AHCODE_USE_GROK
   )
 }
 

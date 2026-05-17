@@ -25,7 +25,7 @@ import { asSessionId } from './types/ids.js'
 import { isAgentSwarmsEnabled } from './utils/agentSwarmsEnabled.js'
 import { checkAndRestoreTerminalBackup } from './utils/appleTerminalBackup.js'
 import { prefetchApiKeyFromApiKeyHelperIfSafe } from './utils/auth.js'
-import { clearMemoryFileCaches } from './utils/claudemd.js'
+import { clearMemoryFileCaches } from './utils/ahcodemd.js'
 import { getCurrentProjectConfig, getGlobalConfig } from './utils/config.js'
 import { logForDiagnosticsNoPII } from './utils/diagLogs.js'
 import { env } from './utils/env.js'
@@ -71,9 +71,7 @@ export async function setup(
   const nodeVersion = process.version.match(/^v(\d+)\./)?.[1]
   if (!nodeVersion || parseInt(nodeVersion, 10) < 18) {
     console.error(
-      chalk.bold.red(
-        'Error: Claude Code requires Node.js version 18 or higher.',
-      ),
+      chalk.bold.red('Error: AH Code requires Node.js version 18 or higher.'),
     )
     process.exit(1)
   }
@@ -90,7 +88,7 @@ export async function setup(
     // Start UDS messaging server (Mac/Linux only).
     // Enabled by default for ants — creates a socket in tmpdir if no
     // --messaging-socket-path is passed. Awaited so the server is bound
-    // and $CLAUDE_CODE_MESSAGING_SOCKET is exported before any hook
+    // and $AHCODE_MESSAGING_SOCKET is exported before any hook
     // (SessionStart in particular) can spawn and snapshot process.env.
     if (feature('UDS_INBOX')) {
       const m = await import('./utils/udsMessaging.js')
@@ -274,7 +272,7 @@ export async function setup(
     clearMemoryFileCaches()
     // Settings cache was populated in init() (via applySafeConfigEnvironmentVariables)
     // and again at captureHooksConfigSnapshot() above, both from the original dir's
-    // .claude/settings.json. Re-read from the worktree and re-capture hooks.
+    // .ahcode/settings.json. Re-read from the worktree and re-capture hooks.
     updateHooksConfigSnapshot()
   }
 
@@ -301,7 +299,7 @@ export async function setup(
   profileCheckpoint('setup_before_prefetch')
   // Pre-fetch promises - only items needed before render
   logForDiagnosticsNoPII('info', 'setup_prefetch_starting')
-  // When CLAUDE_CODE_SYNC_PLUGIN_INSTALL is set, skip all plugin prefetch.
+  // When AHCODE_SYNC_PLUGIN_INSTALL is set, skip all plugin prefetch.
   // The sync install path in print.ts calls refreshPluginState() after
   // installing, which reloads commands, hooks, and agents. Prefetching here
   // races with the install (concurrent copyPluginToVersionedCache / cachePlugin
@@ -309,7 +307,7 @@ export async function setup(
   // mid-install when policySettings arrives.
   const skipPluginPrefetch =
     (getIsNonInteractiveSession() &&
-      isEnvTruthy(process.env.CLAUDE_CODE_SYNC_PLUGIN_INSTALL)) ||
+      isEnvTruthy(process.env.AHCODE_SYNC_PLUGIN_INSTALL)) ||
     // --bare: loadPluginHooks → loadAllPlugins is filesystem work that's
     // wasted when executeHooks early-returns under --bare anyway.
     isBareMode()
@@ -399,7 +397,7 @@ export async function setup(
       typeof process.getuid === 'function' &&
       process.getuid() === 0 &&
       process.env.IS_SANDBOX !== '1' &&
-      !isEnvTruthy(process.env.CLAUDE_CODE_BUBBLEWRAP)
+      !isEnvTruthy(process.env.AHCODE_BUBBLEWRAP)
     ) {
       console.error(
         `--dangerously-skip-permissions cannot be used with root/sudo privileges for security reasons`,
@@ -412,10 +410,10 @@ export async function setup(
       // Skip for Desktop's local agent mode — same trust model as CCR/BYOC
       // (trusted Anthropic-managed launcher intentionally pre-approving everything).
       // Precedent: permissionSetup.ts:861, applySettingsChange.ts:55 (PR #19116)
-      process.env.CLAUDE_CODE_ENTRYPOINT !== 'local-agent' &&
-      // Same for CCD (Claude Code in Desktop) — apps#29127 passes the flag
+      process.env.AHCODE_ENTRYPOINT !== 'local-agent' &&
+      // Same for CCD (AH Code in Desktop) — apps#29127 passes the flag
       // unconditionally to unlock mid-session bypass switching
-      process.env.CLAUDE_CODE_ENTRYPOINT !== 'claude-desktop'
+      process.env.AHCODE_ENTRYPOINT !== 'claude-desktop'
     ) {
       // Only await if permission mode is set to bypass
       const [isDocker, hasInternet] = await Promise.all([

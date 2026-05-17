@@ -43,7 +43,7 @@ export function UserPromptMessage({ addMargin, param: { text }, isTranscriptMode
   const isBriefOnlyState = useAppState(s => s.isBriefOnly);
   const viewingAgentTaskIdState = useAppState(s => s.viewingAgentTaskId);
   // Hoisted to mount-time — per-message component, re-renders on every scroll.
-  const briefEnvEnabledState = useMemo(() => isEnvTruthy(process.env.CLAUDE_CODE_BRIEF), []);
+  const briefEnvEnabledState = useMemo(() => isEnvTruthy(process.env.AHCODE_BRIEF), []);
   const useBriefLayout =
     feature('KAIROS') || feature('KAIROS_BRIEF')
       ? (getKairosActive() ||

@@ -1,4 +1,4 @@
-# Claude Code 远程服务器依赖
+# AH Code 远程服务器依赖
 
 > 只列出代码中实际发起网络请求的远程服务。本地服务、npm 包依赖、展示用 URL 不包含在内。
 
@@ -7,9 +7,9 @@
 | # | 服务 | 远程端点 | 协议 | 状态 |
 |---|---|---|---|---|
 | 1 | Anthropic API | `api.anthropic.com` | HTTPS | 默认启用 |
-| 2 | AWS Bedrock | `bedrock-runtime.*.amazonaws.com` | HTTPS | 需 `CLAUDE_CODE_USE_BEDROCK=1` |
-| 3 | Google Vertex AI | `{region}-aiplatform.googleapis.com` | HTTPS | 需 `CLAUDE_CODE_USE_VERTEX=1` |
-| 4 | Azure Foundry | `{resource}.services.ai.azure.com` | HTTPS | 需 `CLAUDE_CODE_USE_FOUNDRY=1` |
+| 2 | AWS Bedrock | `bedrock-runtime.*.amazonaws.com` | HTTPS | 需 `AHCODE_USE_BEDROCK=1` |
+| 3 | Google Vertex AI | `{region}-aiplatform.googleapis.com` | HTTPS | 需 `AHCODE_USE_VERTEX=1` |
+| 4 | Azure Foundry | `{resource}.services.ai.azure.com` | HTTPS | 需 `AHCODE_USE_FOUNDRY=1` |
 | 5 | OAuth (Anthropic) | `platform.claude.com`, `claude.com`, `claude.ai` | HTTPS | 用户登录时 |
 | 6 | GrowthBook | `api.anthropic.com` (remoteEval) | HTTPS | 默认启用 |
 | 7 | Sentry | 可配置 (`SENTRY_DSN`) | HTTPS | 需设环境变量 |
@@ -91,7 +91,7 @@ OAuth 2.0 + PKCE 授权码流程。
 
 ### 9. OpenTelemetry Collector
 
-- **激活**: `CLAUDE_CODE_ENABLE_TELEMETRY=1` 或 `OTEL_*` 环境变量
+- **激活**: `AHCODE_ENABLE_TELEMETRY=1` 或 `OTEL_*` 环境变量
 - **协议**: gRPC / HTTP / Protobuf，支持 OTLP 和 Prometheus 导出
 - **文件**: `src/utils/telemetry/instrumentation.ts`
 
@@ -149,13 +149,13 @@ WebSearch 工具支持直接抓取 Bing 搜索结果页面，也支持通过 Bra
 
 ### 17. Claude in Chrome Bridge
 
-- **端点**: `wss://bridge.claudeusercontent.com` (生产) / `wss://bridge-staging.claudeusercontent.com` (staging)
+- **端点**: `wss://bridge.claudeusercontent.com` (生产) / `wss://bridge-staging.ahcodeusercontent.com` (staging)
 - **文件**: `src/utils/claudeInChrome/mcpServer.ts`
 
 ### 18. CCR Upstream Proxy
 
 - **端点**: `ws://api.anthropic.com/v1/code/upstreamproxy/ws`
-- **激活**: `CLAUDE_CODE_REMOTE=1` + `CCR_UPSTREAM_PROXY_ENABLED=1`
+- **激活**: `AHCODE_REMOTE=1` + `CCR_UPSTREAM_PROXY_ENABLED=1`
 - **文件**: `src/upstreamproxy/upstreamproxy.ts`
 
 ### 19. Voice STT

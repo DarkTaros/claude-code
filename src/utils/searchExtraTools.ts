@@ -18,12 +18,12 @@ import {
   type Tools,
   toolMatchesName,
 } from '../Tool.js'
-import type { AgentDefinition } from '@claude-code-best/builtin-tools/tools/AgentTool/loadAgentsDir.js'
+import type { AgentDefinition } from '@ahcode/builtin-tools/tools/AgentTool/loadAgentsDir.js'
 import {
   formatDeferredToolLine,
   isDeferredTool,
   SEARCH_EXTRA_TOOLS_TOOL_NAME,
-} from '@claude-code-best/builtin-tools/tools/SearchExtraToolsTool/prompt.js'
+} from '@ahcode/builtin-tools/tools/SearchExtraToolsTool/prompt.js'
 import type { Message } from '../types/message.js'
 import {
   countToolDefinitionTokens,
@@ -168,10 +168,10 @@ export type SearchExtraToolsMode = 'tst' | 'tst-auto' | 'standard'
  *   (unset)               tst (default: always defer non-core tools)
  */
 export function getSearchExtraToolsMode(): SearchExtraToolsMode {
-  // CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS still acts as a kill switch
+  // AHCODE_DISABLE_EXPERIMENTAL_BETAS still acts as a kill switch
   // for tool search, even though we no longer send beta headers.
   // Users who set this flag explicitly opt out of tool search.
-  if (isEnvTruthy(process.env.CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS)) {
+  if (isEnvTruthy(process.env.AHCODE_DISABLE_EXPERIMENTAL_BETAS)) {
     return 'standard'
   }
 

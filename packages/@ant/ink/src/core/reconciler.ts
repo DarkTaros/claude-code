@@ -179,7 +179,7 @@ export function getOwnerChain(fiber: unknown): string[] {
 let debugRepaints: boolean | undefined
 export function isDebugRepaintsEnabled(): boolean {
   if (debugRepaints === undefined) {
-    debugRepaints = process.env.CLAUDE_CODE_DEBUG_REPAINTS === '1'
+    debugRepaints = process.env.AHCODE_DEBUG_REPAINTS === '1'
   }
   return debugRepaints
 }
@@ -188,8 +188,8 @@ export const dispatcher = new Dispatcher()
 
 // --- COMMIT INSTRUMENTATION (debug logging) ---
 // Uses console.warn instead of fs.appendFileSync to avoid filesystem dependencies.
-// Set CLAUDE_CODE_COMMIT_LOG=1 to enable debug logging to stderr.
-const COMMIT_LOG = process.env.CLAUDE_CODE_COMMIT_LOG
+// Set AHCODE_COMMIT_LOG=1 to enable debug logging to stderr.
+const COMMIT_LOG = process.env.AHCODE_COMMIT_LOG
 let _commits = 0
 let _lastLog = 0
 let _lastCommitAt = 0

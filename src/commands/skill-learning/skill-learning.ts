@@ -1,6 +1,6 @@
 import { join } from 'node:path'
 import type { LocalCommandCall } from '../../types/command.js'
-import { getClaudeConfigHomeDir } from '../../utils/envUtils.js'
+import { getAhcodeConfigHomeDir } from '../../utils/envUtils.js'
 import {
   analyzeObservations,
   applySkillLifecycleDecision,
@@ -27,7 +27,7 @@ export const call: LocalCommandCall = async (
   const parts = args.trim().split(/\s+/).filter(Boolean)
   const sub = parts[0] ?? 'status'
   const project = resolveProjectContext(process.cwd())
-  const rootDir = process.env.CLAUDE_SKILL_LEARNING_HOME
+  const rootDir = process.env.AHCODE_SKILL_LEARNING_HOME
   const options = { project, rootDir }
 
   switch (sub) {
@@ -84,8 +84,8 @@ export const call: LocalCommandCall = async (
       if (generate) {
         for (const draft of drafts) {
           const roots = [
-            join(process.cwd(), '.claude', 'skills'),
-            join(getClaudeConfigHomeDir(), 'skills'),
+            join(process.cwd(), '.ahcode', 'skills'),
+            join(getAhcodeConfigHomeDir(), 'skills'),
           ]
           const existing = await compareExistingSkills(draft, roots)
           const decision = decideSkillLifecycle(draft, existing)

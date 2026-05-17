@@ -243,7 +243,7 @@ Computer Use 提供 38 个工具，分为三类：
 
 | agent | 命令 | 说明 |
 |-------|------|------|
-| `claude` | `claude` | 启动 Claude Code |
+| `claude` | `claude` | 启动 AH Code |
 | `codex` | `codex` | 启动 Codex |
 | `gemini` | `gemini` | 启动 Gemini |
 | `custom` | 用户指定 | 自定义命令 |

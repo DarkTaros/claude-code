@@ -6,7 +6,7 @@
 
 ## 一、功能概述
 
-`acp-link` 是一个 ACP (Agent Client Protocol) 代理服务器，将 WebSocket 客户端桥接到 ACP agent 的 stdio 接口。它让 ACP agent（如 Claude Code）可以通过 WebSocket 远程访问，而不仅限于本地 stdio。
+`acp-link` 是一个 ACP (Agent Client Protocol) 代理服务器，将 WebSocket 客户端桥接到 ACP agent 的 stdio 接口。它让 ACP agent（如 AH Code）可以通过 WebSocket 远程访问，而不仅限于本地 stdio。
 
 ### 核心特性
 

@@ -20,16 +20,16 @@ export async function waitForUrlEvent(
  * and then CLI arguments for a claude:// deep link URL.
  *
  * Priority order:
- * 1. CLAUDE_CODE_URL_EVENT — set by the OS URL scheme handler on activation
- * 2. CLAUDE_CODE_DEEP_LINK_URL — set by the desktop app launcher
- * 3. CLAUDE_CODE_URL — legacy / manual override
+ * 1. AHCODE_URL_EVENT — set by the OS URL scheme handler on activation
+ * 2. AHCODE_DEEP_LINK_URL — set by the desktop app launcher
+ * 3. AHCODE_URL — legacy / manual override
  * 4. CLI arguments — e.g. `claude claude://...`
  */
 function findUrlEvent(): string | null {
   for (const key of [
-    'CLAUDE_CODE_URL_EVENT',
-    'CLAUDE_CODE_DEEP_LINK_URL',
-    'CLAUDE_CODE_URL',
+    'AHCODE_URL_EVENT',
+    'AHCODE_DEEP_LINK_URL',
+    'AHCODE_URL',
   ]) {
     const value = process.env[key]
     if (isClaudeUrl(value)) {

@@ -13,7 +13,7 @@ import {
   getSessionProjectDir,
   getOriginalCwd,
 } from '../../bootstrap/state.js'
-import { getClaudeConfigHomeDir } from '../../utils/envUtils.js'
+import { getAhcodeConfigHomeDir } from '../../utils/envUtils.js'
 import { sanitizePath } from '../../utils/path.js'
 import {
   type AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS,
@@ -153,7 +153,7 @@ function getTranscriptPath(): string {
   }
   const encoded = sanitizePath(getOriginalCwd())
   return join(
-    getClaudeConfigHomeDir(),
+    getAhcodeConfigHomeDir(),
     'projects',
     encoded,
     `${sessionId}.jsonl`,

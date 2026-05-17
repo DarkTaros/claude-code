@@ -12,7 +12,7 @@ import {
   WORKFLOW_TOOL_NAME,
 } from './constants.js'
 
-const WORKFLOW_RUNS_DIR = '.claude/workflow-runs'
+const WORKFLOW_RUNS_DIR = '.ahcode/workflow-runs'
 
 const inputSchema = z.object({
   workflow: z.string().describe('Name of the workflow to execute'),
@@ -364,10 +364,10 @@ export const WorkflowTool = buildTool({
   inputSchema,
 
   async description() {
-    return 'Execute and track a user-defined workflow from .claude/workflows/'
+    return 'Execute and track a user-defined workflow from .ahcode/workflows/'
   },
   async prompt() {
-    return `Use the Workflow tool to run user-defined workflows located in .claude/workflows/. Workflows may be Markdown checklists/lists or YAML files with steps.
+    return `Use the Workflow tool to run user-defined workflows located in .ahcode/workflows/. Workflows may be Markdown checklists/lists or YAML files with steps.
 
 Actions:
 - start (default): create a persisted workflow run and return the first step to execute
@@ -376,7 +376,7 @@ Actions:
 - cancel: cancel a workflow run
 - list: list recent workflow runs
 
-Workflow run state is persisted in .claude/workflow-runs/.`
+Workflow run state is persisted in .ahcode/workflow-runs/.`
   },
   userFacingName() {
     return 'Workflow'

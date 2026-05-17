@@ -280,7 +280,7 @@ export function useFeedbackSurvey(
       return false;
     }
 
-    if (isEnvTruthy(process.env.CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY)) {
+    if (isEnvTruthy(process.env.AHCODE_DISABLE_FEEDBACK_SURVEY)) {
       return false;
     }
 

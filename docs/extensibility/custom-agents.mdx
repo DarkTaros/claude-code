@@ -1,6 +1,6 @@
 ---
 title: "自定义 Agent - 从 Markdown 到运行时的完整链路"
-description: "揭秘 Claude Code 自定义 Agent 完整链路：Agent 定义的 Markdown 数据模型、三种加载来源、工具过滤策略和与 AgentTool 的联动机制。"
+description: "揭秘 AH Code 自定义 Agent 完整链路：Agent 定义的 Markdown 数据模型、三种加载来源、工具过滤策略和与 AgentTool 的联动机制。"
 keywords: ["自定义 Agent", "Agent 定义", "Markdown Agent", "Agent 配置", "角色定制"]
 ---
 
@@ -8,15 +8,15 @@ keywords: ["自定义 Agent", "Agent 定义", "Markdown Agent", "Agent 配置", 
 
 ## Agent 定义的三种来源
 
-Claude Code 的 Agent 不仅仅来自用户自定义——系统有三类来源，按优先级合并：
+AH Code 的 Agent 不仅仅来自用户自定义——系统有三类来源，按优先级合并：
 
 | 来源 | 位置 | 优先级 |
 |------|------|--------|
 | **Built-in** | `packages/builtin-tools/src/tools/AgentTool/built-in/` 硬编码 | 最低（可被覆盖） |
 | **Plugin** | 通过插件系统注册 | 中 |
-| **User/Project/Policy** | `.claude/agents/*.md` 或 settings.json | 最高 |
+| **User/Project/Policy** | `.ahcode/agents/*.md` 或 settings.json | 最高 |
 
-合并逻辑在 `getActiveAgentsFromList()` 中：按 `agentType` 去重，后者覆盖前者。这意味着你可以在 `.claude/agents/` 中放一个 `Explore.md` 来完全替换内置的 Explore Agent。
+合并逻辑在 `getActiveAgentsFromList()` 中：按 `agentType` 去重，后者覆盖前者。这意味着你可以在 `.ahcode/agents/` 中放一个 `Explore.md` 来完全替换内置的 Explore Agent。
 
 ## Markdown Agent 文件的完整格式
 
@@ -84,8 +84,8 @@ color: "blue"                       # 终端中的 Agent 颜色标识
 ```
 1. 加载 Markdown 文件
    ├── loadMarkdownFilesForSubdir('agents', cwd)
-   │   ├── ~/.claude/agents/*.md  （用户级，source = 'userSettings'）
-   │   ├── .claude/agents/*.md    （项目级，source = 'projectSettings'）
+   │   ├── ~/.ahcode/agents/*.md  （用户级，source = 'userSettings'）
+   │   ├── .ahcode/agents/*.md    （项目级，source = 'projectSettings'）
    │   └── managed/policy sources （策略级，source = 'policySettings'）
    │
    └── 每个 .md 文件：
@@ -195,7 +195,7 @@ AgentTool.call({ subagent_type: "reviewer", ... })
 | **Explore** | `Explore` | 代码搜索专家 | 只读（无 Write/Edit） | haiku（外部） |
 | **Plan** | `Plan` | 规划专家 | 只读 + ExitPlanMode | inherit |
 | **Verification** | `verification` | 结果验证 | 由 feature flag 控制 | — |
-| **Code Guide** | `claude-code-guide` | Claude Code 使用指南 | 只读 | — |
+| **Code Guide** | `claude-code-guide` | AH Code 使用指南 | 只读 | — |
 | **Statusline Setup** | `statusline-setup` | 终端状态栏配置 | 有限 | — |
 
 SDK 入口（`sdk-ts`/`sdk-py`/`sdk-cli`）不加载 Code Guide Agent。环境变量 `CLAUDE_AGENT_SDK_DISABLE_BUILTIN_AGENTS` 可以完全禁用内置 Agent，给 SDK 用户提供空白画布。

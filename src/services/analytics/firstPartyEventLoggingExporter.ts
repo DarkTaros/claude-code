@@ -22,14 +22,14 @@ import {
 } from '../../utils/auth.js'
 import { checkHasTrustDialogAccepted } from '../../utils/config.js'
 import { logForDebugging } from '../../utils/debug.js'
-import { getClaudeConfigHomeDir } from '../../utils/envUtils.js'
+import { getAhcodeConfigHomeDir } from '../../utils/envUtils.js'
 import { errorMessage, isFsInaccessible, toError } from '../../utils/errors.js'
 import { getAuthHeaders } from '../../utils/http.js'
 import { readJSONLFile } from '../../utils/json.js'
 import { logError } from '../../utils/log.js'
 import { sleep } from '../../utils/sleep.js'
 import { jsonStringify } from '../../utils/slowOperations.js'
-import { getClaudeCodeUserAgent } from '../../utils/userAgent.js'
+import { getAhcodeUserAgent } from '../../utils/userAgent.js'
 import { isOAuthTokenExpired } from '../oauth/client.js'
 import { stripProtoFields } from './index.js'
 import { type EventMetadata, to1PEventFormat } from './metadata.js'
@@ -40,9 +40,9 @@ const BATCH_UUID = randomUUID()
 // File prefix for failed event storage
 const FILE_PREFIX = '1p_failed_events.'
 
-// Storage directory for failed events - evaluated at runtime to respect CLAUDE_CONFIG_DIR in tests
+// Storage directory for failed events - evaluated at runtime to respect AHCODE_CONFIG_DIR in tests
 function getStorageDir(): string {
-  return path.join(getClaudeConfigHomeDir(), 'telemetry')
+  return path.join(getAhcodeConfigHomeDir(), 'telemetry')
 }
 
 // API envelope - event_data is the JSON output from proto toJSON()
@@ -537,7 +537,7 @@ export class FirstPartyEventLoggingExporter implements LogRecordExporter {
 
     const baseHeaders: Record<string, string> = {
       'Content-Type': 'application/json',
-      'User-Agent': getClaudeCodeUserAgent(),
+      'User-Agent': getAhcodeUserAgent(),
       'x-service-name': 'claude-code',
     }
 

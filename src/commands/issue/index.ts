@@ -17,7 +17,7 @@ import {
   getSessionProjectDir,
   getOriginalCwd,
 } from '../../bootstrap/state.js'
-import { getClaudeConfigHomeDir } from '../../utils/envUtils.js'
+import { getAhcodeConfigHomeDir } from '../../utils/envUtils.js'
 import { sanitizePath } from '../../utils/path.js'
 
 import * as childProcess from 'node:child_process'
@@ -141,7 +141,7 @@ function getTranscriptSummary(maxTurns = 5): string {
     const logPath = projectDir
       ? join(projectDir, `${sessionId}.jsonl`)
       : join(
-          getClaudeConfigHomeDir(),
+          getAhcodeConfigHomeDir(),
           'projects',
           sanitizePath(getOriginalCwd()),
           `${sessionId}.jsonl`,
@@ -351,10 +351,10 @@ const issue: Command = {
         // Fallback: provide URL-encoded browser link.
         // Browsers silently truncate URLs beyond ~8KB so we cap the body at
         // MAX_URL_BODY characters. When the full body is larger we save a draft
-        // to ~/.claude/issue-drafts/ and tell the user where to find it.
+        // to ~/.ahcode/issue-drafts/ and tell the user where to find it.
         const MAX_URL_BODY = 4096
         const sessionSummary = getTranscriptSummary()
-        const fullBodyText = `## Context from Claude Code session\n\n${sessionSummary}`
+        const fullBodyText = `## Context from AH Code session\n\n${sessionSummary}`
 
         let bodyText = fullBodyText
         let draftPath: string | null = null
@@ -363,7 +363,7 @@ const issue: Command = {
             fullBodyText.slice(0, MAX_URL_BODY) +
             '\n\n... (truncated, see CLI for full body)'
           try {
-            const draftsDir = join(homedir(), '.claude', 'issue-drafts')
+            const draftsDir = join(homedir(), '.ahcode', 'issue-drafts')
             mkdirSync(draftsDir, { recursive: true })
             const stamp = new Date().toISOString().replace(/[:.]/g, '-')
             draftPath = join(draftsDir, `issue-${stamp}.md`)
@@ -439,18 +439,14 @@ const issue: Command = {
       // Build rich body: session context + template (if present) + errors
       const sessionSummary = getTranscriptSummary(5)
       const bodyParts: string[] = [
-        '## Context from Claude Code session',
+        '## Context from AH Code session',
         '',
         sessionSummary,
       ]
       if (templateBody) {
         bodyParts.push('', '---', '', templateBody)
       }
-      bodyParts.push(
-        '',
-        '---',
-        '_Created via `/issue` command in Claude Code._',
-      )
+      bodyParts.push('', '---', '_Created via `/issue` command in AH Code._')
       const body = bodyParts.join('\n')
 
       // Build gh issue create args

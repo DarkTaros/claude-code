@@ -59,9 +59,9 @@ mock.module('src/utils/teleport/api.js', () => ({
 
 // ── envUtils config dir injection ────────────────────────────────────────────
 // Don't mock the envUtils module — that's process-level and leaks to other
-// tests' getClaudeConfigHomeDir consumers (see feedback_mock_dependency_not_subject).
-// Instead inject CLAUDE_CONFIG_DIR via process.env and clear the lodash memoize
-// cache around each test so the real getClaudeConfigHomeDir reads our value.
+// tests' getAhcodeConfigHomeDir consumers (see feedback_mock_dependency_not_subject).
+// Instead inject AHCODE_CONFIG_DIR via process.env and clear the lodash memoize
+// cache around each test so the real getAhcodeConfigHomeDir reads our value.
 const mockConfigDir = '/tmp/test-claude-config'
 
 // ── Axios mock ──────────────────────────────────────────────────────────────
@@ -115,7 +115,7 @@ mock.module('node:fs/promises', () => {
 
 // ── Lazy imports ─────────────────────────────────────────────────────────────
 let callSkillStore: typeof import('../launchSkillStore.js').callSkillStore
-let getClaudeConfigHomeDir: typeof import('../../../utils/envUtils.js').getClaudeConfigHomeDir
+let getAhcodeConfigHomeDir: typeof import('../../../utils/envUtils.js').getAhcodeConfigHomeDir
 let origConfigDir: string | undefined
 
 beforeAll(async () => {
@@ -123,8 +123,8 @@ beforeAll(async () => {
   const mod = await import('../launchSkillStore.js')
   callSkillStore = mod.callSkillStore
   const envMod = await import('../../../utils/envUtils.js')
-  getClaudeConfigHomeDir = envMod.getClaudeConfigHomeDir
-  origConfigDir = process.env.CLAUDE_CONFIG_DIR
+  getAhcodeConfigHomeDir = envMod.getAhcodeConfigHomeDir
+  origConfigDir = process.env.AHCODE_CONFIG_DIR
   useSkillStoreFsStubs = true
 })
 
@@ -143,19 +143,19 @@ beforeEach(() => {
   writeFileMock.mockClear()
   logEventMock.mockClear()
   // Inject our mock config dir + bust lodash memoize so real
-  // getClaudeConfigHomeDir reads the freshly-set env var.
-  process.env.CLAUDE_CONFIG_DIR = mockConfigDir
-  getClaudeConfigHomeDir.cache?.clear?.()
+  // getAhcodeConfigHomeDir reads the freshly-set env var.
+  process.env.AHCODE_CONFIG_DIR = mockConfigDir
+  getAhcodeConfigHomeDir.cache?.clear?.()
 })
 
 afterEach(() => {
   // Restore env so we don't leak mockConfigDir into other test files.
   if (origConfigDir === undefined) {
-    delete process.env.CLAUDE_CONFIG_DIR
+    delete process.env.AHCODE_CONFIG_DIR
   } else {
-    process.env.CLAUDE_CONFIG_DIR = origConfigDir
+    process.env.AHCODE_CONFIG_DIR = origConfigDir
   }
-  getClaudeConfigHomeDir.cache?.clear?.()
+  getAhcodeConfigHomeDir.cache?.clear?.()
 })
 
 // ── Helper ────────────────────────────────────────────────────────────────────
@@ -373,7 +373,7 @@ describe('install action', () => {
     expect(writeFileMock).not.toHaveBeenCalled()
   })
 
-  test('install writes to ~/.claude/skills/<name>/SKILL.md path', async () => {
+  test('install writes to ~/.ahcode/skills/<name>/SKILL.md path', async () => {
     const skill = {
       skill_id: 'sk_path',
       name: 'path-test',

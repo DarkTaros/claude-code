@@ -1,17 +1,17 @@
 import React, { useCallback } from 'react';
 import { logEvent } from 'src/services/analytics/index.js';
 import { Box, Dialog, Link, Text } from '@anthropic/ink';
-import type { ExternalClaudeMdInclude } from '../utils/claudemd.js';
+import type { ExternalAhcodeMdInclude } from '../utils/ahcodemd.js';
 import { saveCurrentProjectConfig } from '../utils/config.js';
 import { Select } from './CustomSelect/index.js';
 
 type Props = {
   onDone(): void;
   isStandaloneDialog?: boolean;
-  externalIncludes?: ExternalClaudeMdInclude[];
+  externalIncludes?: ExternalAhcodeMdInclude[];
 };
 
-export function ClaudeMdExternalIncludesDialog({
+export function AhcodeMdExternalIncludesDialog({
   onDone,
   isStandaloneDialog,
   externalIncludes,
@@ -28,15 +28,15 @@ export function ClaudeMdExternalIncludesDialog({
         // Mark that we've shown the dialog but it was declined
         saveCurrentProjectConfig(current => ({
           ...current,
-          hasClaudeMdExternalIncludesApproved: false,
-          hasClaudeMdExternalIncludesWarningShown: true,
+          hasAhcodeMdExternalIncludesApproved: false,
+          hasAhcodeMdExternalIncludesWarningShown: true,
         }));
       } else {
         logEvent('tengu_claude_md_external_includes_dialog_accepted', {});
         saveCurrentProjectConfig(current => ({
           ...current,
-          hasClaudeMdExternalIncludesApproved: true,
-          hasClaudeMdExternalIncludesWarningShown: true,
+          hasAhcodeMdExternalIncludesApproved: true,
+          hasAhcodeMdExternalIncludesWarningShown: true,
         }));
       }
 
@@ -51,14 +51,14 @@ export function ClaudeMdExternalIncludesDialog({
 
   return (
     <Dialog
-      title="Allow external CLAUDE.md file imports?"
+      title="Allow external AHCODE.md file imports?"
       color="warning"
       onCancel={handleEscape}
       hideBorder={!isStandaloneDialog}
       hideInputGuide={!isStandaloneDialog}
     >
       <Text>
-        This project&apos;s CLAUDE.md imports files outside the current working directory. Never allow this for
+        This project&apos;s AHCODE.md imports files outside the current working directory. Never allow this for
         third-party repositories.
       </Text>
 
@@ -75,7 +75,7 @@ export function ClaudeMdExternalIncludesDialog({
       )}
 
       <Text dimColor>
-        Important: Only use Claude Code with files you trust. Accessing untrusted files may pose security risks{' '}
+        Important: Only use AH Code with files you trust. Accessing untrusted files may pose security risks{' '}
         <Link url="https://code.claude.com/docs/en/security" />{' '}
       </Text>
 

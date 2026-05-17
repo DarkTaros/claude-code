@@ -129,7 +129,7 @@ export const TeamCreateTool: Tool<InputSchema, Output> = buildTool({
   async call(input, context) {
     if (!isAgentSwarmsEnabled()) {
       throw new Error(
-        'Agent Teams 功能未启用。请确保未设置 CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS_DISABLED 环境变量。',
+        'Agent Teams 功能未启用。请确保未设置 AHCODE_EXPERIMENTAL_AGENT_TEAMS_DISABLED 环境变量。',
       )
     }
 
@@ -228,7 +228,7 @@ export const TeamCreateTool: Tool<InputSchema, Output> = buildTool({
         getResolvedTeammateMode() as AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS,
     })
 
-    // Note: We intentionally don't set CLAUDE_CODE_AGENT_ID for the team lead because:
+    // Note: We intentionally don't set AHCODE_AGENT_ID for the team lead because:
     // 1. The lead is not a "teammate" - isTeammate() should return false for them
     // 2. Their ID is deterministic (team-lead@teamName) and can be derived when needed
     // 3. Setting it would cause isTeammate() to return true, breaking inbox polling

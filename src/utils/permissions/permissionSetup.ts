@@ -48,10 +48,10 @@ import {
   type AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS,
   logEvent,
 } from '../../services/analytics/index.js'
-import { AGENT_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/AgentTool/constants.js'
-import { BASH_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/BashTool/toolName.js'
+import { AGENT_TOOL_NAME } from '@ahcode/builtin-tools/tools/AgentTool/constants.js'
+import { BASH_TOOL_NAME } from '@ahcode/builtin-tools/tools/BashTool/toolName.js'
 /* eslint-enable @typescript-eslint/no-require-imports */
-import { POWERSHELL_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/PowerShellTool/toolName.js'
+import { POWERSHELL_TOOL_NAME } from '@ahcode/builtin-tools/tools/PowerShellTool/toolName.js'
 import { getToolsForDefaultPreset, parseToolPreset } from '../../tools.js'
 import {
   getFsImplementation,
@@ -746,11 +746,11 @@ export function initialPermissionModeFromCLI({
     // settings (e.g. bypassPermissions would otherwise silently grant full
     // access in a remote environment).
     if (
-      isEnvTruthy(process.env.CLAUDE_CODE_REMOTE) &&
+      isEnvTruthy(process.env.AHCODE_REMOTE) &&
       !['acceptEdits', 'plan', 'default'].includes(settingsMode)
     ) {
       logForDebugging(
-        `settings defaultMode "${settingsMode}" is not supported in CLAUDE_CODE_REMOTE — only acceptEdits and plan are allowed`,
+        `settings defaultMode "${settingsMode}" is not supported in AHCODE_REMOTE — only acceptEdits and plan are allowed`,
         { level: 'warn' },
       )
       logEvent('tengu_ccr_unsupported_default_mode_ignored', {
@@ -940,8 +940,8 @@ export async function initializeToolPermissionContext({
   let overlyBroadBashPermissions: DangerousPermissionInfo[] = []
   if (
     process.env.USER_TYPE === 'ant' &&
-    !isEnvTruthy(process.env.CLAUDE_CODE_REMOTE) &&
-    process.env.CLAUDE_CODE_ENTRYPOINT !== 'local-agent'
+    !isEnvTruthy(process.env.AHCODE_REMOTE) &&
+    process.env.AHCODE_ENTRYPOINT !== 'local-agent'
   ) {
     overlyBroadBashPermissions = [
       ...findOverlyBroadBashPermissions(rulesFromDisk, parsedAllowedToolsCli),

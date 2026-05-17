@@ -35,7 +35,7 @@ const coordinator = {
 
         if (mod.isCoordinatorMode()) {
           // Disable: clear the env var
-          delete process.env.CLAUDE_CODE_COORDINATOR_MODE
+          delete process.env.AHCODE_COORDINATOR_MODE
           onDone('Coordinator mode disabled — back to normal mode', {
             display: 'system',
             metaMessages: [
@@ -44,7 +44,7 @@ const coordinator = {
           })
         } else {
           // Enable: set the env var
-          process.env.CLAUDE_CODE_COORDINATOR_MODE = '1'
+          process.env.AHCODE_COORDINATOR_MODE = '1'
           onDone(
             'Coordinator mode enabled — use Agent(subagent_type: "worker") to dispatch tasks',
             {

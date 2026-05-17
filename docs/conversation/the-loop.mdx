@@ -1,6 +1,6 @@
 ---
 title: "Agentic Loop：AI 自主循环的核心机制"
-description: "深入解析 Claude Code 的 query() 异步生成器循环——从流式 API 调用、工具并行执行、上下文压缩、错误恢复到终止条件的完整状态机，基于 src/query.ts 的源码级分析。"
+description: "深入解析 AH Code 的 query() 异步生成器循环——从流式 API 调用、工具并行执行、上下文压缩、错误恢复到终止条件的完整状态机，基于 src/query.ts 的源码级分析。"
 keywords: ["Agentic Loop", "query loop", "tool_use", "状态机", "auto-compact", "streaming", "recovery"]
 sourceRef: "3ec5675 (2026-04-08)"
 ---
@@ -10,7 +10,7 @@ sourceRef: "3ec5675 (2026-04-08)"
 ## 什么是 Agentic Loop
 
 传统聊天机器人：你问一句，它答一句。  
-Claude Code 不一样：你说一个需求，它可能连续执行十几步操作才给你最终结果。
+AH Code 不一样：你说一个需求，它可能连续执行十几步操作才给你最终结果。
 
 这背后的机制叫做 **Agentic Loop**（智能体循环），核心实现在 `src/query.ts` 的 `queryLoop()` 异步生成器函数。它是一个 `while(true)` 无限循环，每次迭代代表一次"思考→行动→观察"周期。
 
@@ -152,7 +152,7 @@ type State = {
 ## 为什么不是"一次规划，批量执行"
 
 <Note>
-源码揭示了为什么 Claude Code 选择逐步循环：
+源码揭示了为什么 AH Code 选择逐步循环：
 </Note>
 
 - **每一步都产生真实信息**：`runTools()` 返回的 `toolResults` 是 API 不可能预知的——命令输出、文件内容、错误信息

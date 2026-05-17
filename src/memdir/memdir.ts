@@ -15,8 +15,8 @@ import {
   type AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS,
   logEvent,
 } from '../services/analytics/index.js'
-import { GREP_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/GrepTool/prompt.js'
-import { isReplModeEnabled } from '@claude-code-best/builtin-tools/tools/REPLTool/constants.js'
+import { GREP_TOOL_NAME } from '@ahcode/builtin-tools/tools/GrepTool/prompt.js'
+import { isReplModeEnabled } from '@ahcode/builtin-tools/tools/REPLTool/constants.js'
 import { logForDebugging } from '../utils/debug.js'
 import { hasEmbeddedSearchTools } from '../utils/embeddedTools.js'
 import { isEnvTruthy } from '../utils/envUtils.js'
@@ -51,7 +51,7 @@ export type EntrypointTruncation = {
  * that names which cap fired. Line-truncates first (natural boundary), then
  * byte-truncates at the last newline before the cap so we don't cut mid-line.
  *
- * Shared by buildMemoryPrompt and claudemd getMemoryFiles (previously
+ * Shared by buildMemoryPrompt and ahcodemd getMemoryFiles (previously
  * duplicated the line-only logic).
  */
 export function truncateEntrypointContent(raw: string): EntrypointTruncation {
@@ -123,7 +123,7 @@ export const DIRS_EXIST_GUIDANCE =
  * (once per session via systemPromptSection cache) so the model can always
  * write without checking existence first. FsOperations.mkdir is recursive
  * by default and already swallows EEXIST, so the full parent chain
- * (~/.claude/projects/<slug>/memory/) is created in one call with no
+ * (~/.ahcode/projects/<slug>/memory/) is created in one call with no
  * try/catch needed for the happy path.
  */
 export async function ensureMemoryDirExists(memoryDir: string): Promise<void> {
@@ -267,7 +267,7 @@ export function buildMemoryLines(
 
 /**
  * Build the typed-memory prompt with MEMORY.md content included.
- * Used by agent memory (which has no getClaudeMds() equivalent).
+ * Used by agent memory (which has no getAhcodeMds() equivalent).
  */
 export function buildMemoryPrompt(params: {
   displayName: string
@@ -321,7 +321,7 @@ export function buildMemoryPrompt(params: {
  * Assistant sessions are effectively perpetual, so the agent writes memories
  * append-only to a date-named log file rather than maintaining MEMORY.md as
  * a live index. A separate nightly /dream skill distills logs into topic
- * files + MEMORY.md. MEMORY.md is still loaded into context (via claudemd.ts)
+ * files + MEMORY.md. MEMORY.md is still loaded into context (via ahcodemd.ts)
  * as the distilled index — this prompt only changes where NEW memories go.
  */
 function buildAssistantDailyLogPrompt(skipIndex = false): string {
@@ -490,11 +490,9 @@ export async function loadMemoryPrompt(): Promise<string | null> {
   }
 
   logEvent('tengu_memdir_disabled', {
-    disabled_by_env_var: isEnvTruthy(
-      process.env.CLAUDE_CODE_DISABLE_AUTO_MEMORY,
-    ),
+    disabled_by_env_var: isEnvTruthy(process.env.AHCODE_DISABLE_AUTO_MEMORY),
     disabled_by_setting:
-      !isEnvTruthy(process.env.CLAUDE_CODE_DISABLE_AUTO_MEMORY) &&
+      !isEnvTruthy(process.env.AHCODE_DISABLE_AUTO_MEMORY) &&
       getInitialSettings().autoMemoryEnabled === false,
   })
   // Gate on the GB flag directly, not isTeamMemoryEnabled() — that function

@@ -7,7 +7,7 @@ import { errorMessage } from '../../utils/errors.js'
 import { getSessionIngressAuthHeaders } from '../../utils/sessionIngressAuth.js'
 import { sleep } from '../../utils/sleep.js'
 import { jsonParse, jsonStringify } from '../../utils/slowOperations.js'
-import { getClaudeCodeUserAgent } from '../../utils/userAgent.js'
+import { getAhcodeUserAgent } from '../../utils/userAgent.js'
 import type { Transport } from './Transport.js'
 
 // ---------------------------------------------------------------------------
@@ -205,7 +205,7 @@ export class SSETransport implements Transport {
     initialSequenceNum?: number,
     /**
      * Per-instance auth header source. Omit to read the process-wide
-     * CLAUDE_CODE_SESSION_ACCESS_TOKEN (single-session callers). Required
+     * AHCODE_SESSION_ACCESS_TOKEN (single-session callers). Required
      * for concurrent multi-session callers — the env-var path is a process
      * global and would stomp across sessions.
      */
@@ -266,7 +266,7 @@ export class SSETransport implements Transport {
       ...authHeaders,
       Accept: 'text/event-stream',
       'anthropic-version': '2023-06-01',
-      'User-Agent': getClaudeCodeUserAgent(),
+      'User-Agent': getAhcodeUserAgent(),
     }
     if (authHeaders['Cookie']) {
       delete headers['Authorization']
@@ -611,7 +611,7 @@ export class SSETransport implements Transport {
       ...authHeaders,
       'Content-Type': 'application/json',
       'anthropic-version': '2023-06-01',
-      'User-Agent': getClaudeCodeUserAgent(),
+      'User-Agent': getAhcodeUserAgent(),
     }
 
     logForDebugging(

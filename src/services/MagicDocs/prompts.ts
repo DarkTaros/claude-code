@@ -1,5 +1,5 @@
 import { join } from 'path'
-import { getClaudeConfigHomeDir } from '../../utils/envUtils.js'
+import { getAhcodeConfigHomeDir } from '../../utils/envUtils.js'
 import { getFsImplementation } from '../../utils/fsOperations.js'
 import { getDisplayedEffortLevel } from '../../utils/effort.js'
 import { getMainLoopModel } from '../../utils/model/model.js'
@@ -53,7 +53,7 @@ What NOT to document:
 - Exhaustive lists of files, functions, or parameters
 - Step-by-step implementation details
 - Low-level code mechanics
-- Information already in CLAUDE.md or other project docs
+- Information already in AHCODE.md or other project docs
 
 Use the Edit tool with file_path: {{docPath}}
 
@@ -62,12 +62,12 @@ REMEMBER: Only update if there is substantial new information. The Magic Doc hea
 
 /**
  * Load custom Magic Docs prompt from file if it exists
- * Custom prompts can be placed at ~/.claude/magic-docs/prompt.md
+ * Custom prompts can be placed at ~/.ahcode/magic-docs/prompt.md
  * Use {{variableName}} syntax for variable substitution (e.g., {{docContents}}, {{docPath}}, {{docTitle}})
  */
 async function loadMagicDocsPrompt(): Promise<string> {
   const fs = getFsImplementation()
-  const promptPath = join(getClaudeConfigHomeDir(), 'magic-docs', 'prompt.md')
+  const promptPath = join(getAhcodeConfigHomeDir(), 'magic-docs', 'prompt.md')
 
   try {
     return await fs.readFile(promptPath, { encoding: 'utf-8' })

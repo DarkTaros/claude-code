@@ -8,7 +8,7 @@ import {
   IMAGE_TARGET_RAW_SIZE,
 } from '../constants/apiLimits.js'
 import { getFeatureValue_CACHED_MAY_BE_STALE } from '../services/analytics/growthbook.js'
-import { getImageProcessor } from '@claude-code-best/builtin-tools/tools/FileReadTool/imageProcessor.js'
+import { getImageProcessor } from '@ahcode/builtin-tools/tools/FileReadTool/imageProcessor.js'
 import { logForDebugging } from './debug.js'
 import { execFileNoThrowWithCwd } from './execFileNoThrow.js'
 import { getFsImplementation } from './fsOperations.js'
@@ -32,9 +32,9 @@ function getClipboardCommands() {
   const platform = process.platform as SupportedPlatform
 
   // Platform-specific temporary file paths
-  // Use CLAUDE_CODE_TMPDIR if set, otherwise fall back to platform defaults
+  // Use AHCODE_TMPDIR if set, otherwise fall back to platform defaults
   const baseTmpDir =
-    process.env.CLAUDE_CODE_TMPDIR ||
+    process.env.AHCODE_TMPDIR ||
     (platform === 'win32' ? process.env.TEMP || 'C:\\Temp' : '/tmp')
   const screenshotFilename = 'claude_cli_latest_screenshot.png'
   const tempPaths: Record<SupportedPlatform, string> = {

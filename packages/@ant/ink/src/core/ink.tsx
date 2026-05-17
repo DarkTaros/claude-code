@@ -480,7 +480,7 @@ export default class Ink {
       (this.altScreenActive ? ENTER_ALT_SCREEN : '') + // re-enter alt — vim's rmcup dropped us to main
         '\x1b[2J' + // clear screen (now alt if fullscreen)
         '\x1b[H' + // cursor home
-        (this.altScreenMouseTracking ? ENABLE_MOUSE_TRACKING : '') + // re-enable mouse (skip if CLAUDE_CODE_DISABLE_MOUSE)
+        (this.altScreenMouseTracking ? ENABLE_MOUSE_TRACKING : '') + // re-enable mouse (skip if AHCODE_DISABLE_MOUSE)
         (this.altScreenActive ? '' : '\x1b[?1049l') + // exit alt (non-fullscreen only)
         '\x1b[?25l', // hide cursor (Ink manages)
     );

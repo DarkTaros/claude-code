@@ -1,39 +1,39 @@
 /**
  * Tests for src/daemon/state.ts
  *
- * Uses real temp directories and CLAUDE_CONFIG_DIR env var
+ * Uses real temp directories and AHCODE_CONFIG_DIR env var
  * instead of mocking fs/envUtils, to avoid cross-test mock pollution.
  */
 import { describe, expect, test, beforeEach, afterAll } from 'bun:test'
 import { mkdtempSync, rmSync, existsSync, readFileSync } from 'fs'
 import { join } from 'path'
 import { tmpdir } from 'os'
-import { getClaudeConfigHomeDir } from '../../utils/envUtils.js'
+import { getAhcodeConfigHomeDir } from '../../utils/envUtils.js'
 
 // ─── setup: real temp dir via env var ──────────────────────────────────────
 
 const tempBase = mkdtempSync(join(tmpdir(), 'daemon-state-test-'))
 
 beforeEach(() => {
-  // Clear lodash memoize cache so CLAUDE_CONFIG_DIR env var takes effect
+  // Clear lodash memoize cache so AHCODE_CONFIG_DIR env var takes effect
   if (
-    typeof getClaudeConfigHomeDir === 'function' &&
-    'cache' in getClaudeConfigHomeDir
+    typeof getAhcodeConfigHomeDir === 'function' &&
+    'cache' in getAhcodeConfigHomeDir
   ) {
-    ;(getClaudeConfigHomeDir as any).cache.clear?.()
+    ;(getAhcodeConfigHomeDir as any).cache.clear?.()
   }
   const tempHome = mkdtempSync(join(tempBase, 'home-'))
-  process.env.CLAUDE_CONFIG_DIR = tempHome
+  process.env.AHCODE_CONFIG_DIR = tempHome
 })
 
 afterAll(() => {
-  delete process.env.CLAUDE_CONFIG_DIR
+  delete process.env.AHCODE_CONFIG_DIR
   // Clear memoize cache after all tests so other files see fresh state
   if (
-    typeof getClaudeConfigHomeDir === 'function' &&
-    'cache' in getClaudeConfigHomeDir
+    typeof getAhcodeConfigHomeDir === 'function' &&
+    'cache' in getAhcodeConfigHomeDir
   ) {
-    ;(getClaudeConfigHomeDir as any).cache.clear?.()
+    ;(getAhcodeConfigHomeDir as any).cache.clear?.()
   }
   try {
     rmSync(tempBase, { recursive: true, force: true })

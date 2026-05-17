@@ -60,7 +60,7 @@ import type { ToolInputJSONSchema } from './Tool.js';
 import {
   createSyntheticOutputTool,
   isSyntheticOutputToolEnabled,
-} from '@claude-code-best/builtin-tools/tools/SyntheticOutputTool/SyntheticOutputTool.js';
+} from '@ahcode/builtin-tools/tools/SyntheticOutputTool/SyntheticOutputTool.js';
 import { getTools } from './tools.js';
 import {
   canUserConfigureAdvisor,
@@ -137,7 +137,7 @@ import {
 import { initializeAnalyticsGates } from 'src/services/analytics/sink.js';
 import {
   getOriginalCwd,
-  setAdditionalDirectoriesForClaudeMd,
+  setAdditionalDirectoriesForAhcodeMd,
   setIsRemoteMode,
   setMainLoopModelOverride,
   setMainThreadAgentType,
@@ -168,14 +168,14 @@ import { checkQuotaStatus } from './services/claudeAiLimits.js';
 import { getMcpToolsCommandsAndResources, prefetchAllMcpResources } from './services/mcp/client.js';
 import { VALID_INSTALLABLE_SCOPES, VALID_UPDATE_SCOPES } from './services/plugins/pluginCliCommands.js';
 import { initBundledSkills } from './skills/bundled/index.js';
-import type { AgentColorName } from '@claude-code-best/builtin-tools/tools/AgentTool/agentColorManager.js';
+import type { AgentColorName } from '@ahcode/builtin-tools/tools/AgentTool/agentColorManager.js';
 import {
   getActiveAgentsFromList,
   getAgentDefinitionsWithOverrides,
   isBuiltInAgent,
   isCustomAgent,
   parseAgentsFromJson,
-} from '@claude-code-best/builtin-tools/tools/AgentTool/loadAgentsDir.js';
+} from '@ahcode/builtin-tools/tools/AgentTool/loadAgentsDir.js';
 import type { LogOption } from './types/logs.js';
 import type { Message as MessageType } from './types/message.js';
 import {
@@ -439,7 +439,7 @@ function getCertEnvVarTelemetry(): Record<string, boolean> {
   if (process.env.NODE_EXTRA_CA_CERTS) {
     result.has_node_extra_ca_certs = true;
   }
-  if (process.env.CLAUDE_CODE_CLIENT_CERT) {
+  if (process.env.AHCODE_CLIENT_CERT) {
     result.has_client_cert = true;
   }
   if (hasNodeOption('--use-system-ca')) {
@@ -539,7 +539,7 @@ export function startDeferredPrefetches(): void {
   // loop time, which skews startup benchmarks (CPU profiles, time-to-first-render
   // measurements). Skip all of it when we're only measuring startup performance.
   if (
-    isEnvTruthy(process.env.CLAUDE_CODE_EXIT_AFTER_FIRST_RENDER) ||
+    isEnvTruthy(process.env.AHCODE_EXIT_AFTER_FIRST_RENDER) ||
     // --bare: skip ALL prefetches. These are cache-warms for the REPL's
     // first-turn responsiveness (initUser, getUserContext, tips, countFiles,
     // modelCapabilities, change detectors). Scripted -p calls don't have a
@@ -555,10 +555,10 @@ export function startDeferredPrefetches(): void {
   void getUserContext();
   prefetchSystemContextIfSafe();
   void getRelevantTips();
-  if (isEnvTruthy(process.env.CLAUDE_CODE_USE_BEDROCK) && !isEnvTruthy(process.env.CLAUDE_CODE_SKIP_BEDROCK_AUTH)) {
+  if (isEnvTruthy(process.env.AHCODE_USE_BEDROCK) && !isEnvTruthy(process.env.AHCODE_SKIP_BEDROCK_AUTH)) {
     void prefetchAwsCredentialsAndBedRockInfoIfSafe();
   }
-  if (isEnvTruthy(process.env.CLAUDE_CODE_USE_VERTEX) && !isEnvTruthy(process.env.CLAUDE_CODE_SKIP_VERTEX_AUTH)) {
+  if (isEnvTruthy(process.env.AHCODE_USE_VERTEX) && !isEnvTruthy(process.env.AHCODE_SKIP_VERTEX_AUTH)) {
     void prefetchGcpCredentialsIfSafe();
   }
   void countFilesRoundedRg(getCwd(), AbortSignal.timeout(3000), []);
@@ -670,7 +670,7 @@ function eagerLoadSettings(): void {
 
 function initializeEntrypoint(isNonInteractive: boolean): void {
   // Skip if already set (e.g., by SDK or other entrypoints)
-  if (process.env.CLAUDE_CODE_ENTRYPOINT) {
+  if (process.env.AHCODE_ENTRYPOINT) {
     return;
   }
 
@@ -679,20 +679,20 @@ function initializeEntrypoint(isNonInteractive: boolean): void {
   // Check for MCP serve command (handle flags before mcp serve, e.g., --debug mcp serve)
   const mcpIndex = cliArgs.indexOf('mcp');
   if (mcpIndex !== -1 && cliArgs[mcpIndex + 1] === 'serve') {
-    process.env.CLAUDE_CODE_ENTRYPOINT = 'mcp';
+    process.env.AHCODE_ENTRYPOINT = 'mcp';
     return;
   }
 
-  if (isEnvTruthy(process.env.CLAUDE_CODE_ACTION)) {
-    process.env.CLAUDE_CODE_ENTRYPOINT = 'claude-code-github-action';
+  if (isEnvTruthy(process.env.AHCODE_ACTION)) {
+    process.env.AHCODE_ENTRYPOINT = 'claude-code-github-action';
     return;
   }
 
   // Note: 'local-agent' entrypoint is set by the local agent mode launcher
-  // via CLAUDE_CODE_ENTRYPOINT env var (handled by early return above)
+  // via AHCODE_ENTRYPOINT env var (handled by early return above)
 
   // Set based on interactive status
-  process.env.CLAUDE_CODE_ENTRYPOINT = isNonInteractive ? 'sdk-cli' : 'cli';
+  process.env.AHCODE_ENTRYPOINT = isNonInteractive ? 'sdk-cli' : 'cli';
 }
 
 // Set by early argv processing when `claude open <url>` is detected (interactive mode only)
@@ -885,7 +885,7 @@ export async function main() {
       }
       // Forward session-resume + model flags to the remote CLI's initial spawn.
       // --continue/-c and --resume <uuid> operate on the REMOTE session history
-      // (which persists under the remote's ~/.claude/projects/<cwd>/).
+      // (which persists under the remote's ~/.ahcode/projects/<cwd>/).
       // --model controls which model the remote uses.
       const extractFlag = (flag: string, opts: { hasValue?: boolean; as?: string } = {}) => {
         const i = rawCliArgs.indexOf(flag);
@@ -953,7 +953,7 @@ export async function main() {
   const hasPrintFlag = cliArgs.includes('-p') || cliArgs.includes('--print');
   const hasInitOnlyFlag = cliArgs.includes('--init-only');
   const hasSdkUrl = cliArgs.some(arg => arg.startsWith('--sdk-url'));
-  const forceInteractive = isEnvTruthy(process.env.CLAUDE_CODE_FORCE_INTERACTIVE);
+  const forceInteractive = isEnvTruthy(process.env.AHCODE_FORCE_INTERACTIVE);
   const isNonInteractive = hasPrintFlag || hasInitOnlyFlag || hasSdkUrl || (!forceInteractive && !process.stdout.isTTY);
 
   // Stop capturing early input for non-interactive modes
@@ -971,17 +971,17 @@ export async function main() {
   // Determine client type
   const clientType = (() => {
     if (isEnvTruthy(process.env.GITHUB_ACTIONS)) return 'github-action';
-    if (process.env.CLAUDE_CODE_ENTRYPOINT === 'sdk-ts') return 'sdk-typescript';
-    if (process.env.CLAUDE_CODE_ENTRYPOINT === 'sdk-py') return 'sdk-python';
-    if (process.env.CLAUDE_CODE_ENTRYPOINT === 'sdk-cli') return 'sdk-cli';
-    if (process.env.CLAUDE_CODE_ENTRYPOINT === 'claude-vscode') return 'claude-vscode';
-    if (process.env.CLAUDE_CODE_ENTRYPOINT === 'local-agent') return 'local-agent';
-    if (process.env.CLAUDE_CODE_ENTRYPOINT === 'claude-desktop') return 'claude-desktop';
+    if (process.env.AHCODE_ENTRYPOINT === 'sdk-ts') return 'sdk-typescript';
+    if (process.env.AHCODE_ENTRYPOINT === 'sdk-py') return 'sdk-python';
+    if (process.env.AHCODE_ENTRYPOINT === 'sdk-cli') return 'sdk-cli';
+    if (process.env.AHCODE_ENTRYPOINT === 'claude-vscode') return 'claude-vscode';
+    if (process.env.AHCODE_ENTRYPOINT === 'local-agent') return 'local-agent';
+    if (process.env.AHCODE_ENTRYPOINT === 'claude-desktop') return 'claude-desktop';
 
     // Check if session-ingress token is provided (indicates remote session)
     const hasSessionIngressToken =
-      process.env.CLAUDE_CODE_SESSION_ACCESS_TOKEN || process.env.CLAUDE_CODE_WEBSOCKET_AUTH_FILE_DESCRIPTOR;
-    if (process.env.CLAUDE_CODE_ENTRYPOINT === 'remote' || hasSessionIngressToken) {
+      process.env.AHCODE_SESSION_ACCESS_TOKEN || process.env.AHCODE_WEBSOCKET_AUTH_FILE_DESCRIPTOR;
+    if (process.env.AHCODE_ENTRYPOINT === 'remote' || hasSessionIngressToken) {
       return 'remote';
     }
 
@@ -989,7 +989,7 @@ export async function main() {
   })();
   setClientType(clientType);
 
-  const previewFormat = process.env.CLAUDE_CODE_QUESTION_PREVIEW_FORMAT;
+  const previewFormat = process.env.AHCODE_QUESTION_PREVIEW_FORMAT;
   if (previewFormat === 'markdown' || previewFormat === 'html') {
     setQuestionPreviewFormat(previewFormat);
   } else if (
@@ -1004,7 +1004,7 @@ export async function main() {
   }
 
   // Tag sessions created via `claude remote-control` so the backend can identify them
-  if (process.env.CLAUDE_CODE_ENVIRONMENT_KIND === 'bridge') {
+  if (process.env.AHCODE_ENVIRONMENT_KIND === 'bridge') {
     setSessionSource('remote-control');
   }
 
@@ -1091,7 +1091,7 @@ async function run(): Promise<CommanderCommand> {
     // process.title on Windows sets the console title directly; on POSIX,
     // terminal shell integration may mirror the process name to the tab.
     // After init() so settings.json env can also gate this (gh-4765).
-    if (!isEnvTruthy(process.env.CLAUDE_CODE_DISABLE_TERMINAL_TITLE)) {
+    if (!isEnvTruthy(process.env.AHCODE_DISABLE_TERMINAL_TITLE)) {
       process.title = 'claude';
     }
 
@@ -1141,7 +1141,7 @@ async function run(): Promise<CommanderCommand> {
 
   program
     .name('claude')
-    .description(`Claude Code - starts an interactive session by default, use -p/--print for non-interactive output`)
+    .description(`AH Code - starts an interactive session by default, use -p/--print for non-interactive output`)
     .argument('[prompt]', 'Your prompt', String)
     // Subcommands inherit helpOption via commander's copyInheritedSettings —
     // setting it once here covers mcp, plugin, auth, and all other subcommands.
@@ -1170,7 +1170,7 @@ async function run(): Promise<CommanderCommand> {
     )
     .option(
       '--bare',
-      'Minimal mode: skip hooks, LSP, plugin sync, attribution, auto-memory, background prefetches, keychain reads, and CLAUDE.md auto-discovery. Sets CLAUDE_CODE_SIMPLE=1. Anthropic auth is strictly ANTHROPIC_API_KEY or apiKeyHelper via --settings (OAuth and keychain are never read). 3P providers (Bedrock/Vertex/Foundry) use their own credentials. Skills still resolve via /skill-name. Explicitly provide context via: --system-prompt[-file], --append-system-prompt[-file], --add-dir (CLAUDE.md dirs), --mcp-config, --settings, --agents, --plugin-dir.',
+      'Minimal mode: skip hooks, LSP, plugin sync, attribution, auto-memory, background prefetches, keychain reads, and AHCODE.md auto-discovery. Sets AHCODE_SIMPLE=1. Anthropic auth is strictly ANTHROPIC_API_KEY or apiKeyHelper via --settings (OAuth and keychain are never read). 3P providers (Bedrock/Vertex/Foundry) use their own credentials. Skills still resolve via /skill-name. Explicitly provide context via: --system-prompt[-file], --append-system-prompt[-file], --add-dir (AHCODE.md dirs), --mcp-config, --settings, --agents, --plugin-dir.',
       () => true,
     )
     .addOption(new Option('--init', 'Run Setup hooks with init trigger, then continue').hideHelp())
@@ -1427,16 +1427,16 @@ async function run(): Promise<CommanderCommand> {
       profileCheckpoint('action_handler_start');
 
       // --bare = one-switch minimal mode. Sets SIMPLE so all the existing
-      // gates fire (CLAUDE.md, skills, hooks inside executeHooks, agent
+      // gates fire (AHCODE.md, skills, hooks inside executeHooks, agent
       // dir-walk). Must be set before setup() / any of the gated work runs.
       if ((options as { bare?: boolean }).bare) {
-        process.env.CLAUDE_CODE_SIMPLE = '1';
+        process.env.AHCODE_SIMPLE = '1';
       }
 
       // Ignore "code" as a prompt - treat it the same as no prompt
       if (prompt === 'code') {
         logEvent('tengu_code_prompt_ignored', {});
-        console.warn(chalk.yellow('Tip: You can launch Claude Code with just `claude`'));
+        console.warn(chalk.yellow('Tip: You can launch AH Code with just `claude`'));
         prompt = undefined;
       }
 
@@ -1445,7 +1445,7 @@ async function run(): Promise<CommanderCommand> {
         logEvent('tengu_single_word_prompt', { length: prompt.length });
       }
 
-      // Assistant mode: when .claude/settings.json has assistant: true AND
+      // Assistant mode: when .ahcode/settings.json has assistant: true AND
       // the tengu_kairos GrowthBook gate is on, force brief on. Permission
       // mode is left to the user — settings defaultMode or --permission-mode
       // apply as normal. REPL-typed messages already default to 'next'
@@ -1455,10 +1455,10 @@ async function run(): Promise<CommanderCommand> {
       // kairosEnabled is computed once here and reused at the
       // getAssistantSystemPromptAddendum() call site further down.
       //
-      // Trust gate: .claude/settings.json is attacker-controllable in an
+      // Trust gate: .ahcode/settings.json is attacker-controllable in an
       // untrusted clone. We run ~1000 lines before showSetupScreens() shows
       // the trust dialog, and by then we've already appended
-      // .claude/agents/assistant.md to the system prompt. Refuse to activate
+      // .ahcode/agents/assistant.md to the system prompt. Refuse to activate
       // until the directory has been explicitly trusted.
       let kairosEnabled = false;
       let assistantTeamContext:
@@ -1534,7 +1534,7 @@ async function run(): Promise<CommanderCommand> {
       const agentsJson = options.agents;
       const agentCli = options.agent;
       if (feature('BG_SESSIONS') && agentCli) {
-        process.env.CLAUDE_CODE_AGENT = agentCli;
+        process.env.AHCODE_AGENT = agentCli;
       }
 
       // NOTE: LSP manager initialization is intentionally deferred until after
@@ -1561,7 +1561,7 @@ async function run(): Promise<CommanderCommand> {
           : DEFAULT_TASKS_MODE_TASK_LIST_ID
         : undefined;
       if (process.env.USER_TYPE === 'ant' && taskListId) {
-        process.env.CLAUDE_CODE_TASK_LIST_ID = taskListId;
+        process.env.AHCODE_TASK_LIST_ID = taskListId;
       }
 
       // Extract worktree option
@@ -1606,7 +1606,7 @@ async function run(): Promise<CommanderCommand> {
       let storedTeammateOpts: TeammateOptions | undefined;
       if (isAgentSwarmsEnabled()) {
         // Extract agent identity options (for tmux-spawned agents)
-        // These replace the CLAUDE_CODE_* environment variables
+        // These replace the AHCODE_* environment variables
         const teammateOpts = extractTeammateOptions(options);
         storedTeammateOpts = teammateOpts;
 
@@ -1645,12 +1645,12 @@ async function run(): Promise<CommanderCommand> {
 
       // Allow env var to enable partial messages (used by sandbox gateway for baku)
       const effectiveIncludePartialMessages =
-        includePartialMessages || isEnvTruthy(process.env.CLAUDE_CODE_INCLUDE_PARTIAL_MESSAGES);
+        includePartialMessages || isEnvTruthy(process.env.AHCODE_INCLUDE_PARTIAL_MESSAGES);
 
       // Enable all hook event types when explicitly requested via SDK option
-      // or when running in CLAUDE_CODE_REMOTE mode (CCR needs them).
+      // or when running in AHCODE_REMOTE mode (CCR needs them).
       // Without this, only SessionStart and Setup events are emitted.
-      if (includeHookEvents || isEnvTruthy(process.env.CLAUDE_CODE_REMOTE)) {
+      if (includeHookEvents || isEnvTruthy(process.env.AHCODE_REMOTE)) {
         setAllHookEventsEnabled(true);
       }
 
@@ -1724,19 +1724,17 @@ async function run(): Promise<CommanderCommand> {
       // Download file resources if specified via --file flag
       const fileSpecs = (options as { file?: string[] }).file;
       if (fileSpecs && fileSpecs.length > 0) {
-        // Get session ingress token (provided by EnvManager via CLAUDE_CODE_SESSION_ACCESS_TOKEN)
+        // Get session ingress token (provided by EnvManager via AHCODE_SESSION_ACCESS_TOKEN)
         const sessionToken = getSessionIngressAuthToken();
         if (!sessionToken) {
           process.stderr.write(
-            chalk.red(
-              'Error: Session token required for file downloads. CLAUDE_CODE_SESSION_ACCESS_TOKEN must be set.\n',
-            ),
+            chalk.red('Error: Session token required for file downloads. AHCODE_SESSION_ACCESS_TOKEN must be set.\n'),
           );
           process.exit(1);
         }
 
         // Resolve session ID: prefer remote session ID, fall back to internal session ID
-        const fileSessionId = process.env.CLAUDE_CODE_REMOTE_SESSION_ID || getSessionId();
+        const fileSessionId = process.env.AHCODE_REMOTE_SESSION_ID || getSessionId();
 
         const files = parseFileSpecs(fileSpecs);
         if (files.length > 0) {
@@ -2086,8 +2084,8 @@ async function run(): Promise<CommanderCommand> {
         }
       }
 
-      // Store additional directories for CLAUDE.md loading (controlled by env var)
-      setAdditionalDirectoriesForClaudeMd(addDir);
+      // Store additional directories for AHCODE.md loading (controlled by env var)
+      setAdditionalDirectoriesForAhcodeMd(addDir);
 
       // Channel server allowlist from --channels flag — servers whose
       // inbound push notifications should register this session. The option
@@ -2189,9 +2187,9 @@ async function run(): Promise<CommanderCommand> {
       if ((feature('KAIROS') || feature('KAIROS_BRIEF')) && baseTools.length > 0) {
         /* eslint-disable @typescript-eslint/no-require-imports */
         const { BRIEF_TOOL_NAME, LEGACY_BRIEF_TOOL_NAME } =
-          require('@claude-code-best/builtin-tools/tools/BriefTool/prompt.js') as typeof import('@claude-code-best/builtin-tools/tools/BriefTool/prompt.js');
+          require('@ahcode/builtin-tools/tools/BriefTool/prompt.js') as typeof import('@ahcode/builtin-tools/tools/BriefTool/prompt.js');
         const { isBriefEntitled } =
-          require('@claude-code-best/builtin-tools/tools/BriefTool/BriefTool.js') as typeof import('@claude-code-best/builtin-tools/tools/BriefTool/BriefTool.js');
+          require('@ahcode/builtin-tools/tools/BriefTool/BriefTool.js') as typeof import('@ahcode/builtin-tools/tools/BriefTool/BriefTool.js');
         /* eslint-enable @typescript-eslint/no-require-imports */
         const parsed = parseToolListFromCLI(baseTools);
         if ((parsed.includes(BRIEF_TOOL_NAME) || parsed.includes(LEGACY_BRIEF_TOOL_NAME)) && isBriefEntitled()) {
@@ -2332,7 +2330,7 @@ async function run(): Promise<CommanderCommand> {
 
       // Apply coordinator mode tool filtering for headless path
       // (mirrors useMergedTools.ts filtering for REPL/interactive path)
-      if (feature('COORDINATOR_MODE') && isEnvTruthy(process.env.CLAUDE_CODE_COORDINATOR_MODE)) {
+      if (feature('COORDINATOR_MODE') && isEnvTruthy(process.env.AHCODE_COORDINATOR_MODE)) {
         const { applyCoordinatorToolFilter } = await import('./utils/toolPool.js');
         tools = applyCoordinatorToolFilter(tools);
       }
@@ -2384,7 +2382,7 @@ async function run(): Promise<CommanderCommand> {
       // pure in-memory array pushes (<1ms, zero I/O) that getBundledSkills()
       // reads synchronously. Previously ran inside setup() after ~20ms of
       // await points, so the parallel getCommands() memoized an empty list.
-      if (process.env.CLAUDE_CODE_ENTRYPOINT !== 'local-agent') {
+      if (process.env.AHCODE_ENTRYPOINT !== 'local-agent') {
         initBuiltinPlugins();
         initBundledSkills();
       }
@@ -2424,7 +2422,7 @@ async function run(): Promise<CommanderCommand> {
 
       if (getIsNonInteractiveSession()) {
         // Apply full merged settings env now (including project-scoped
-        // .claude/settings.json PATH/GIT_DIR/GIT_WORK_TREE) so gitExe() and
+        // .ahcode/settings.json PATH/GIT_DIR/GIT_WORK_TREE) so gitExe() and
         // the git spawn below see it. Trust is implicit in -p mode; the
         // docstring at managedEnv.ts:96-97 says this applies "potentially
         // dangerous environment variables such as LD_PRELOAD, PATH" from all
@@ -2449,7 +2447,7 @@ async function run(): Promise<CommanderCommand> {
         // (same gate as prefetchSystemContextIfSafe).
         void getSystemContext();
         // Kick getUserContext now too — its first await (fs.readFile in
-        // getMemoryFiles) yields naturally, so the CLAUDE.md directory walk
+        // getMemoryFiles) yields naturally, so the AHCODE.md directory walk
         // runs during the ~280ms overlap window before the context
         // Promise.all join in print.ts. The void getUserContext() in
         // startDeferredPrefetches becomes a memoize cache-hit.
@@ -2702,7 +2700,7 @@ async function run(): Promise<CommanderCommand> {
       ) {
         /* eslint-disable @typescript-eslint/no-require-imports */
         const { isBriefEntitled } =
-          require('@claude-code-best/builtin-tools/tools/BriefTool/BriefTool.js') as typeof import('@claude-code-best/builtin-tools/tools/BriefTool/BriefTool.js');
+          require('@ahcode/builtin-tools/tools/BriefTool/BriefTool.js') as typeof import('@ahcode/builtin-tools/tools/BriefTool/BriefTool.js');
         /* eslint-enable @typescript-eslint/no-require-imports */
         if (isBriefEntitled()) {
           setUserMsgOptIn(true);
@@ -2713,7 +2711,7 @@ async function run(): Promise<CommanderCommand> {
       // access and conflict with delegation instructions.
       if (
         (feature('PROACTIVE') || feature('KAIROS')) &&
-        ((options as { proactive?: boolean }).proactive || isEnvTruthy(process.env.CLAUDE_CODE_PROACTIVE)) &&
+        ((options as { proactive?: boolean }).proactive || isEnvTruthy(process.env.AHCODE_PROACTIVE)) &&
         !coordinatorModeModule?.isCoordinatorMode()
       ) {
         /* eslint-disable @typescript-eslint/no-require-imports */
@@ -2721,7 +2719,7 @@ async function run(): Promise<CommanderCommand> {
           feature('KAIROS') || feature('KAIROS_BRIEF')
             ? (() => {
                 const briefTool =
-                  require('@claude-code-best/builtin-tools/tools/BriefTool/BriefTool.js') as typeof import('@claude-code-best/builtin-tools/tools/BriefTool/BriefTool.js');
+                  require('@ahcode/builtin-tools/tools/BriefTool/BriefTool.js') as typeof import('@ahcode/builtin-tools/tools/BriefTool/BriefTool.js');
                 return typeof briefTool.isBriefEnabled === 'function' && briefTool.isBriefEnabled()
                   ? 'Call SendUserMessage at checkpoints to mark where things stand.'
                   : 'The user will see any text you output.';
@@ -2748,7 +2746,7 @@ async function run(): Promise<CommanderCommand> {
         const ctx = getRenderContext(false);
         getFpsMetrics = ctx.getFpsMetrics;
         stats = ctx.stats;
-        // Install asciicast recorder before Ink mounts (ant-only, opt-in via CLAUDE_CODE_TERMINAL_RECORDING=1)
+        // Install asciicast recorder before Ink mounts (ant-only, opt-in via AHCODE_TERMINAL_RECORDING=1)
         if (process.env.USER_TYPE === 'ant') {
           installAsciicastRecorder();
         }
@@ -3069,7 +3067,7 @@ async function run(): Promise<CommanderCommand> {
 
       logManagedSettings();
 
-      // Register PID file for concurrent-session detection (~/.claude/sessions/)
+      // Register PID file for concurrent-session detection (~/.ahcode/sessions/)
       // and fire multi-clauding telemetry. Lives here (not init.ts) so only the
       // REPL path registers — not subcommands like `claude doctor`. Chained:
       // count must run after register's write completes or it misses our own file.
@@ -3621,7 +3619,7 @@ async function run(): Promise<CommanderCommand> {
       // environments can be recreated at any user message index. Gating:
       //   - Build-time: this import is stubbed in external builds.
       //   - Runtime: uploader checks github.com/anthropics/* remote + gcloud auth.
-      //   - Safety: CLAUDE_CODE_DISABLE_SESSION_DATA_UPLOAD=1 bypasses (tests set this).
+      //   - Safety: AHCODE_DISABLE_SESSION_DATA_UPLOAD=1 bypasses (tests set this).
       // Import is dynamic + async to avoid adding startup latency.
       const sessionUploaderPromise = process.env.USER_TYPE === 'ant' ? import('./utils/sessionDataUploader.js') : null;
 
@@ -4028,7 +4026,7 @@ async function run(): Promise<CommanderCommand> {
           }
         }
 
-        // --remote and --teleport both create/resume Claude Code Web (CCR) sessions.
+        // --remote and --teleport both create/resume AH Code Web (CCR) sessions.
         // Remote Control (--rc) is a separate feature gated in initReplBridge.ts.
         if (remote !== null || teleport) {
           await waitForPolicyLimitsToLoad();
@@ -4456,7 +4454,7 @@ async function run(): Promise<CommanderCommand> {
         // knows the session originated externally. Linux xdg-open and
         // browsers with "always allow" set dispatch the link with no OS-level
         // confirmation, so this is the only signal the user gets that the
-        // prompt — and the working directory / CLAUDE.md it implies — came
+        // prompt — and the working directory / AHCODE.md it implies — came
         // from an external source rather than something they typed.
         let deepLinkBanner: ReturnType<typeof createSystemMessage> | null = null;
         if (feature('LODESTONE')) {
@@ -4499,7 +4497,7 @@ async function run(): Promise<CommanderCommand> {
         );
       }
     })
-    .version(`${MACRO.VERSION} (Claude Code)`, '-v, --version', 'Output the version number');
+    .version(`${MACRO.VERSION} (AH Code)`, '-v, --version', 'Output the version number');
 
   // Worktree flags
   program.option('-w, --worktree [name]', 'Create a new git worktree for this session (optionally specify a name)');
@@ -4584,7 +4582,7 @@ async function run(): Promise<CommanderCommand> {
   );
 
   // Teammate identity options (set by leader when spawning tmux teammates)
-  // These replace the CLAUDE_CODE_* environment variables
+  // These replace the AHCODE_* environment variables
   program.addOption(new Option('--agent-id <id>', 'Teammate agent ID').hideHelp());
   program.addOption(new Option('--agent-name <name>', 'Teammate display name').hideHelp());
   program.addOption(new Option('--team-name <name>', 'Team name for swarm coordination').hideHelp());
@@ -4660,7 +4658,7 @@ async function run(): Promise<CommanderCommand> {
 
   mcp
     .command('serve')
-    .description(`Start the Claude Code MCP server`)
+    .description(`Start the AH Code MCP server`)
     .option('-d, --debug', 'Enable debug mode', () => true)
     .option('--verbose', 'Override verbose mode setting from config', () => true)
     .action(async ({ debug, verbose }: { debug?: boolean; verbose?: boolean }) => {
@@ -4738,7 +4736,7 @@ async function run(): Promise<CommanderCommand> {
   if (feature('DIRECT_CONNECT')) {
     program
       .command('server')
-      .description('Start a Claude Code session server')
+      .description('Start a AH Code session server')
       .option('--port <number>', 'HTTP port', '0')
       .option('--host <string>', 'Bind address', '0.0.0.0')
       .option('--auth-token <token>', 'Bearer token for auth')
@@ -4826,7 +4824,7 @@ async function run(): Promise<CommanderCommand> {
     program
       .command('ssh <host> [dir]')
       .description(
-        'Run Claude Code on a remote host over SSH. Deploys the binary and ' +
+        'Run AH Code on a remote host over SSH. Deploys the binary and ' +
           'tunnels API auth back through your local machine — no remote setup needed.',
       )
       .option('--permission-mode <mode>', 'Permission mode for the remote session')
@@ -4847,7 +4845,7 @@ async function run(): Promise<CommanderCommand> {
         // rewrite predicate didn't match.
         process.stderr.write(
           'Usage: claude ssh <user@host | ssh-config-alias> [dir]\n\n' +
-            "Runs Claude Code on a remote Linux host. You don't need to install\n" +
+            "Runs AH Code on a remote Linux host. You don't need to install\n" +
             'anything on the remote or run `claude auth login` there — the binary is\n' +
             'deployed over SSH and API auth tunnels back through your local machine.\n',
         );
@@ -4861,7 +4859,7 @@ async function run(): Promise<CommanderCommand> {
   if (feature('DIRECT_CONNECT')) {
     program
       .command('open <cc-url>')
-      .description('Connect to a Claude Code server (internal — use cc:// URLs)')
+      .description('Connect to a AH Code server (internal — use cc:// URLs)')
       .option('-p, --print [prompt]', 'Print mode (headless)')
       .option('--output-format <format>', 'Output format: text, json, stream-json', 'text')
       .action(
@@ -4962,7 +4960,7 @@ async function run(): Promise<CommanderCommand> {
   const pluginCmd = program
     .command('plugin')
     .alias('plugins')
-    .description('Manage Claude Code plugins')
+    .description('Manage AH Code plugins')
     .configureHelp(createSortedHelpConfig());
 
   pluginCmd
@@ -4989,7 +4987,7 @@ async function run(): Promise<CommanderCommand> {
   // Marketplace subcommands
   const marketplaceCmd = pluginCmd
     .command('marketplace')
-    .description('Manage Claude Code marketplaces')
+    .description('Manage AH Code marketplaces')
     .configureHelp(createSortedHelpConfig());
 
   marketplaceCmd
@@ -4998,7 +4996,7 @@ async function run(): Promise<CommanderCommand> {
     .addOption(coworkOption())
     .option(
       '--sparse <paths...>',
-      'Limit checkout to specific directories via git sparse-checkout (for monorepos). Example: --sparse .claude-plugin plugins',
+      'Limit checkout to specific directories via git sparse-checkout (for monorepos). Example: --sparse .ahcode-plugin plugins',
     )
     .option('--scope <scope>', 'Where to declare the marketplace: user (default), project, or local')
     .action(
@@ -5063,7 +5061,7 @@ async function run(): Promise<CommanderCommand> {
     .alias('rm')
     .description('Uninstall an installed plugin')
     .option('-s, --scope <scope>', 'Uninstall from scope: user, project, or local', 'user')
-    .option('--keep-data', "Preserve the plugin's persistent data directory (~/.claude/plugins/data/{id}/)")
+    .option('--keep-data', "Preserve the plugin's persistent data directory (~/.ahcode/plugins/data/{id}/)")
     .addOption(coworkOption())
     .action(
       async (
@@ -5279,7 +5277,7 @@ async function run(): Promise<CommanderCommand> {
   program
     .command('doctor')
     .description(
-      'Check the health of your Claude Code auto-updater. Note: The workspace trust dialog is skipped and stdio servers from .mcp.json are spawned for health checks. Only use this command in directories you trust.',
+      'Check the health of your AH Code auto-updater. Note: The workspace trust dialog is skipped and stdio servers from .mcp.json are spawned for health checks. Only use this command in directories you trust.',
     )
     .action(async () => {
       const [{ doctorHandler }, { createRoot }] = await Promise.all([
@@ -5290,12 +5288,12 @@ async function run(): Promise<CommanderCommand> {
       await doctorHandler(root);
     });
 
-  // claude up — run the project's CLAUDE.md "# claude up" setup instructions.
+  // claude up — run the project's AHCODE.md "# claude up" setup instructions.
   if (process.env.USER_TYPE === 'ant') {
     program
       .command('up')
       .description(
-        '[ANT-ONLY] Initialize or upgrade the local dev environment using the "# claude up" section of the nearest CLAUDE.md',
+        '[ANT-ONLY] Initialize or upgrade the local dev environment using the "# claude up" section of the nearest AHCODE.md',
       )
       .action(async () => {
         const { up } = await import('src/cli/up.js');
@@ -5332,9 +5330,7 @@ async function run(): Promise<CommanderCommand> {
   // claude install
   program
     .command('install [target]')
-    .description(
-      'Install Claude Code native build. Use [target] to specify version (stable, latest, or specific version)',
-    )
+    .description('Install AH Code native build. Use [target] to specify version (stable, latest, or specific version)')
     .option('--force', 'Force installation even if already installed')
     .action(async (target: string | undefined, options: { force?: boolean }) => {
       const { installHandler } = await import('./cli/handlers/util.js');
@@ -5344,7 +5340,7 @@ async function run(): Promise<CommanderCommand> {
   // claude update — update ccb to the latest version via npm or bun
   program
     .command('update')
-    .description('Update claude-code-best (ccb) to the latest version')
+    .description('Update ah-code (ccb) to the latest version')
     .action(async () => {
       const { updateCCB } = await import('./cli/updateCCB.js');
       await updateCCB();
@@ -5606,7 +5602,7 @@ async function logTenguInit({
 function maybeActivateProactive(options: unknown): void {
   if (
     (feature('PROACTIVE') || feature('KAIROS')) &&
-    ((options as { proactive?: boolean }).proactive || isEnvTruthy(process.env.CLAUDE_CODE_PROACTIVE))
+    ((options as { proactive?: boolean }).proactive || isEnvTruthy(process.env.AHCODE_PROACTIVE))
   ) {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const proactiveModule = require('./proactive/index.js');
@@ -5619,18 +5615,18 @@ function maybeActivateProactive(options: unknown): void {
 function maybeActivateBrief(options: unknown): void {
   if (!(feature('KAIROS') || feature('KAIROS_BRIEF'))) return;
   const briefFlag = (options as { brief?: boolean }).brief;
-  const briefEnv = isEnvTruthy(process.env.CLAUDE_CODE_BRIEF);
+  const briefEnv = isEnvTruthy(process.env.AHCODE_BRIEF);
   if (!briefFlag && !briefEnv) return;
-  // --brief / CLAUDE_CODE_BRIEF are explicit opt-ins: check entitlement,
+  // --brief / AHCODE_BRIEF are explicit opt-ins: check entitlement,
   // then set userMsgOptIn to activate the tool + prompt section. The env
   // var also grants entitlement (isBriefEntitled() reads it), so setting
-  // CLAUDE_CODE_BRIEF=1 alone force-enables for dev/testing — no GB gate
+  // AHCODE_BRIEF=1 alone force-enables for dev/testing — no GB gate
   // needed. initialIsBriefOnly reads getUserMsgOptIn() directly.
   // Conditional require: static import would leak the tool name string
   // into external builds via BriefTool.ts → prompt.ts.
   /* eslint-disable @typescript-eslint/no-require-imports */
   const { isBriefEntitled } =
-    require('@claude-code-best/builtin-tools/tools/BriefTool/BriefTool.js') as typeof import('@claude-code-best/builtin-tools/tools/BriefTool/BriefTool.js');
+    require('@ahcode/builtin-tools/tools/BriefTool/BriefTool.js') as typeof import('@ahcode/builtin-tools/tools/BriefTool/BriefTool.js');
   /* eslint-enable @typescript-eslint/no-require-imports */
   const entitled = isBriefEntitled();
   if (entitled) {

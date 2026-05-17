@@ -1,13 +1,13 @@
 /**
  * Undercover mode — safety utilities for contributing to public/open-source repos.
  *
- * When active, Claude Code adds safety instructions to commit/PR prompts and
+ * When active, AH Code adds safety instructions to commit/PR prompts and
  * strips all attribution to avoid leaking internal model codenames, project
  * names, or other Anthropic-internal information. The model is not told what
  * model it is.
  *
  * Activation:
- *   - CLAUDE_CODE_UNDERCOVER=1 — force ON (even in internal repos)
+ *   - AHCODE_UNDERCOVER=1 — force ON (even in internal repos)
  *   - Otherwise AUTO: active UNLESS the repo remote matches the internal
  *     allowlist (INTERNAL_MODEL_REPOS in commitAttribution.ts). Safe default
  *     is ON — Claude may push to public remotes from a CWD that isn't itself
@@ -27,7 +27,7 @@ import { isEnvTruthy } from './envUtils.js'
 
 export function isUndercover(): boolean {
   if (process.env.USER_TYPE === 'ant') {
-    if (isEnvTruthy(process.env.CLAUDE_CODE_UNDERCOVER)) return true
+    if (isEnvTruthy(process.env.AHCODE_UNDERCOVER)) return true
     // Auto: active unless we've positively confirmed we're in an allowlisted
     // internal repo. 'external', 'none', and null (check not yet run) all
     // resolve to ON. The check is primed in setup.ts; only 'internal' → OFF.
@@ -49,7 +49,7 @@ NEVER include in commit messages or PR descriptions:
 - Unreleased model version numbers (e.g., sonnet-4-8)
 - Internal repo or project names (e.g., claude-cli-internal, anthropics/…)
 - Internal tooling, Slack channels, or short links (e.g., go/cc, #claude-code-…)
-- The phrase "Claude Code" or any mention that you are an AI
+- The phrase "AH Code" or any mention that you are an AI
 - Any hint of what model or version you are
 - Co-Authored-By lines or any other attribution
 
@@ -65,7 +65,7 @@ BAD (never write these):
 - "Fix bug found while testing with Claude Capybara"
 - "1-shotted by claude-opus-4-6"
 - "1-shotted by claude-opus-4-7"
-- "Generated with Claude Code"
+- "Generated with AH Code"
 - "Co-Authored-By: Claude Opus 4.6 <…>"
 - "Co-Authored-By: Claude Opus 4.7 <…>"
 `
@@ -82,7 +82,7 @@ BAD (never write these):
 export function shouldShowUndercoverAutoNotice(): boolean {
   if (process.env.USER_TYPE === 'ant') {
     // If forced via env, user already knows; don't nag.
-    if (isEnvTruthy(process.env.CLAUDE_CODE_UNDERCOVER)) return false
+    if (isEnvTruthy(process.env.AHCODE_UNDERCOVER)) return false
     if (!isUndercover()) return false
     if (getGlobalConfig().hasSeenUndercoverAutoNotice) return false
     return true

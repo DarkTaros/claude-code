@@ -10,7 +10,7 @@ import type {
 import {
   AGENT_TOOL_NAME,
   LEGACY_AGENT_TOOL_NAME,
-} from '@claude-code-best/builtin-tools/tools/AgentTool/constants.js'
+} from '@ahcode/builtin-tools/tools/AgentTool/constants.js'
 import { getAnthropicApiKeyWithSource } from '../auth.js'
 import { getCwd } from '../cwd.js'
 import { getFastModeState } from '../fastMode.js'
@@ -71,7 +71,7 @@ export function buildSystemInitMessage(inputs: SystemInitInputs): SDKMessage {
       .map(c => c.name),
     apiKeySource: getAnthropicApiKeyWithSource().source as ApiKeySource,
     betas: getSdkBetas(),
-    claude_code_version: MACRO.VERSION,
+    ahcode_version: MACRO.VERSION,
     output_style: outputStyle,
     agents: inputs.agents.map(agent => agent.agentType),
     skills: inputs.skills

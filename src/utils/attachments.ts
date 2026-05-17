@@ -15,7 +15,7 @@ import {
   MaxFileReadTokenExceededError,
   type Output as FileReadToolOutput,
   readImageWithTokenBudget,
-} from '@claude-code-best/builtin-tools/tools/FileReadTool/FileReadTool.js'
+} from '@ahcode/builtin-tools/tools/FileReadTool/FileReadTool.js'
 import { FileTooLargeError, readFileInRange } from './readFileInRange.js'
 import { expandPath } from './path.js'
 import { countCharInString } from './stringUtils.js'
@@ -23,11 +23,11 @@ import { uniq } from './array.js'
 import { getFsImplementation } from './fsOperations.js'
 import { readdir, stat } from 'fs/promises'
 import type { IDESelection } from '../hooks/useIdeSelection.js'
-import { TODO_WRITE_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/TodoWriteTool/constants.js'
-import { TASK_CREATE_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/TaskCreateTool/constants.js'
-import { TASK_UPDATE_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/TaskUpdateTool/constants.js'
-import { BASH_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/BashTool/toolName.js'
-import { SKILL_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/SkillTool/constants.js'
+import { TODO_WRITE_TOOL_NAME } from '@ahcode/builtin-tools/tools/TodoWriteTool/constants.js'
+import { TASK_CREATE_TOOL_NAME } from '@ahcode/builtin-tools/tools/TaskCreateTool/constants.js'
+import { TASK_UPDATE_TOOL_NAME } from '@ahcode/builtin-tools/tools/TaskUpdateTool/constants.js'
+import { BASH_TOOL_NAME } from '@ahcode/builtin-tools/tools/BashTool/toolName.js'
+import { SKILL_TOOL_NAME } from '@ahcode/builtin-tools/tools/SkillTool/constants.js'
 import type { TodoList } from './todo/types.js'
 import {
   type Task,
@@ -42,7 +42,7 @@ import {
   getMemoryFilesForNestedDirectory,
   getConditionalRulesForCwdLevelDirectory,
   type MemoryFileInfo,
-} from './claudemd.js'
+} from './ahcodemd.js'
 import { dirname, parse, relative, resolve } from 'path'
 import { getCwd } from 'src/utils/cwd.js'
 import { getViewedTeammateTask } from '../state/selectors.js'
@@ -62,7 +62,7 @@ import {
   isValidImagePaste,
 } from 'src/types/textInputTypes.js'
 import { randomUUID, type UUID } from 'crypto'
-import { getSnippetForTwoFileDiff } from '@claude-code-best/builtin-tools/tools/FileEditTool/utils.js'
+import { getSnippetForTwoFileDiff } from '@ahcode/builtin-tools/tools/FileEditTool/utils.js'
 import type {
   ContentBlockParam,
   ImageBlockParam,
@@ -81,7 +81,7 @@ import { getSkillToolCommands, getMcpSkillCommands } from '../commands.js'
 import type { Command } from '../types/command.js'
 import uniqBy from 'lodash-es/uniqBy.js'
 import { getProjectRoot } from '../bootstrap/state.js'
-import { formatCommandsWithinBudget } from '@claude-code-best/builtin-tools/tools/SkillTool/prompt.js'
+import { formatCommandsWithinBudget } from '@ahcode/builtin-tools/tools/SkillTool/prompt.js'
 import { getContextWindowForModel } from './context.js'
 import type { DiscoverySignal } from '../services/skillSearch/signals.js'
 // Conditional require for DCE. All skill-search string literals that would
@@ -111,8 +111,8 @@ const autoModeStateModule = feature('TRANSCRIPT_CLASSIFIER')
 import {
   MAX_LINES_TO_READ,
   FILE_READ_TOOL_NAME,
-} from '@claude-code-best/builtin-tools/tools/FileReadTool/prompt.js'
-import { getDefaultFileReadingLimits } from '@claude-code-best/builtin-tools/tools/FileReadTool/limits.js'
+} from '@ahcode/builtin-tools/tools/FileReadTool/prompt.js'
+import { getDefaultFileReadingLimits } from '@ahcode/builtin-tools/tools/FileReadTool/limits.js'
 import { cacheKeys, type FileStateCache } from './fileStateCache.js'
 import {
   createAbortController,
@@ -123,13 +123,13 @@ import {
   getFileModificationTimeAsync,
   isFileWithinReadSizeLimit,
 } from './file.js'
-import type { AgentDefinition } from '@claude-code-best/builtin-tools/tools/AgentTool/loadAgentsDir.js'
-import { filterAgentsByMcpRequirements } from '@claude-code-best/builtin-tools/tools/AgentTool/loadAgentsDir.js'
-import { AGENT_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/AgentTool/constants.js'
+import type { AgentDefinition } from '@ahcode/builtin-tools/tools/AgentTool/loadAgentsDir.js'
+import { filterAgentsByMcpRequirements } from '@ahcode/builtin-tools/tools/AgentTool/loadAgentsDir.js'
+import { AGENT_TOOL_NAME } from '@ahcode/builtin-tools/tools/AgentTool/constants.js'
 import {
   formatAgentLine,
   shouldInjectAgentListInMessages,
-} from '@claude-code-best/builtin-tools/tools/AgentTool/prompt.js'
+} from '@ahcode/builtin-tools/tools/AgentTool/prompt.js'
 import { filterDeniedAgents } from './permissions/permissions.js'
 import { getSubscriptionType } from './auth.js'
 import { mcpInfoFromString } from '../services/mcp/mcpStringUtils.js'
@@ -197,13 +197,13 @@ import {
   isThinkingMessage,
 } from './messages.js'
 import { isHumanTurn } from './messagePredicates.js'
-import { isEnvTruthy, getClaudeConfigHomeDir } from './envUtils.js'
+import { isEnvTruthy, getAhcodeConfigHomeDir } from './envUtils.js'
 import { feature } from 'bun:bundle'
 /* eslint-disable @typescript-eslint/no-require-imports */
 const BRIEF_TOOL_NAME: string | null =
   feature('KAIROS') || feature('KAIROS_BRIEF')
     ? (
-        require('@claude-code-best/builtin-tools/tools/BriefTool/prompt.js') as typeof import('@claude-code-best/builtin-tools/tools/BriefTool/prompt.js')
+        require('@ahcode/builtin-tools/tools/BriefTool/prompt.js') as typeof import('@ahcode/builtin-tools/tools/BriefTool/prompt.js')
       ).BRIEF_TOOL_NAME
     : null
 const sessionTranscriptModule = feature('KAIROS')
@@ -235,7 +235,7 @@ import { isAgentSwarmsEnabled } from './agentSwarmsEnabled.js'
 import { findRelevantMemories } from '../memdir/findRelevantMemories.js'
 import { memoryAge, memoryFreshnessText } from '../memdir/memoryAge.js'
 import { getAutoMemPath, isAutoMemoryEnabled } from '../memdir/paths.js'
-import { getAgentMemoryDir } from '@claude-code-best/builtin-tools/tools/AgentTool/agentMemory.js'
+import { getAgentMemoryDir } from '@ahcode/builtin-tools/tools/AgentTool/agentMemory.js'
 import {
   readUnreadMessages,
   markMessagesAsReadByPredicate,
@@ -777,8 +777,8 @@ export async function getAttachments(
   options?: { skipSkillDiscovery?: boolean },
 ): Promise<Attachment[]> {
   if (
-    isEnvTruthy(process.env.CLAUDE_CODE_DISABLE_ATTACHMENTS) ||
-    isEnvTruthy(process.env.CLAUDE_CODE_SIMPLE)
+    isEnvTruthy(process.env.AHCODE_DISABLE_ATTACHMENTS) ||
+    isEnvTruthy(process.env.AHCODE_SIMPLE)
   ) {
     // query.ts:removeFromQueue dequeues these unconditionally after
     // getAttachmentMessages runs — returning [] here silently drops them.
@@ -1699,7 +1699,7 @@ async function getSelectedLinesFromIDE(
 /**
  * Computes the directories to process for nested memory file loading.
  * Returns two lists:
- * - nestedDirs: Directories between CWD and targetPath (processed for CLAUDE.md + all rules)
+ * - nestedDirs: Directories between CWD and targetPath (processed for AHCODE.md + all rules)
  * - cwdLevelDirs: Directories from root to CWD (processed for conditional rules only)
  *
  * @param targetPath The target file path
@@ -1771,7 +1771,7 @@ export function memoryFilesToAttachments(
   for (const memoryFile of memoryFiles) {
     // Dedup: loadedNestedMemoryPaths is a non-evicting Set; readFileState
     // is a 100-entry LRU that drops entries in busy sessions, so relying
-    // on it alone re-injects the same CLAUDE.md on every eviction cycle.
+    // on it alone re-injects the same AHCODE.md on every eviction cycle.
     if (toolUseContext.loadedNestedMemoryPaths?.has(memoryFile.path)) {
       continue
     }
@@ -1828,12 +1828,12 @@ export function memoryFilesToAttachments(
 
 /**
  * Loads nested memory files for a given file path and returns them as attachments.
- * This function performs directory traversal to find CLAUDE.md files and conditional rules
+ * This function performs directory traversal to find AHCODE.md files and conditional rules
  * that apply to the target file path.
  *
  * Processing order (must be preserved):
  * 1. Managed/User conditional rules matching targetPath
- * 2. Nested directories (CWD → target): CLAUDE.md + unconditional + conditional rules
+ * 2. Nested directories (CWD → target): AHCODE.md + unconditional + conditional rules
  * 3. CWD-level directories (root → CWD): conditional rules only
  *
  * @param filePath The file path to get nested memory files for
@@ -1878,7 +1878,7 @@ async function getNestedMemoryAttachmentsForFile(
     )
 
     // Phase 3: Process nested directories (CWD → target)
-    // Each directory gets: CLAUDE.md + unconditional rules + conditional rules
+    // Each directory gets: AHCODE.md + unconditional rules + conditional rules
     for (const dir of nestedDirs) {
       const memoryFiles = (
         await getMemoryFilesForNestedDirectory(dir, filePath, processedPaths)
@@ -2213,7 +2213,7 @@ export async function getChangedFiles(
 }
 
 /**
- * Processes paths that need nested memory attachments and checks for nested CLAUDE.md files
+ * Processes paths that need nested memory attachments and checks for nested AHCODE.md files
  * Uses nestedMemoryAttachmentTriggers field from ToolUseContext
  */
 async function getNestedMemoryAttachments(
@@ -3601,7 +3601,7 @@ async function getAsyncHookResponseAttachments(): Promise<Attachment[]> {
 
 /**
  * Get teammate mailbox attachments for agent swarm communication
- * Teammates are independent Claude Code sessions running in parallel (swarms),
+ * Teammates are independent AH Code sessions running in parallel (swarms),
  * not parent-child subagent relationships.
  *
  * This function checks two sources for messages:
@@ -3870,7 +3870,7 @@ function getTeamContextAttachment(messages: Message[]): Attachment[] {
     return []
   }
 
-  const configDir = getClaudeConfigHomeDir()
+  const configDir = getAhcodeConfigHomeDir()
   const teamConfigPath = `${configDir}/teams/${teamName}/config.json`
   const taskListPath = `${configDir}/tasks/${teamName}/`
 
@@ -3890,7 +3890,7 @@ function getTokenUsageAttachment(
   messages: Message[],
   model: string,
 ): Attachment[] {
-  if (!isEnvTruthy(process.env.CLAUDE_CODE_ENABLE_TOKEN_USAGE_ATTACHMENT)) {
+  if (!isEnvTruthy(process.env.AHCODE_ENABLE_TOKEN_USAGE_ATTACHMENT)) {
     return []
   }
 
@@ -3979,7 +3979,7 @@ async function getVerifyPlanReminderAttachment(
 ): Promise<Attachment[]> {
   if (
     process.env.USER_TYPE !== 'ant' ||
-    !isEnvTruthy(process.env.CLAUDE_CODE_VERIFY_PLAN)
+    !isEnvTruthy(process.env.AHCODE_VERIFY_PLAN)
   ) {
     return []
   }

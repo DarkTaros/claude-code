@@ -20,7 +20,7 @@ import {
   getPendingHintSnapshot,
   markShownThisSession,
   subscribeToPendingHint,
-} from '../utils/claudeCodeHints.js';
+} from '../utils/ahcodeCodeHints.js';
 import { logForDebugging } from '../utils/debug.js';
 import {
   disableHintRecommendations,
@@ -31,12 +31,12 @@ import {
 import { installPluginFromMarketplace } from '../utils/plugins/pluginInstallationHelpers.js';
 import { installPluginAndNotify, usePluginRecommendationBase } from './usePluginRecommendationBase.js';
 
-type UseClaudeCodeHintRecommendationResult = {
+type UseAhcodeHintRecommendationResult = {
   recommendation: PluginHintRecommendation | null;
   handleResponse: (response: 'yes' | 'no' | 'disable') => void;
 };
 
-export function useClaudeCodeHintRecommendation(): UseClaudeCodeHintRecommendationResult {
+export function useAhcodeHintRecommendation(): UseAhcodeHintRecommendationResult {
   const pendingHint = React.useSyncExternalStore(subscribeToPendingHint, getPendingHintSnapshot);
   const { addNotification } = useNotifications();
   const { recommendation, clearRecommendation, tryResolve } = usePluginRecommendationBase<PluginHintRecommendation>();
@@ -46,9 +46,7 @@ export function useClaudeCodeHintRecommendation(): UseClaudeCodeHintRecommendati
     tryResolve(async () => {
       const resolved = await resolvePluginHint(pendingHint);
       if (resolved) {
-        logForDebugging(
-          `[useClaudeCodeHintRecommendation] surfacing ${resolved.pluginId} from ${resolved.sourceCommand}`,
-        );
+        logForDebugging(`[useAhcodeHintRecommendation] surfacing ${resolved.pluginId} from ${resolved.sourceCommand}`);
         markShownThisSession();
       }
       // Drop the slot — but only if it still holds the hint we just

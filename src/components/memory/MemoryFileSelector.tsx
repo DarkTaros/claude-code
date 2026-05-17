@@ -13,10 +13,10 @@ import { logEvent } from '../../services/analytics/index.js';
 import { isAutoDreamEnabled } from '../../services/autoDream/config.js';
 import { readLastConsolidatedAt } from '../../services/autoDream/consolidationLock.js';
 import { useAppState } from '../../state/AppState.js';
-import { getAgentMemoryDir } from '@claude-code-best/builtin-tools/tools/AgentTool/agentMemory.js';
+import { getAgentMemoryDir } from '@ahcode/builtin-tools/tools/AgentTool/agentMemory.js';
 import { openPath } from '../../utils/browser.js';
-import { getMemoryFiles, type MemoryFileInfo } from '../../utils/claudemd.js';
-import { getClaudeConfigHomeDir } from '../../utils/envUtils.js';
+import { getMemoryFiles, type MemoryFileInfo } from '../../utils/ahcodemd.js';
+import { getAhcodeConfigHomeDir } from '../../utils/envUtils.js';
 import { getDisplayPath } from '../../utils/file.js';
 import { formatRelativeTimeAgo } from '../../utils/format.js';
 import { projectIsInGitRepo } from '../../utils/memory/versions.js';
@@ -47,9 +47,9 @@ type Props = {
 export function MemoryFileSelector({ onSelect, onCancel }: Props): React.ReactNode {
   const existingMemoryFiles = use(getMemoryFiles()) as MemoryFileInfo[];
 
-  // Create entries for User and Project CLAUDE.md even if they don't exist
-  const userMemoryPath = join(getClaudeConfigHomeDir(), 'CLAUDE.md');
-  const projectMemoryPath = join(getOriginalCwd(), 'CLAUDE.md');
+  // Create entries for User and Project AHCODE.md even if they don't exist
+  const userMemoryPath = join(getAhcodeConfigHomeDir(), 'AHCODE.md');
+  const projectMemoryPath = join(getOriginalCwd(), 'AHCODE.md');
 
   // Check if these are already in the existing files
   const hasUserMemory = existingMemoryFiles.some(f => f.path === userMemoryPath);
@@ -115,9 +115,9 @@ export function MemoryFileSelector({ onSelect, onCancel }: Props): React.ReactNo
     const isGit = projectIsInGitRepo(getOriginalCwd());
 
     if (file.type === 'User' && !file.isNested) {
-      description = 'Saved in ~/.claude/CLAUDE.md';
+      description = 'Saved in ~/.ahcode/AHCODE.md';
     } else if (file.type === 'Project' && !file.isNested && file.path === projectMemoryPath) {
-      description = `${isGit ? 'Checked in at' : 'Saved in'} ./CLAUDE.md`;
+      description = `${isGit ? 'Checked in at' : 'Saved in'} ./AHCODE.md`;
     } else if (file.parent) {
       // For imported files (with @-import)
       description = '@-imported';

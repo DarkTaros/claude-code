@@ -17,7 +17,7 @@ WORKFLOW_SCRIPTS 实现基于文件的多步自动化工作流。用户可以定
 | WorkflowTool | `packages/builtin-tools/src/tools/WorkflowTool/WorkflowTool.ts` | **部分实现** — tool schema + 渲染完整，call 返回运行时缺失提示 |
 | Workflow 权限 | `packages/builtin-tools/src/tools/WorkflowTool/WorkflowPermissionRequest.tsx` | **部分实现** — 权限请求组件 |
 | 常量 | `packages/builtin-tools/src/tools/WorkflowTool/constants.ts` | **实现** — 工具名 + 目录名 + 文件扩展名常量 |
-| 命令创建 | `packages/builtin-tools/src/tools/WorkflowTool/createWorkflowCommand.ts` | **实现** — 扫描 .claude/workflows/ 目录创建 Command 对象 |
+| 命令创建 | `packages/builtin-tools/src/tools/WorkflowTool/createWorkflowCommand.ts` | **实现** — 扫描 .ahcode/workflows/ 目录创建 Command 对象 |
 | 捆绑工作流 | `packages/builtin-tools/src/tools/WorkflowTool/bundled/index.ts` | **实现** — 内置工作流初始化 |
 | 本地工作流任务 | `src/tasks/LocalWorkflowTask/LocalWorkflowTask.ts` | **Stub** — 类型 + 空操作 |
 | UI 任务组件 | `src/components/tasks/src/tasks/LocalWorkflowTask/` | **Stub** — 空导出 |

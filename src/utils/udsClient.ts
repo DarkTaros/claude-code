@@ -1,7 +1,7 @@
 /**
- * UDS Client — connect to peer Claude Code sessions via Unix Domain Sockets.
+ * UDS Client — connect to peer AH Code sessions via Unix Domain Sockets.
  *
- * Peers are discovered by reading the PID-file registry in ~/.claude/sessions/
+ * Peers are discovered by reading the PID-file registry in ~/.ahcode/sessions/
  * (written by concurrentSessions.ts) and checking each entry's
  * `messagingSocketPath` field. A peer is "alive" if its PID is running and
  * its socket accepts a ping/pong round-trip.
@@ -10,7 +10,7 @@
 import { createConnection, type Socket } from 'net'
 import { readdir, readFile } from 'fs/promises'
 import { join } from 'path'
-import { getClaudeConfigHomeDir } from './envUtils.js'
+import { getAhcodeConfigHomeDir } from './envUtils.js'
 import { logForDebugging } from './debug.js'
 import { errorMessage, isFsInaccessible } from './errors.js'
 import { isProcessRunning } from './genericProcessUtils.js'
@@ -54,7 +54,7 @@ export class UdsPeerConnectionError extends Error {
 // ---------------------------------------------------------------------------
 
 function getSessionsDir(): string {
-  return join(getClaudeConfigHomeDir(), 'sessions')
+  return join(getAhcodeConfigHomeDir(), 'sessions')
 }
 
 // ---------------------------------------------------------------------------

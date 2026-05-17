@@ -1,6 +1,6 @@
 ---
 title: "Ant 特权世界 - Anthropic 员工专属功能"
-description: "完整记录 Claude Code 身份门控层：USER_TYPE === 'ant' 时解锁的专属工具、命令、API 和代号体系，揭示内外部构建的差异。"
+description: "完整记录 AH Code 身份门控层：USER_TYPE === 'ant' 时解锁的专属工具、命令、API 和代号体系，揭示内外部构建的差异。"
 keywords: ["Ant 特权", "USER_TYPE", "身份门控", "内部功能", "Anthropic 员工"]
 ---
 
@@ -36,11 +36,11 @@ keywords: ["Ant 特权", "USER_TYPE", "身份门控", "内部功能", "Anthropic
 /* eslint-disable custom-rules/no-process-env-top-level, @typescript-eslint/no-require-imports */
 const REPLTool =
   process.env.USER_TYPE === 'ant'
-    ? require('@claude-code-best/builtin-tools/tools/REPLTool/REPLTool.js').REPLTool
+    ? require('@ahcode/builtin-tools/tools/REPLTool/REPLTool.js').REPLTool
     : null
 const SuggestBackgroundPRTool =
   process.env.USER_TYPE === 'ant'
-    ? require('@claude-code-best/builtin-tools/tools/SuggestBackgroundPRTool/SuggestBackgroundPRTool.js')
+    ? require('@ahcode/builtin-tools/tools/SuggestBackgroundPRTool/SuggestBackgroundPRTool.js')
         .SuggestBackgroundPRTool
     : null
 ```
@@ -94,13 +94,13 @@ const SuggestBackgroundPRTool =
 
 ## Beta API Headers
 
-Claude Code 向 API 发送的 beta headers 分布在 `src/constants/betas.ts`（主注册表）和其他文件中，按可见性分为以下几类：
+AH Code 向 API 发送的 beta headers 分布在 `src/constants/betas.ts`（主注册表）和其他文件中，按可见性分为以下几类：
 
 ### 公开 Headers（所有构建均发送）
 
 | Header | 功能 | 额外条件 |
 |--------|------|----------|
-| `claude-code-20250219` | Claude Code 标识 | 非 Haiku 时始终发送；Haiku 在 agentic 模式下也发送 |
+| `claude-code-20250219` | AH Code 标识 | 非 Haiku 时始终发送；Haiku 在 agentic 模式下也发送 |
 | `effort-2025-11-24` | 推理强度控制 | 动态注入 |
 | `task-budgets-2026-03-13` | 任务预算 | 始终通过 `addAgenticBetas()` 注入 |
 | `fast-mode-2026-02-01` | 快速模式 | 通过 sticky-on latch 动态注入 |
@@ -167,7 +167,7 @@ Anthropic 有浓厚的"动物命名"文化：
 
 | 代号 | 身份 | 出处 |
 |------|------|------|
-| **Tengu**（天狗） | Claude Code 项目代号 | 所有 GrowthBook flags 的 `tengu_` 前缀、分析事件名称 |
+| **Tengu**（天狗） | AH Code 项目代号 | 所有 GrowthBook flags 的 `tengu_` 前缀、分析事件名称 |
 | **Capybara**（水豚） | 模型代号 | `src/constants/prompts.ts` 中被 Undercover Mode 屏蔽的名称 |
 | **Fennec**（耳廓狐） | 已退役模型别名 | `src/migrations/migrateFennecToOpus.ts`——曾用名已迁移到 Opus |
 
@@ -179,29 +179,29 @@ Anthropic 有浓厚的"动物命名"文化：
 
 <AccordionGroup>
   <Accordion title="功能禁用开关">
-    - `CLAUDE_CODE_SIMPLE` — 简化模式（禁用高级功能）
-    - `CLAUDE_CODE_DISABLE_THINKING` — 禁用 thinking
+    - `AHCODE_SIMPLE` — 简化模式（禁用高级功能）
+    - `AHCODE_DISABLE_THINKING` — 禁用 thinking
     - `DISABLE_INTERLEAVED_THINKING` — 禁用交错思考
     - `DISABLE_COMPACT` — 禁用消息压缩
     - `DISABLE_AUTO_COMPACT` — 禁用自动压缩
-    - `CLAUDE_CODE_DISABLE_AUTO_MEMORY` — 禁用自动记忆
-    - `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS` — 禁用后台任务
-    - `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS` — 禁用实验性 beta headers
+    - `AHCODE_DISABLE_AUTO_MEMORY` — 禁用自动记忆
+    - `AHCODE_DISABLE_BACKGROUND_TASKS` — 禁用后台任务
+    - `AHCODE_DISABLE_EXPERIMENTAL_BETAS` — 禁用实验性 beta headers
     - `USE_API_CONTEXT_MANAGEMENT` — 上下文管理工具清除（需 ant）
   </Accordion>
   <Accordion title="功能启用开关">
-    - `CLAUDE_CODE_VERIFY_PLAN` — 启用 VerifyPlanExecutionTool
+    - `AHCODE_VERIFY_PLAN` — 启用 VerifyPlanExecutionTool
     - `ENABLE_LSP_TOOL` — 启用 LSP 语言服务器工具
-    - `CLAUDE_CODE_UNDERCOVER` — 强制启用 Undercover Mode
-    - `CLAUDE_CODE_TERMINAL_RECORDING` — 启用终端录制（asciicast）
-    - `CLAUDE_CODE_ABLATION_BASELINE` — 启用基线对照模式
+    - `AHCODE_UNDERCOVER` — 强制启用 Undercover Mode
+    - `AHCODE_TERMINAL_RECORDING` — 启用终端录制（asciicast）
+    - `AHCODE_ABLATION_BASELINE` — 启用基线对照模式
   </Accordion>
   <Accordion title="环境配置">
-    - `CLAUDE_CODE_REMOTE` — 远程执行模式（自动增加堆内存限制）
-    - `CLAUDE_CODE_COORDINATOR_MODE` — 启用 Coordinator 模式
+    - `AHCODE_REMOTE` — 远程执行模式（自动增加堆内存限制）
+    - `AHCODE_COORDINATOR_MODE` — 启用 Coordinator 模式
     - `CLAUDE_INTERNAL_FC_OVERRIDES` — GrowthBook flag 覆盖（ant-only）
     - `IS_DEMO` — 演示模式（隐藏内部命令和敏感信息）
-    - `CLAUDE_CODE_ENTRYPOINT` — 入口类型标识（`cli` | 其他）
+    - `AHCODE_ENTRYPOINT` — 入口类型标识（`cli` | 其他）
   </Accordion>
 </AccordionGroup>
 

@@ -117,7 +117,7 @@ describe('beta header constants safety', () => {
 // ── Part 3: getExtraBodyParams beta 合并逻辑 ─────────────────────
 
 describe('getExtraBodyParams beta merge', () => {
-  // getExtraBodyParams 从 CLAUDE_CODE_EXTRA_BODY 解析 JSON 并合并 betaHeaders
+  // getExtraBodyParams 从 AHCODE_EXTRA_BODY 解析 JSON 并合并 betaHeaders
   // 我们在这里验证合并逻辑的边界情况
 
   test('empty beta headers array should not add anthropic_beta', () => {
@@ -201,18 +201,14 @@ describe('ANTHROPIC_BETAS env var parsing', () => {
 describe('request params beta assembly (simulated)', () => {
   test('simulates the full beta assembly pipeline with empty constants', () => {
     // 模拟 claude.ts 中 paramsFromContext 的 beta 组装流程
-    const CLAUDE_CODE_HEADER = 'claude-code-20250219'
+    const AHCODE_HEADER = 'claude-code-20250219'
     const INTERLEAVED_HEADER = 'interleaved-thinking-2025-05-14'
     const CONTEXT_1M_HEADER = 'context-1m-2025-08-07'
     const CACHE_EDITING_HEADER = '' // 空！
     const AFK_MODE_HEADER = '' // 也是空！
 
     // Step 1: 基础 betas（来自 getAllModelBetas）
-    const baseBetas = [
-      CLAUDE_CODE_HEADER,
-      INTERLEAVED_HEADER,
-      CONTEXT_1M_HEADER,
-    ]
+    const baseBetas = [AHCODE_HEADER, INTERLEAVED_HEADER, CONTEXT_1M_HEADER]
 
     // Step 2: paramsFromContext 中的动态添加
     const betasParams = [...baseBetas]
@@ -245,7 +241,7 @@ describe('request params beta assembly (simulated)', () => {
     // 验证：没有空字符串泄漏
     expect(filteredBetas).not.toContain('')
     expect(filteredBetas).toEqual([
-      CLAUDE_CODE_HEADER,
+      AHCODE_HEADER,
       INTERLEAVED_HEADER,
       CONTEXT_1M_HEADER,
     ])

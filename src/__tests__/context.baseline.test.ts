@@ -9,7 +9,7 @@ import {
   getUserContext,
   setSystemPromptInjection,
 } from '../context'
-import { clearMemoryFileCaches } from '../utils/claudemd'
+import { clearMemoryFileCaches } from '../utils/ahcodemd'
 import {
   cleanupTempDir,
   createTempDir,
@@ -17,22 +17,22 @@ import {
 } from '../../tests/mocks/file-system'
 
 let tempDir = ''
-let projectClaudeMdContent = ''
+let projectAhcodeMdContent = ''
 
 beforeEach(async () => {
   tempDir = await createTempDir('context-baseline-')
-  projectClaudeMdContent = `baseline-${Date.now()}`
+  projectAhcodeMdContent = `baseline-${Date.now()}`
 
   resetStateForTests()
   setOriginalCwd(tempDir)
   setProjectRoot(tempDir)
-  await writeTempFile(tempDir, 'CLAUDE.md', projectClaudeMdContent)
+  await writeTempFile(tempDir, 'AHCODE.md', projectAhcodeMdContent)
 
   clearMemoryFileCaches()
   getUserContext.cache.clear?.()
   getSystemContext.cache.clear?.()
   setSystemPromptInjection(null)
-  delete process.env.CLAUDE_CODE_DISABLE_CLAUDE_MDS
+  delete process.env.AHCODE_DISABLE_AHCODE_MDS
 })
 
 afterEach(async () => {
@@ -40,7 +40,7 @@ afterEach(async () => {
   getUserContext.cache.clear?.()
   getSystemContext.cache.clear?.()
   setSystemPromptInjection(null)
-  delete process.env.CLAUDE_CODE_DISABLE_CLAUDE_MDS
+  delete process.env.AHCODE_DISABLE_AHCODE_MDS
   resetStateForTests()
   if (tempDir) {
     await cleanupTempDir(tempDir)
@@ -48,34 +48,34 @@ afterEach(async () => {
 })
 
 describe('context baseline', () => {
-  test('getUserContext includes currentDate and project CLAUDE.md content', async () => {
+  test('getUserContext includes currentDate and project AHCODE.md content', async () => {
     const ctx = await getUserContext()
 
     expect(ctx.currentDate).toContain("Today's date is")
-    expect(ctx.claudeMd).toContain(projectClaudeMdContent)
+    expect(ctx.ahcodeMd).toContain(projectAhcodeMdContent)
   })
 
-  test('CLAUDE_CODE_DISABLE_CLAUDE_MDS suppresses claudeMd loading', async () => {
-    process.env.CLAUDE_CODE_DISABLE_CLAUDE_MDS = '1'
+  test('AHCODE_DISABLE_AHCODE_MDS suppresses claudeMd loading', async () => {
+    process.env.AHCODE_DISABLE_AHCODE_MDS = '1'
 
     const ctx = await getUserContext()
 
     expect(ctx.currentDate).toContain("Today's date is")
-    expect(ctx.claudeMd).toBeUndefined()
+    expect(ctx.ahcodeMd).toBeUndefined()
   })
 
   test('setSystemPromptInjection clears the memoized user-context cache', async () => {
     const first = await getUserContext()
-    process.env.CLAUDE_CODE_DISABLE_CLAUDE_MDS = '1'
+    process.env.AHCODE_DISABLE_AHCODE_MDS = '1'
 
     const second = await getUserContext()
-    expect(first.claudeMd).toContain(projectClaudeMdContent)
-    expect(second.claudeMd).toContain(projectClaudeMdContent)
+    expect(first.ahcodeMd).toContain(projectAhcodeMdContent)
+    expect(second.ahcodeMd).toContain(projectAhcodeMdContent)
 
     setSystemPromptInjection('cache-break')
 
     const third = await getUserContext()
-    expect(third.claudeMd).toBeUndefined()
+    expect(third.ahcodeMd).toBeUndefined()
   })
 
   test('getSystemContext reflects system prompt injection after cache invalidation', async () => {

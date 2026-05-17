@@ -20,13 +20,11 @@ import { errorMessage, getErrnoCode } from '../errors.js'
 
 type SafeString = AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS
 
-// CDN-fronted domain for the public GCS bucket (same bucket the native
-// binary ships from — nativeInstaller/download.ts:24 uses the raw GCS URL).
-// `{sha}.zip` is content-addressed so CDN can cache it indefinitely;
-// `latest` has Cache-Control: max-age=300 so CDN staleness is bounded.
-// Backend (anthropic#317037) populates this prefix.
+// Public GCS bucket for Anthropic's official marketplace mirror. This is an
+// external Claude Code release bucket, not AH Code-owned infrastructure, so it
+// intentionally keeps the upstream `claude-code-releases` path.
 const GCS_BASE =
-  'https://downloads.claude.ai/claude-code-releases/plugins/claude-plugins-official'
+  'https://storage.googleapis.com/claude-code-dist-86c565f3-f756-42ad-8dfa-d59b1c096819/claude-code-releases/plugins/claude-plugins-official'
 
 // Zip arc paths are seed-dir-relative (marketplaces/claude-plugins-official/…)
 // so the titanium seed machinery can use the same zip. Strip this prefix when
@@ -158,7 +156,7 @@ export async function fetchOfficialMarketplaceFromGcs(
     // values below are static enums or a git SHA — not code/filepaths/PII.
     logEvent('tengu_plugin_remote_fetch', {
       source: 'marketplace_gcs' as SafeString,
-      host: 'downloads.claude.ai' as SafeString,
+      host: 'storage.googleapis.com' as SafeString,
       is_official: true,
       outcome: outcome as SafeString,
       duration_ms: Math.round(performance.now() - start),

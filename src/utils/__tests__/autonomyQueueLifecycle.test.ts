@@ -43,9 +43,8 @@ afterEach(async () => {
 
 describe('autonomyQueueLifecycle', () => {
   async function consumeQueuedAutonomyAttachmentTurn() {
-    const previousDisableAttachments =
-      process.env.CLAUDE_CODE_DISABLE_ATTACHMENTS
-    process.env.CLAUDE_CODE_DISABLE_ATTACHMENTS = '1'
+    const previousDisableAttachments = process.env.AHCODE_DISABLE_ATTACHMENTS
+    process.env.AHCODE_DISABLE_ATTACHMENTS = '1'
     try {
       const snapshot = getCommandsByMaxPriority('later')
       const claim = await claimConsumableQueuedAutonomyCommands(
@@ -85,9 +84,9 @@ describe('autonomyQueueLifecycle', () => {
       return { attachments, runningRunIds: claim.claimedRunIds, nextCommands }
     } finally {
       if (previousDisableAttachments === undefined) {
-        delete process.env.CLAUDE_CODE_DISABLE_ATTACHMENTS
+        delete process.env.AHCODE_DISABLE_ATTACHMENTS
       } else {
-        process.env.CLAUDE_CODE_DISABLE_ATTACHMENTS = previousDisableAttachments
+        process.env.AHCODE_DISABLE_ATTACHMENTS = previousDisableAttachments
       }
     }
   }

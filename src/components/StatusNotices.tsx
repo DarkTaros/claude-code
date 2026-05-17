@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { use } from 'react';
 import { Box } from '@anthropic/ink';
-import type { AgentDefinitionsResult } from '@claude-code-best/builtin-tools/tools/AgentTool/loadAgentsDir.js';
-import { getMemoryFiles } from '../utils/claudemd.js';
+import type { AgentDefinitionsResult } from '@ahcode/builtin-tools/tools/AgentTool/loadAgentsDir.js';
+import { getMemoryFiles } from '../utils/ahcodemd.js';
 import { getGlobalConfig } from '../utils/config.js';
 import { getActiveNotices, type StatusNoticeContext } from '../utils/statusNoticeDefinitions.js';
 

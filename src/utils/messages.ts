@@ -104,21 +104,21 @@ import type {
   HookEvent,
   SDKAssistantMessageError,
 } from 'src/entrypoints/agentSdkTypes.js'
-import { EXPLORE_AGENT } from '@claude-code-best/builtin-tools/tools/AgentTool/built-in/exploreAgent.js'
-import { PLAN_AGENT } from '@claude-code-best/builtin-tools/tools/AgentTool/built-in/planAgent.js'
-import { areExplorePlanAgentsEnabled } from '@claude-code-best/builtin-tools/tools/AgentTool/builtInAgents.js'
-import { AGENT_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/AgentTool/constants.js'
-import { ASK_USER_QUESTION_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/AskUserQuestionTool/prompt.js'
-import { BashTool } from '@claude-code-best/builtin-tools/tools/BashTool/BashTool.js'
-import { ExitPlanModeV2Tool } from '@claude-code-best/builtin-tools/tools/ExitPlanModeTool/ExitPlanModeV2Tool.js'
-import { FileEditTool } from '@claude-code-best/builtin-tools/tools/FileEditTool/FileEditTool.js'
+import { EXPLORE_AGENT } from '@ahcode/builtin-tools/tools/AgentTool/built-in/exploreAgent.js'
+import { PLAN_AGENT } from '@ahcode/builtin-tools/tools/AgentTool/built-in/planAgent.js'
+import { areExplorePlanAgentsEnabled } from '@ahcode/builtin-tools/tools/AgentTool/builtInAgents.js'
+import { AGENT_TOOL_NAME } from '@ahcode/builtin-tools/tools/AgentTool/constants.js'
+import { ASK_USER_QUESTION_TOOL_NAME } from '@ahcode/builtin-tools/tools/AskUserQuestionTool/prompt.js'
+import { BashTool } from '@ahcode/builtin-tools/tools/BashTool/BashTool.js'
+import { ExitPlanModeV2Tool } from '@ahcode/builtin-tools/tools/ExitPlanModeTool/ExitPlanModeV2Tool.js'
+import { FileEditTool } from '@ahcode/builtin-tools/tools/FileEditTool/FileEditTool.js'
 import {
   FILE_READ_TOOL_NAME,
   MAX_LINES_TO_READ,
-} from '@claude-code-best/builtin-tools/tools/FileReadTool/prompt.js'
-import { FileWriteTool } from '@claude-code-best/builtin-tools/tools/FileWriteTool/FileWriteTool.js'
-import { GLOB_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/GlobTool/prompt.js'
-import { GREP_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/GrepTool/prompt.js'
+} from '@ahcode/builtin-tools/tools/FileReadTool/prompt.js'
+import { FileWriteTool } from '@ahcode/builtin-tools/tools/FileWriteTool/FileWriteTool.js'
+import { GLOB_TOOL_NAME } from '@ahcode/builtin-tools/tools/GlobTool/prompt.js'
+import { GREP_TOOL_NAME } from '@ahcode/builtin-tools/tools/GrepTool/prompt.js'
 import type { DeepImmutable } from 'src/types/utils.js'
 import { getStrictToolResultPairing } from '../bootstrap/state.js'
 import type { SpinnerMode } from '../components/Spinner.js'
@@ -139,11 +139,11 @@ import {
 import {
   FileReadTool,
   type Output as FileReadToolOutput,
-} from '@claude-code-best/builtin-tools/tools/FileReadTool/FileReadTool.js'
-import { SEND_MESSAGE_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/SendMessageTool/constants.js'
-import { TASK_CREATE_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/TaskCreateTool/constants.js'
-import { TASK_OUTPUT_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/TaskOutputTool/constants.js'
-import { TASK_UPDATE_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/TaskUpdateTool/constants.js'
+} from '@ahcode/builtin-tools/tools/FileReadTool/FileReadTool.js'
+import { SEND_MESSAGE_TOOL_NAME } from '@ahcode/builtin-tools/tools/SendMessageTool/constants.js'
+import { TASK_CREATE_TOOL_NAME } from '@ahcode/builtin-tools/tools/TaskCreateTool/constants.js'
+import { TASK_OUTPUT_TOOL_NAME } from '@ahcode/builtin-tools/tools/TaskOutputTool/constants.js'
+import { TASK_UPDATE_TOOL_NAME } from '@ahcode/builtin-tools/tools/TaskUpdateTool/constants.js'
 import type { PermissionMode } from '../types/permissions.js'
 import { normalizeToolInput, normalizeToolInputForAPI } from './api.js'
 import { getCurrentProjectConfig } from './config.js'
@@ -236,7 +236,7 @@ export function AUTO_REJECT_MESSAGE(toolName: string): string {
   return `Permission to use ${toolName} has been denied. ${DENIAL_WORKAROUND_GUIDANCE}`
 }
 export function DONT_ASK_REJECT_MESSAGE(toolName: string): string {
-  return `Permission to use ${toolName} has been denied because Claude Code is running in don't ask mode. ${DENIAL_WORKAROUND_GUIDANCE}`
+  return `Permission to use ${toolName} has been denied because AH Code is running in don't ask mode. ${DENIAL_WORKAROUND_GUIDANCE}`
 }
 export const NO_RESPONSE_REQUESTED = 'No response requested.'
 
@@ -4652,12 +4652,10 @@ You have exited auto mode. The user may now want to interact more directly. You 
       ])
     }
     case 'verify_plan_reminder': {
-      // Dead code elimination: CLAUDE_CODE_VERIFY_PLAN='false' in external builds, so === 'true' check allows Bun to eliminate the string
+      // Dead code elimination: AHCODE_VERIFY_PLAN='false' in external builds, so === 'true' check allows Bun to eliminate the string
       /* eslint-disable-next-line custom-rules/no-process-env-top-level */
       const toolName =
-        process.env.CLAUDE_CODE_VERIFY_PLAN === 'true'
-          ? 'VerifyPlanExecution'
-          : ''
+        process.env.AHCODE_VERIFY_PLAN === 'true' ? 'VerifyPlanExecution' : ''
       const content = `You have completed implementing the plan. Please call the "${toolName}" tool directly (NOT the ${AGENT_TOOL_NAME} tool or an agent) to verify that all plan items were completed correctly.`
       return wrapMessagesInSystemReminder([
         createUserMessage({ content, isMeta: true }),

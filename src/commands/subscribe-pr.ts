@@ -2,7 +2,7 @@ import * as fs from 'node:fs'
 import * as path from 'node:path'
 import type { Command, LocalCommandCall } from '../types/command.js'
 import { detectCurrentRepositoryWithHost } from '../utils/detectRepository.js'
-import { getClaudeConfigHomeDir } from '../utils/envUtils.js'
+import { getAhcodeConfigHomeDir } from '../utils/envUtils.js'
 
 /**
  * File-backed store for PR webhook subscriptions.
@@ -16,7 +16,7 @@ interface PRSubscription {
 }
 
 function getSubscriptionsFilePath(): string {
-  return path.join(getClaudeConfigHomeDir(), 'pr-subscriptions.json')
+  return path.join(getAhcodeConfigHomeDir(), 'pr-subscriptions.json')
 }
 
 function readSubscriptions(): PRSubscription[] {

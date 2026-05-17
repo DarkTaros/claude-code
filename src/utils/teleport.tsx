@@ -469,7 +469,7 @@ export async function teleportResumeCodeSession(
         error_type: 'no_access_token' as AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS,
       });
       throw new Error(
-        'Claude Code web sessions require authentication with a Claude.ai account. API key authentication is not sufficient. Please run /login to authenticate, or check your authentication status with /status.',
+        'AH Code web sessions require authentication with a Claude.ai account. API key authentication is not sufficient. Please run /login to authenticate, or check your authentication status with /status.',
       );
     }
 
@@ -694,7 +694,7 @@ export async function teleportFromSessionsAPI(
       });
       throw new TeleportOperationError(
         `${sessionId} not found.`,
-        `${sessionId} not found.\n${chalk.dim('Run /status in Claude Code to check your account.')}`,
+        `${sessionId} not found.\n${chalk.dim('Run /status in AH Code to check your account.')}`,
       );
     }
 
@@ -839,7 +839,7 @@ export async function teleportToRemote(options: {
   /**
    * Per-session env vars merged into session_context.environment_variables.
    * Write-only at the API layer (stripped from Get/List responses). When
-   * environmentId is set, CLAUDE_CODE_OAUTH_TOKEN is auto-injected from the
+   * environmentId is set, AHCODE_OAUTH_TOKEN is auto-injected from the
    * caller's accessToken so the container's hook can hit inference (the
    * server only passes through what the caller sends; bughunter.go mints
    * its own, user sessions don't get one automatically).
@@ -916,7 +916,7 @@ export async function teleportToRemote(options: {
         'x-organization-uuid': orgUUID,
       };
       const envVars = {
-        CLAUDE_CODE_OAUTH_TOKEN: accessToken,
+        AHCODE_OAUTH_TOKEN: accessToken,
         ...(options.environmentVariables ?? {}),
       };
 

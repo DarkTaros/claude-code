@@ -7,7 +7,7 @@
  *    prompts and receiving streamed AI output back.
  *
  * Each CLI auto-creates a PipeServer at:
- *   ~/.claude/pipes/{session-short-id}.sock
+ *   ~/.ahcode/pipes/{session-short-id}.sock
  *
  * Protocol: newline-delimited JSON (NDJSON), one message per line.
  */
@@ -19,7 +19,7 @@ import { EventEmitter } from 'events'
 import type { ContentBlockParam } from '@anthropic-ai/sdk/resources/messages.mjs'
 import type { PermissionDecision } from '../types/permissions.js'
 import type { PermissionUpdate } from './permissions/PermissionUpdateSchema.js'
-import { getClaudeConfigHomeDir } from './envUtils.js'
+import { getAhcodeConfigHomeDir } from './envUtils.js'
 import { logError } from './log.js'
 import { attachNdjsonFramer } from './ndjsonFramer.js'
 
@@ -138,7 +138,7 @@ export type PipeServerOptions = {
 // ---------------------------------------------------------------------------
 
 export function getPipesDir(): string {
-  return join(getClaudeConfigHomeDir(), 'pipes')
+  return join(getAhcodeConfigHomeDir(), 'pipes')
 }
 
 export function getPipePath(name: string): string {

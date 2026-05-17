@@ -17,7 +17,7 @@ mock.module('src/utils/settings/constants.js', () => ({
   isSettingSourceEnabled: () => true,
   SETTING_SOURCES: ['localSettings', 'userSettings', 'projectSettings'],
   SOURCES: ['localSettings', 'userSettings', 'projectSettings'],
-  CLAUDE_CODE_SETTINGS_SCHEMA_URL:
+  AHCODE_SETTINGS_SCHEMA_URL:
     'https://json.schemastore.org/claude-code-settings.json',
 }))
 

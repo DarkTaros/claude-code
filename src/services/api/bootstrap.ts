@@ -19,7 +19,7 @@ import {
   updateSettingsForSource,
 } from '../../utils/settings/settings.js'
 import type { SettingsJson } from '../../utils/settings/types.js'
-import { getClaudeCodeUserAgent } from '../../utils/userAgent.js'
+import { getAhcodeUserAgent } from '../../utils/userAgent.js'
 import {
   type AhCliModelsResponse,
   fetchAhServerModels,
@@ -177,7 +177,7 @@ async function fetchBootstrapAPI(): Promise<BootstrapResponse | null> {
       const response = await axios.get<unknown>(endpoint, {
         headers: {
           'Content-Type': 'application/json',
-          'User-Agent': getClaudeCodeUserAgent(),
+          'User-Agent': getAhcodeUserAgent(),
           ...authHeaders,
         },
         timeout: 5000,

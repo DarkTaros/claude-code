@@ -1,8 +1,8 @@
-# SSH Remote — 远程主机运行 Claude Code
+# SSH Remote — 远程主机运行 AH Code
 
 ## 概述
 
-SSH Remote 提供两种方式在远程 Linux 主机上运行 Claude Code：
+SSH Remote 提供两种方式在远程 Linux 主机上运行 AH Code：
 
 1. **SSH Remote 模块**（`ccb ssh <host>`）— 本地 REPL + 远程工具执行，自动部署二进制 + 认证隧道
 2. **直接 SSH 运行**（`ssh <host> -t ccb`）— 远程已安装 ccb，直接启动交互式会话
@@ -259,7 +259,7 @@ bun install -g .
 # 创建的命令：
 #   ccb            → dist/cli-node.js
 #   ccb-bun        → dist/cli-bun.js
-#   claude-code-best → dist/cli-node.js
+#   ah-code → dist/cli-node.js
 
 # 安装位置：~/.bun/bin/ccb
 ```
@@ -274,7 +274,7 @@ npm install -g .
 
 ```bash
 ccb --version
-# → x.x.x (Claude Code)
+# → x.x.x (AH Code)
 ```
 
 ### 远端部署（全流程）

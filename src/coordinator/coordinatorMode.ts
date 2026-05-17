@@ -5,15 +5,15 @@ import {
   type AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS,
   logEvent,
 } from '../services/analytics/index.js'
-import { AGENT_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/AgentTool/constants.js'
-import { BASH_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/BashTool/toolName.js'
-import { FILE_EDIT_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/FileEditTool/constants.js'
-import { FILE_READ_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/FileReadTool/prompt.js'
-import { SEND_MESSAGE_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/SendMessageTool/constants.js'
-import { SYNTHETIC_OUTPUT_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/SyntheticOutputTool/SyntheticOutputTool.js'
-import { TASK_STOP_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/TaskStopTool/prompt.js'
-import { TEAM_CREATE_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/TeamCreateTool/constants.js'
-import { TEAM_DELETE_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/TeamDeleteTool/constants.js'
+import { AGENT_TOOL_NAME } from '@ahcode/builtin-tools/tools/AgentTool/constants.js'
+import { BASH_TOOL_NAME } from '@ahcode/builtin-tools/tools/BashTool/toolName.js'
+import { FILE_EDIT_TOOL_NAME } from '@ahcode/builtin-tools/tools/FileEditTool/constants.js'
+import { FILE_READ_TOOL_NAME } from '@ahcode/builtin-tools/tools/FileReadTool/prompt.js'
+import { SEND_MESSAGE_TOOL_NAME } from '@ahcode/builtin-tools/tools/SendMessageTool/constants.js'
+import { SYNTHETIC_OUTPUT_TOOL_NAME } from '@ahcode/builtin-tools/tools/SyntheticOutputTool/SyntheticOutputTool.js'
+import { TASK_STOP_TOOL_NAME } from '@ahcode/builtin-tools/tools/TaskStopTool/prompt.js'
+import { TEAM_CREATE_TOOL_NAME } from '@ahcode/builtin-tools/tools/TeamCreateTool/constants.js'
+import { TEAM_DELETE_TOOL_NAME } from '@ahcode/builtin-tools/tools/TeamDeleteTool/constants.js'
 import { isEnvTruthy } from '../utils/envUtils.js'
 
 // Checks the same gate as isScratchpadEnabled() in
@@ -35,7 +35,7 @@ const INTERNAL_WORKER_TOOLS = new Set([
 
 export function isCoordinatorMode(): boolean {
   if (feature('COORDINATOR_MODE')) {
-    return isEnvTruthy(process.env.CLAUDE_CODE_COORDINATOR_MODE)
+    return isEnvTruthy(process.env.AHCODE_COORDINATOR_MODE)
   }
   return false
 }
@@ -63,9 +63,9 @@ export function matchSessionMode(
 
   // Flip the env var — isCoordinatorMode() reads it live, no caching
   if (sessionIsCoordinator) {
-    process.env.CLAUDE_CODE_COORDINATOR_MODE = '1'
+    process.env.AHCODE_COORDINATOR_MODE = '1'
   } else {
-    delete process.env.CLAUDE_CODE_COORDINATOR_MODE
+    delete process.env.AHCODE_COORDINATOR_MODE
   }
 
   logEvent('tengu_coordinator_mode_switched', {
@@ -85,7 +85,7 @@ export function getCoordinatorUserContext(
     return {}
   }
 
-  const workerTools = isEnvTruthy(process.env.CLAUDE_CODE_SIMPLE)
+  const workerTools = isEnvTruthy(process.env.AHCODE_SIMPLE)
     ? [BASH_TOOL_NAME, FILE_READ_TOOL_NAME, FILE_EDIT_TOOL_NAME]
         .sort()
         .join(', ')
@@ -109,11 +109,11 @@ export function getCoordinatorUserContext(
 }
 
 export function getCoordinatorSystemPrompt(): string {
-  const workerCapabilities = isEnvTruthy(process.env.CLAUDE_CODE_SIMPLE)
+  const workerCapabilities = isEnvTruthy(process.env.AHCODE_SIMPLE)
     ? 'Workers have access to Bash, Read, and Edit tools, plus MCP tools from configured MCP servers.'
     : 'Workers have access to standard tools, MCP tools from configured MCP servers, and project skills via the Skill tool. Delegate skill invocations (e.g. /commit, /verify) to workers.'
 
-  return `You are Claude Code, an AI assistant that orchestrates software engineering tasks across multiple workers.
+  return `You are AH Code, an AI assistant that orchestrates software engineering tasks across multiple workers.
 
 ## 1. Your Role
 

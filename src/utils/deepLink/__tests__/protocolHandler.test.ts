@@ -34,21 +34,21 @@ const { handleDeepLinkUri, handleUrlSchemeLaunch } = await import(
 )
 
 const originalBundleId = process.env.__CFBundleIdentifier
-const originalUrlEvent = process.env.CLAUDE_CODE_URL_EVENT
+const originalUrlEvent = process.env.AHCODE_URL_EVENT
 
 beforeEach(() => {
   mockParseDeepLink.mockClear()
   mockLaunchInTerminal.mockClear()
   process.env.__CFBundleIdentifier = undefined
-  delete process.env.CLAUDE_CODE_URL_EVENT
+  delete process.env.AHCODE_URL_EVENT
 })
 
 afterEach(() => {
   process.env.__CFBundleIdentifier = originalBundleId
   if (originalUrlEvent === undefined) {
-    delete process.env.CLAUDE_CODE_URL_EVENT
+    delete process.env.AHCODE_URL_EVENT
   } else {
-    process.env.CLAUDE_CODE_URL_EVENT = originalUrlEvent
+    process.env.AHCODE_URL_EVENT = originalUrlEvent
   }
 })
 
@@ -69,7 +69,7 @@ describe('handleUrlSchemeLaunch', () => {
 
   test('handles a URL event after waiting for url-handler-napi', async () => {
     process.env.__CFBundleIdentifier = 'com.anthropic.claude-code-url-handler'
-    process.env.CLAUDE_CODE_URL_EVENT = 'claude-cli://prompt?q=hello'
+    process.env.AHCODE_URL_EVENT = 'claude-cli://prompt?q=hello'
 
     await expect(handleUrlSchemeLaunch()).resolves.toBe(0)
     expect(mockParseDeepLink).toHaveBeenCalledWith(

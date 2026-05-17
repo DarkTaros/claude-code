@@ -67,7 +67,7 @@ import {
   formatDeferredToolLine,
   isDeferredTool,
   SEARCH_EXTRA_TOOLS_TOOL_NAME,
-} from '@claude-code-best/builtin-tools/tools/SearchExtraToolsTool/prompt.js'
+} from '@ahcode/builtin-tools/tools/SearchExtraToolsTool/prompt.js'
 
 function convertToResponsesReasoningEffort(
   effortValue: unknown,
@@ -83,7 +83,7 @@ function convertToResponsesReasoningEffort(
 function getChatGPTResponsesReasoningEffort(
   effortValue: unknown,
 ): ResponsesReasoningEffort | undefined {
-  const envOverride = process.env.CLAUDE_CODE_EFFORT_LEVEL?.toLowerCase()
+  const envOverride = process.env.AHCODE_EFFORT_LEVEL?.toLowerCase()
   if (envOverride === 'auto' || envOverride === 'unset') return undefined
   return (
     convertToResponsesReasoningEffort(envOverride) ??
@@ -192,7 +192,7 @@ function assembleFinalAssistantOutputs(params: {
       createAssistantAPIErrorMessage({
         content:
           `Output truncated: response exceeded the ${maxTokens} token limit. ` +
-          `Set OPENAI_MAX_TOKENS or CLAUDE_CODE_MAX_OUTPUT_TOKENS to override.`,
+          `Set OPENAI_MAX_TOKENS or AHCODE_MAX_OUTPUT_TOKENS to override.`,
         apiError: 'max_output_tokens',
         error: 'max_output_tokens',
       }),
@@ -334,7 +334,7 @@ export async function* queryModelOpenAI(
     //     1. options.maxOutputTokensOverride (programmatic)
     //     2. OPENAI_MAX_TOKENS env var (OpenAI-specific, useful for local models
     //        with small context windows, e.g. RTX 3060 12GB running 65536-token models)
-    //     3. CLAUDE_CODE_MAX_OUTPUT_TOKENS env var (generic override)
+    //     3. AHCODE_MAX_OUTPUT_TOKENS env var (generic override)
     //     4. upperLimit default (64000)
     const { upperLimit } = getModelMaxOutputTokens(openaiModel)
     const maxTokens = resolveOpenAIMaxTokens(

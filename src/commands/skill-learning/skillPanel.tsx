@@ -80,7 +80,7 @@ async function stopSkillLearning(): Promise<string> {
 
   if (isSkillLearningEnabled()) {
     process.env.SKILL_LEARNING_ENABLED = '0';
-    process.env.CLAUDE_SKILL_LEARNING_DISABLE = '1';
+    process.env.AHCODE_SKILL_LEARNING_DISABLE = '1';
     lines.push('Skill Learning: disabled (SKILL_LEARNING_ENABLED=0)');
   } else {
     lines.push('Skill Learning: already disabled');

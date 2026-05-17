@@ -77,10 +77,10 @@ export function getSkillLearningRoot(
   options?: ObservationStoreOptions,
 ): string {
   if (options?.rootDir) return options.rootDir
-  if (process.env.CLAUDE_SKILL_LEARNING_HOME) {
-    return process.env.CLAUDE_SKILL_LEARNING_HOME
+  if (process.env.AHCODE_SKILL_LEARNING_HOME) {
+    return process.env.AHCODE_SKILL_LEARNING_HOME
   }
-  return join(process.env.HOME ?? process.cwd(), '.claude', 'skill-learning')
+  return join(process.env.HOME ?? process.cwd(), '.ahcode', 'skill-learning')
 }
 
 export function getObservationFilePath(

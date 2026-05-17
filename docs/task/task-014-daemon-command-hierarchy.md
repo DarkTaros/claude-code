@@ -240,7 +240,7 @@ const daemonCmd =
 ### 5. 更新 help 文本 (`daemon/main.ts`)
 
 ```
-Claude Code Daemon — background process management
+AH Code Daemon — background process management
 
 USAGE
   claude daemon [subcommand]

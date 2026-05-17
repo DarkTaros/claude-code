@@ -7,7 +7,7 @@ import { useExitOnCtrlCDWithKeybindings } from '../../hooks/useExitOnCtrlCDWithK
 import { Box, Link, Text } from '@anthropic/ink';
 import { useKeybinding } from '../../keybindings/useKeybinding.js';
 import { getMcpConfigsByScope } from '../../services/mcp/config.js';
-import { BASH_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/BashTool/toolName.js';
+import { BASH_TOOL_NAME } from '@ahcode/builtin-tools/tools/BashTool/toolName.js';
 import { checkHasTrustDialogAccepted, saveCurrentProjectConfig } from '../../utils/config.js';
 import { getCwd } from '../../utils/cwd.js';
 import { getFsImplementation } from '../../utils/fsOperations.js';
@@ -176,7 +176,7 @@ export function TrustDialog({ onDone, commands }: Props): React.ReactNode {
         <Text>
           Is this a project you trust? (Your own code, a well-known open source project, or work from your team).
         </Text>
-        <Text>Once trusted, Claude Code can read, edit, and run commands in this folder.</Text>
+        <Text>Once trusted, AH Code can read, edit, and run commands in this folder.</Text>
 
         <Text dimColor>
           <Link url="https://code.claude.com/docs/en/security">Security guide</Link>

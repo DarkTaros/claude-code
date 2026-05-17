@@ -5,10 +5,10 @@ import {
 import { sanitizeToolNameForAnalytics } from '../../../services/analytics/metadata.js'
 import type { ToolPermissionContext } from '../../../Tool.js'
 import {
-  CLAUDE_FOLDER_PERMISSION_PATTERN,
+  AHCODE_FOLDER_PERMISSION_PATTERN,
   FILE_EDIT_TOOL_NAME,
-  GLOBAL_CLAUDE_FOLDER_PERMISSION_PATTERN,
-} from '@claude-code-best/builtin-tools/tools/FileEditTool/constants.js'
+  GLOBAL_AHCODE_FOLDER_PERMISSION_PATTERN,
+} from '@ahcode/builtin-tools/tools/FileEditTool/constants.js'
 import { env } from '../../../utils/env.js'
 import { generateSuggestions } from '../../../utils/permissions/filesystem.js'
 import type { PermissionUpdate } from '../../../utils/permissions/PermissionUpdateSchema.js'
@@ -101,15 +101,15 @@ function handleAcceptSession(
 
   logPermissionEvent('accept', completionType, languageName, messageId)
 
-  // For claude-folder scope, grant session-level access to all .claude/ files
+  // For claude-folder scope, grant session-level access to all .ahcode/ files
   if (
     options?.scope === 'claude-folder' ||
     options?.scope === 'global-claude-folder'
   ) {
     const pattern =
       options.scope === 'global-claude-folder'
-        ? GLOBAL_CLAUDE_FOLDER_PERMISSION_PATTERN
-        : CLAUDE_FOLDER_PERMISSION_PATTERN
+        ? GLOBAL_AHCODE_FOLDER_PERMISSION_PATTERN
+        : AHCODE_FOLDER_PERMISSION_PATTERN
     const suggestions: PermissionUpdate[] = [
       {
         type: 'addRules',

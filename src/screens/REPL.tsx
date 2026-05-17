@@ -145,7 +145,7 @@ import { SpinnerWithVerb, BriefIdleStatus, type SpinnerMode } from '../component
 import { getSystemPrompt } from '../constants/prompts.js';
 import { buildEffectiveSystemPrompt } from '../utils/systemPrompt.js';
 import { getSystemContext, getUserContext } from '../context.js';
-import { getMemoryFiles } from '../utils/claudemd.js';
+import { getMemoryFiles } from '../utils/ahcodemd.js';
 import { startBackgroundHousekeeping } from '../utils/backgroundHousekeeping.js';
 import { getTotalCost, saveCurrentSessionCosts, resetCostState, getStoredSessionCosts } from '../cost-tracker.js';
 import { useCostSummary } from '../costHook.js';
@@ -215,9 +215,9 @@ import {
 import { buildPermissionUpdates } from '../components/permissions/ExitPlanModePermissionRequest/ExitPlanModePermissionRequest.js';
 import { stripDangerousPermissionsForAutoMode } from '../utils/permissions/permissionSetup.js';
 import { getScratchpadDir, isScratchpadEnabled } from '../utils/permissions/filesystem.js';
-import { WEB_FETCH_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/WebFetchTool/prompt.js';
-import { SLEEP_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/SleepTool/prompt.js';
-import { clearSpeculativeChecks } from '@claude-code-best/builtin-tools/tools/BashTool/bashPermissions.js';
+import { WEB_FETCH_TOOL_NAME } from '@ahcode/builtin-tools/tools/WebFetchTool/prompt.js';
+import { SLEEP_TOOL_NAME } from '@ahcode/builtin-tools/tools/SleepTool/prompt.js';
+import { clearSpeculativeChecks } from '@ahcode/builtin-tools/tools/BashTool/bashPermissions.js';
 import type { AutoUpdaterResult } from '../utils/autoUpdater.js';
 import { getGlobalConfig, saveGlobalConfig, getGlobalConfigWriteCount } from '../utils/config.js';
 import { hasConsoleBillingAccess } from '../utils/billing.js';
@@ -251,7 +251,7 @@ import {
   FORK_BOILERPLATE_TAG,
   LOCAL_COMMAND_STDOUT_TAG,
 } from '../constants/xml.js';
-import { FORK_SUBAGENT_TYPE } from '@claude-code-best/builtin-tools/tools/AgentTool/forkSubagent.js';
+import { FORK_SUBAGENT_TYPE } from '@ahcode/builtin-tools/tools/AgentTool/forkSubagent.js';
 import { escapeXml } from '../utils/xml.js';
 import type { ThinkingConfig } from '../utils/thinking.js';
 import { gracefulShutdownSync } from '../utils/gracefulShutdown.js';
@@ -287,9 +287,9 @@ import { processSessionStartHooks } from '../utils/sessionStart.js';
 import { executeSessionEndHooks, getSessionEndHookTimeoutMs } from '../utils/hooks.js';
 import { type IDESelection, useIdeSelection } from '../hooks/useIdeSelection.js';
 import { getTools, assembleToolPool } from '../tools.js';
-import type { AgentDefinition } from '@claude-code-best/builtin-tools/tools/AgentTool/loadAgentsDir.js';
-import { resolveAgentTools } from '@claude-code-best/builtin-tools/tools/AgentTool/agentToolUtils.js';
-import { resumeAgentBackground } from '@claude-code-best/builtin-tools/tools/AgentTool/resumeAgent.js';
+import type { AgentDefinition } from '@ahcode/builtin-tools/tools/AgentTool/loadAgentsDir.js';
+import { resolveAgentTools } from '@ahcode/builtin-tools/tools/AgentTool/agentToolUtils.js';
+import { resumeAgentBackground } from '@ahcode/builtin-tools/tools/AgentTool/resumeAgent.js';
 import { useMainLoopModel } from '../hooks/useMainLoopModel.js';
 import { useAppState, useSetAppState, useAppStateStore } from '../state/AppState.js';
 import type { ContentBlockParam, ContentBlock, ImageBlockParam } from '@anthropic-ai/sdk/resources/messages.mjs';
@@ -321,7 +321,7 @@ import {
 } from '../utils/toolResultStorage.js';
 import { partialCompactConversation } from '../services/compact/compact.js';
 import type { LogOption } from '../types/logs.js';
-import type { AgentColorName } from '@claude-code-best/builtin-tools/tools/AgentTool/agentColorManager.js';
+import type { AgentColorName } from '@ahcode/builtin-tools/tools/AgentTool/agentColorManager.js';
 import {
   fileHistoryMakeSnapshot,
   type FileHistoryState,
@@ -444,8 +444,8 @@ import { AUTO_MODE_DESCRIPTION } from 'src/components/AutoModeOptInDialog.js';
 import { useLspInitializationNotification } from 'src/hooks/notifs/useLspInitializationNotification.js';
 import { useLspPluginRecommendation } from 'src/hooks/useLspPluginRecommendation.js';
 import { LspRecommendationMenu } from 'src/components/LspRecommendation/LspRecommendationMenu.js';
-import { useClaudeCodeHintRecommendation } from 'src/hooks/useClaudeCodeHintRecommendation.js';
-import { PluginHintMenu } from 'src/components/ClaudeCodeHint/PluginHintMenu.js';
+import { useAhcodeHintRecommendation } from 'src/hooks/useAhcodeHintRecommendation.js';
+import { PluginHintMenu } from 'src/components/AhcodeHint/PluginHintMenu.js';
 import { SearchExtraToolsHint } from 'src/components/SearchExtraToolsHint.js';
 import { useSearchExtraToolsHint } from 'src/hooks/useSearchExtraToolsHint.js';
 import {
@@ -473,7 +473,7 @@ import {
   type AutoRunIssueReason,
 } from '../utils/autoRunIssue.js';
 import type { HookProgress } from '../types/hooks.js';
-import { TungstenLiveMonitor } from '@claude-code-best/builtin-tools/tools/TungstenTool/TungstenLiveMonitor.js';
+import { TungstenLiveMonitor } from '@ahcode/builtin-tools/tools/TungstenTool/TungstenLiveMonitor.js';
 // WebBrowserPanel removed — browser-lite returns results inline via tool_result.
 // For full browser interaction use Claude-in-Chrome MCP tools.
 import { IssueFlagBanner } from '../components/PromptInput/IssueFlagBanner.js';
@@ -544,7 +544,7 @@ function TranscriptModeFooter({
    *  right-aligned count instead of scroll hints. */
   searchBadge?: { current: number; count: number };
   /** Hide the ctrl+e hint. The [ dump path shares this footer with
-   *  env-opted dump (CLAUDE_CODE_NO_FLICKER=0 / DISABLE_VIRTUAL_SCROLL=1),
+   *  env-opted dump (AHCODE_NO_FLICKER=0 / DISABLE_VIRTUAL_SCROLL=1),
    *  but ctrl+e only works in the env case — useGlobalKeybindings.tsx
    *  gates on !virtualScrollActive which is env-derived, doesn't know
    *  [ happened. */
@@ -856,13 +856,13 @@ export function REPL({
 
   // Env-var gates hoisted to mount-time — isEnvTruthy does toLowerCase+trim+
   // includes, and these were on the render path (hot during PageUp spam).
-  const titleDisabled = useMemo(() => isEnvTruthy(process.env.CLAUDE_CODE_DISABLE_TERMINAL_TITLE), []);
+  const titleDisabled = useMemo(() => isEnvTruthy(process.env.AHCODE_DISABLE_TERMINAL_TITLE), []);
   const moreRightEnabled = useMemo(
     () => process.env.USER_TYPE === 'ant' && isEnvTruthy(process.env.CLAUDE_MORERIGHT),
     [],
   );
-  const disableVirtualScroll = useMemo(() => isEnvTruthy(process.env.CLAUDE_CODE_DISABLE_VIRTUAL_SCROLL), []);
-  const disableMessageActionsRaw = useMemo(() => isEnvTruthy(process.env.CLAUDE_CODE_DISABLE_MESSAGE_ACTIONS), []);
+  const disableVirtualScroll = useMemo(() => isEnvTruthy(process.env.AHCODE_DISABLE_VIRTUAL_SCROLL), []);
+  const disableMessageActionsRaw = useMemo(() => isEnvTruthy(process.env.AHCODE_DISABLE_MESSAGE_ACTIONS), []);
   const disableMessageActions = feature('MESSAGE_ACTIONS') ? disableMessageActionsRaw : false;
 
   // Log REPL mount/unmount lifecycle
@@ -935,7 +935,7 @@ export function REPL({
 
   // Note: standaloneAgentContext is initialized in main.tsx (via initialState) or
   // ResumeConversation.tsx (via setAppState before rendering REPL) to avoid
-  // useEffect-based state initialization on mount (per CLAUDE.md guidelines)
+  // useEffect-based state initialization on mount (per AHCODE.md guidelines)
 
   // Local state for commands (hot-reloadable when skill files change)
   const [localCommands, setLocalCommands] = useState(initialCommands);
@@ -982,7 +982,7 @@ export function REPL({
   const [screen, setScreen] = useState<Screen>('prompt');
   const [showAllInTranscript, setShowAllInTranscript] = useState(false);
   // [ forces the dump-to-scrollback path inside transcript mode. Separate
-  // from CLAUDE_CODE_NO_FLICKER=0 (which is process-lifetime) — this is
+  // from AHCODE_NO_FLICKER=0 (which is process-lifetime) — this is
   // ephemeral, reset on transcript exit. Diagnostic escape hatch so
   // terminal/tmux native cmd-F can search the full flat render.
   const [dumpMode, setDumpMode] = useState(false);
@@ -1037,7 +1037,7 @@ export function REPL({
   useLspInitializationNotification();
   useTeammateLifecycleNotification();
   const { recommendation: lspRecommendation, handleResponse: handleLspResponse } = useLspPluginRecommendation();
-  const { recommendation: hintRecommendation, handleResponse: handleHintResponse } = useClaudeCodeHintRecommendation();
+  const { recommendation: hintRecommendation, handleResponse: handleHintResponse } = useAhcodeHintRecommendation();
   const searchExtraToolsHint = useSearchExtraToolsHint();
 
   // Memoize the combined initial tools array to prevent reference changes
@@ -1399,7 +1399,7 @@ export function REPL({
   // session from mid-conversation context.
   const haikuTitleAttemptedRef = useRef((initialMessages?.length ?? 0) > 0);
   const agentTitle = mainThreadAgentDefinition?.agentType;
-  const terminalTitle = sessionTitle ?? agentTitle ?? haikuTitle ?? 'Claude Code';
+  const terminalTitle = sessionTitle ?? agentTitle ?? haikuTitle ?? 'AH Code';
   const isWaitingForApproval =
     toolUseConfirmQueue.length > 0 || promptQueue.length > 0 || pendingWorkerRequest || pendingSandboxRequest;
   // Local-jsx commands (like /plugin, /config) show user-facing dialogs that
@@ -1974,7 +1974,7 @@ export function REPL({
     setMessages(prev => [
       ...prev,
       createSystemMessage(
-        `Worktree creation took ${secs}s. For large repos, set \`worktree.sparsePaths\` in .claude/settings.json to check out only the directories you need — e.g. \`{"worktree": {"sparsePaths": ["src", "packages/foo"]}}\`.`,
+        `Worktree creation took ${secs}s. For large repos, set \`worktree.sparsePaths\` in .ahcode/settings.json to check out only the directories you need — e.g. \`{"worktree": {"sparsePaths": ["src", "packages/foo"]}}\`.`,
         'info',
       ),
     ]);
@@ -2115,7 +2115,7 @@ export function REPL({
             // reflect the new coordinator/normal mode
             /* eslint-disable @typescript-eslint/no-require-imports */
             const { getAgentDefinitionsWithOverrides, getActiveAgentsFromList } =
-              require('@claude-code-best/builtin-tools/tools/AgentTool/loadAgentsDir.js') as typeof import('@claude-code-best/builtin-tools/tools/AgentTool/loadAgentsDir.js');
+              require('@ahcode/builtin-tools/tools/AgentTool/loadAgentsDir.js') as typeof import('@ahcode/builtin-tools/tools/AgentTool/loadAgentsDir.js');
             /* eslint-enable @typescript-eslint/no-require-imports */
             getAgentDefinitionsWithOverrides.cache.clear?.();
             const freshAgentDefs = await getAgentDefinitionsWithOverrides(getOriginalCwd());
@@ -2326,8 +2326,8 @@ export function REPL({
   // before onQuery builds its own context, and discovery on turn N must
   // still attribute a SkillTool call on turn N+k. Cleared in clearConversation.
   const discoveredSkillNamesRef = useRef(new Set<string>());
-  // Session-level dedup for nested_memory CLAUDE.md attachments.
-  // readFileState is a 100-entry LRU; once it evicts a CLAUDE.md path,
+  // Session-level dedup for nested_memory AHCODE.md attachments.
+  // readFileState is a 100-entry LRU; once it evicts a AHCODE.md path,
   // the next discovery cycle re-injects it. Cleared in clearConversation.
   const loadedNestedMemoryPathsRef = useRef(new Set<string>());
 
@@ -3252,7 +3252,7 @@ export function REPL({
       // which was broken by SessionStart hook messages (prepended via
       // useDeferredHookMessages) and attachment messages (appended by
       // processTextPrompt) — both pushed length past 1 on turn one, so the
-      // title silently fell through to the "Claude Code" default.
+      // title silently fell through to the "AH Code" default.
       if (!titleDisabled && !sessionTitle && !agentTitle && !haikuTitleAttemptedRef.current) {
         const firstUserMessage = newMessages.find(m => m.type === 'user' && !m.isMeta);
         const text =
@@ -4047,8 +4047,8 @@ export function REPL({
       // controls treatment: "dialog" (blocking), "hint" (notification), "off".
       {
         const willowMode = getFeatureValue_CACHED_MAY_BE_STALE('tengu_willow_mode', 'off');
-        const idleThresholdMin = Number(process.env.CLAUDE_CODE_IDLE_THRESHOLD_MINUTES ?? 75);
-        const tokenThreshold = Number(process.env.CLAUDE_CODE_IDLE_TOKEN_THRESHOLD ?? 100_000);
+        const idleThresholdMin = Number(process.env.AHCODE_IDLE_THRESHOLD_MINUTES ?? 75);
+        const tokenThreshold = Number(process.env.AHCODE_IDLE_TOKEN_THRESHOLD ?? 100_000);
         if (
           willowMode !== 'off' &&
           !getGlobalConfig().idleReturnDismissed &&
@@ -4608,15 +4608,15 @@ export function REPL({
     // bottom right corner of the screen if the API key is invalid.
     void reverify();
 
-    // Populate readFileState with CLAUDE.md files at startup
+    // Populate readFileState with AHCODE.md files at startup
     const memoryFiles = await getMemoryFiles();
     if (memoryFiles.length > 0) {
       const fileList = memoryFiles
         .map(f => `  [${f.type}] ${f.path} (${f.content.length} chars)${f.parent ? ` (included by ${f.parent})` : ''}`)
         .join('\n');
-      logForDebugging(`Loaded ${memoryFiles.length} CLAUDE.md/rules files:\n${fileList}`);
+      logForDebugging(`Loaded ${memoryFiles.length} AHCODE.md/rules files:\n${fileList}`);
     } else {
-      logForDebugging('No CLAUDE.md/rules files found');
+      logForDebugging('No AHCODE.md/rules files found');
     }
     for (const file of memoryFiles) {
       // When the injected content doesn't match disk (stripped HTML comments,
@@ -4655,7 +4655,7 @@ export function REPL({
   // empty to non-empty, not on every length change -- otherwise a render loop
   // (concurrent onQuery thrashing, etc.) spams saveGlobalConfig, which hits
   // ELOCKED under concurrent sessions and falls back to unlocked writes.
-  // That write storm is the primary trigger for ~/.claude.json corruption
+  // That write storm is the primary trigger for ~/.ahcode.json corruption
   // (GH #3117).
   const hasCountedQueueUseRef = useRef(false);
   useEffect(() => {
@@ -4802,10 +4802,10 @@ export function REPL({
     if (willowMode !== 'hint' && willowMode !== 'hint_v2') return;
     if (getGlobalConfig().idleReturnDismissed) return;
 
-    const tokenThreshold = Number(process.env.CLAUDE_CODE_IDLE_TOKEN_THRESHOLD ?? 100_000);
+    const tokenThreshold = Number(process.env.AHCODE_IDLE_TOKEN_THRESHOLD ?? 100_000);
     if (getTotalInputTokens() < tokenThreshold) return;
 
-    const idleThresholdMs = Number(process.env.CLAUDE_CODE_IDLE_THRESHOLD_MINUTES ?? 75) * 60_000;
+    const idleThresholdMs = Number(process.env.AHCODE_IDLE_THRESHOLD_MINUTES ?? 75) * 60_000;
     const elapsed = Date.now() - lastQueryCompletionTime;
     const remaining = idleThresholdMs - elapsed;
 
@@ -4975,7 +4975,7 @@ export function REPL({
   usePipeIpc({ store, handleIncomingPrompt });
   const { routeToSelectedPipes } = usePipeRouter({ store, setAppState, addNotification });
 
-  // Scheduled tasks from .claude/scheduled_tasks.json (CronCreate/Delete/List)
+  // Scheduled tasks from .ahcode/scheduled_tasks.json (CronCreate/Delete/List)
   if (feature('AGENT_TRIGGERS')) {
     // Assistant mode bypasses the isLoading gate (the proactive tick →
     // Sleep → tick loop would otherwise starve the scheduler).
@@ -5087,7 +5087,7 @@ export function REPL({
     const handleSuspend = () => {
       // Print suspension instructions
       process.stdout.write(
-        `\nClaude Code has been suspended. Run \`fg\` to bring Claude Code back.\nNote: ctrl + z now suspends Claude Code, ctrl + _ undoes input.\n`,
+        `\nAH Code has been suspended. Run \`fg\` to bring AH Code back.\nNote: ctrl + z now suspends AH Code, ctrl + _ undoes input.\n`,
       );
     };
 

@@ -99,7 +99,7 @@ import {
 } from './utils/tokens.js'
 import { ESCALATED_MAX_TOKENS } from './utils/context.js'
 import { getFeatureValue_CACHED_MAY_BE_STALE } from './services/analytics/growthbook.js'
-import { SLEEP_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/SleepTool/prompt.js'
+import { SLEEP_TOOL_NAME } from '@ahcode/builtin-tools/tools/SleepTool/prompt.js'
 import { executePostSamplingHooks } from './utils/hooks/postSamplingHooks.js'
 import { executeStopFailureHooks } from './utils/hooks.js'
 import type { QuerySource } from './constants/querySource.js'
@@ -733,7 +733,7 @@ async function* queryLoop(
 
     const assistantMessages: AssistantMessage[] = []
     const toolResults: (UserMessage | AttachmentMessage)[] = []
-    // @see https://docs.claude.com/en/docs/build-with-claude/tool-use
+    // @see https://docs.ahcode.com/en/docs/build-with-claude/tool-use
     // Note: stop_reason === 'tool_use' is unreliable -- it's not always set correctly.
     // Set during streaming whenever a tool_use block arrives — the sole
     // loop-exit signal. If false after streaming, we're done (modulo stop-hook retry).
@@ -1471,7 +1471,7 @@ async function* queryLoop(
         if (
           capEnabled &&
           maxOutputTokensOverride === undefined &&
-          !process.env.CLAUDE_CODE_MAX_OUTPUT_TOKENS
+          !process.env.AHCODE_MAX_OUTPUT_TOKENS
         ) {
           logEvent('tengu_max_tokens_escalate', {
             escalatedTo: ESCALATED_MAX_TOKENS,

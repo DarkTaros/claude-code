@@ -20,10 +20,10 @@ import { generateSessionName } from '../../../commands/rename/generateSessionNam
 import { launchUltraplan } from '../../../commands/ultraplan.js';
 import { type KeyboardEvent, Box, Text } from '@anthropic/ink';
 import type { AppState } from '../../../state/AppStateStore.js';
-import { AGENT_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/AgentTool/constants.js';
-import { EXIT_PLAN_MODE_V2_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/ExitPlanModeTool/constants.js';
-import type { AllowedPrompt } from '@claude-code-best/builtin-tools/tools/ExitPlanModeTool/ExitPlanModeV2Tool.js';
-import { TEAM_CREATE_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/TeamCreateTool/constants.js';
+import { AGENT_TOOL_NAME } from '@ahcode/builtin-tools/tools/AgentTool/constants.js';
+import { EXIT_PLAN_MODE_V2_TOOL_NAME } from '@ahcode/builtin-tools/tools/ExitPlanModeTool/constants.js';
+import type { AllowedPrompt } from '@ahcode/builtin-tools/tools/ExitPlanModeTool/ExitPlanModeV2Tool.js';
+import { TEAM_CREATE_TOOL_NAME } from '@ahcode/builtin-tools/tools/TeamCreateTool/constants.js';
 import { isAgentSwarmsEnabled } from '../../../utils/agentSwarmsEnabled.js';
 import { calculateContextPercentages, getContextWindowForModel } from '../../../utils/context.js';
 import { getExternalEditor } from '../../../utils/editor.js';
@@ -418,7 +418,7 @@ export function ExitPlanModePermissionRequest({
 
       // Set initial message - REPL will handle context clear and fresh query
       // Add verification instruction if the feature is enabled
-      // Dead code elimination: CLAUDE_CODE_VERIFY_PLAN='false' in external builds, so === 'true' check allows Bun to eliminate the string
+      // Dead code elimination: AHCODE_VERIFY_PLAN='false' in external builds, so === 'true' check allows Bun to eliminate the string
       const verificationInstruction =
         undefined === 'true'
           ? `\n\nIMPORTANT: When you have finished implementing the plan, you MUST call the "VerifyPlanExecution" tool directly (NOT the ${AGENT_TOOL_NAME} tool or an agent) to trigger background verification.`
@@ -851,7 +851,7 @@ export function buildPlanApprovalOptions({
 
   if (showUltraplan) {
     options.push({
-      label: 'No, refine with Ultraplan on Claude Code on the web',
+      label: 'No, refine with Ultraplan on AH Code on the web',
       value: 'ultraplan',
     });
   }

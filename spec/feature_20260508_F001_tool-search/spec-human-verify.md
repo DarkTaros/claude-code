@@ -214,7 +214,7 @@
   1. [A] `bun run build 2>&1 | tail -5` → 期望包含: `dist/cli.js`
 
 #### - [x] 5.5 precheck 零错误通过
-- **来源:** spec-design.md 验收标准 / CLAUDE.md
+- **来源:** spec-design.md 验收标准 / AHCODE.md
 - **目的:** 确认 typecheck + lint fix + test 全通过
 - **操作步骤:**
   1. [A] `bun run precheck 2>&1 | tail -10` → 期望包含: 无 error 或 fail

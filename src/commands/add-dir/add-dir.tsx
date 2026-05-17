@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import figures from 'figures';
 import React, { useEffect } from 'react';
-import { getAdditionalDirectoriesForClaudeMd, setAdditionalDirectoriesForClaudeMd } from '../../bootstrap/state.js';
+import { getAdditionalDirectoriesForAhcodeMd, setAdditionalDirectoriesForAhcodeMd } from '../../bootstrap/state.js';
 import type { LocalJSXCommandContext } from '../../commands.js';
 import { MessageResponse } from '../../components/MessageResponse.js';
 import { AddWorkspaceDirectory } from '../../components/permissions/rules/AddWorkspaceDirectory.js';
@@ -71,9 +71,9 @@ export async function call(
     // Bootstrap state is the source of truth for session-only dirs; persisted
     // dirs are picked up via the settings subscription, but we refresh
     // eagerly here to avoid a race when the user acts immediately.
-    const currentDirs = getAdditionalDirectoriesForClaudeMd();
+    const currentDirs = getAdditionalDirectoriesForAhcodeMd();
     if (!currentDirs.includes(path)) {
-      setAdditionalDirectoriesForClaudeMd([...currentDirs, path]);
+      setAdditionalDirectoriesForAhcodeMd([...currentDirs, path]);
     }
     SandboxManager.refreshConfig();
 

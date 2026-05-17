@@ -137,7 +137,7 @@ export async function* handleStopHooks(
   if (!isBareMode()) {
     // Inline env check for dead code elimination in external builds
     if (
-      !isEnvDefinedFalsy(process.env.CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION) &&
+      !isEnvDefinedFalsy(process.env.AHCODE_ENABLE_PROMPT_SUGGESTION) &&
       !poorMode
     ) {
       void executePromptSuggestion(stopHookContext)

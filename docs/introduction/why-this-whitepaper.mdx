@@ -1,19 +1,19 @@
 ---
-title: "为什么写这份白皮书 - Claude Code 逆向工程分析"
-description: "对 Anthropic 官方 Claude Code CLI 的逆向工程分析白皮书。通过反编译 TypeScript 单文件 bundle，深入解析运行时行为与源码结构。"
-keywords: ["Claude Code", "逆向工程", "白皮书", "反编译", "TypeScript"]
+title: "为什么写这份白皮书 - AH Code 逆向工程分析"
+description: "对 Anthropic 官方 AH Code CLI 的逆向工程分析白皮书。通过反编译 TypeScript 单文件 bundle，深入解析运行时行为与源码结构。"
+keywords: ["AH Code", "逆向工程", "白皮书", "反编译", "TypeScript"]
 ---
 
 ## 这份白皮书是什么
 
-这是对 Anthropic 官方发布的 **Claude Code CLI** 的**逆向工程分析**。
+这是对 Anthropic 官方发布的 **AH Code CLI** 的**逆向工程分析**。
 
 源码经过反编译处理（TypeScript 单文件 bundle 逆向），保留了核心功能模块，但包含大量 `unknown`/`never`/`{}` 类型错误——这些不影响 Bun 运行时执行，但意味着我们的分析基于运行时行为 + 残留源码结构，而非原始源码。
 
 **这不是：**
 - 官方文档或使用教程
 - API 参考手册
-- Claude Code 的功能推销
+- AH Code 的功能推销
 
 **这是：**
 - 一个生产级 agentic system 的架构解构
@@ -35,11 +35,11 @@ keywords: ["Claude Code", "逆向工程", "白皮书", "反编译", "TypeScript"
 
 ### 2. 上下文工程的分层策略
 
-AI 没有真正的"记忆"，Claude Code 通过精心分层营造了这个幻觉：
+AI 没有真正的"记忆"，AH Code 通过精心分层营造了这个幻觉：
 
 | 层 | 机制 | 持久性 |
 |----|------|--------|
-| **System Prompt** | 项目结构、git 状态、CLAUDE.md | 每轮重建 |
+| **System Prompt** | 项目结构、git 状态、AHCODE.md | 每轮重建 |
 | **对话历史** | 完整的 User/Assistant/Tool 消息 | 会话内 |
 | **Compaction** | 自动压缩过长对话为摘要 | 压缩后替代原始消息 |
 | **Memory 文件** | 跨会话持久化的笔记 | 永久（用户可控） |
@@ -83,7 +83,7 @@ const feature = (_name: string) => false;
 推荐的阅读顺序，每章解决一个核心问题：
 
 ```
-什么是 Claude Code (你在读的)          ← 建立直觉
+什么是 AH Code (你在读的)          ← 建立直觉
     │
     ├── 架构全景                       ← 五层架构 + 数据流
     │

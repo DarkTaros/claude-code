@@ -1,12 +1,12 @@
 # LSP Integration
 
-Claude Code 内置了 Language Server Protocol (LSP) 集成，提供代码智能功能（跳转定义、查找引用、悬停信息、文档符号等）和被动的诊断反馈。
+AH Code 内置了 Language Server Protocol (LSP) 集成，提供代码智能功能（跳转定义、查找引用、悬停信息、文档符号等）和被动的诊断反馈。
 
 ## 快速开始
 
 ### 1. 安装 LSP 插件
 
-在 Claude Code REPL 中使用 `/plugin` 命令搜索并安装 LSP 插件：
+在 AH Code REPL 中使用 `/plugin` 命令搜索并安装 LSP 插件：
 
 ```
 /plugin
@@ -30,7 +30,7 @@ ENABLE_LSP_TOOL=1 bun run dev
 
 ## 自动推荐
 
-除了手动 `/plugin` 搜索安装外，Claude Code 会在编辑文件时自动检测：
+除了手动 `/plugin` 搜索安装外，AH Code 会在编辑文件时自动检测：
 
 1. 监听 `fileHistory.trackedFiles`，发现有新文件被编辑
 2. 扫描已安装的 marketplace，找到声明支持该文件扩展名的 LSP 插件

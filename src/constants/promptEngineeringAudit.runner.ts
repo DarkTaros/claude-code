@@ -122,78 +122,63 @@ const TOOL_NAMES = {
   Sleep: 'Sleep',
 }
 
-mock.module(
-  '@claude-code-best/builtin-tools/tools/BashTool/toolName.js',
-  () => ({ BASH_TOOL_NAME: TOOL_NAMES.Bash }),
-)
-mock.module(
-  '@claude-code-best/builtin-tools/tools/FileReadTool/prompt.js',
-  () => ({ FILE_READ_TOOL_NAME: TOOL_NAMES.Read }),
-)
-mock.module(
-  '@claude-code-best/builtin-tools/tools/FileEditTool/constants.js',
-  () => ({ FILE_EDIT_TOOL_NAME: TOOL_NAMES.Edit }),
-)
-mock.module(
-  '@claude-code-best/builtin-tools/tools/FileWriteTool/prompt.js',
-  () => ({ FILE_WRITE_TOOL_NAME: TOOL_NAMES.Write }),
-)
-mock.module('@claude-code-best/builtin-tools/tools/GlobTool/prompt.js', () => ({
+mock.module('@ahcode/builtin-tools/tools/BashTool/toolName.js', () => ({
+  BASH_TOOL_NAME: TOOL_NAMES.Bash,
+}))
+mock.module('@ahcode/builtin-tools/tools/FileReadTool/prompt.js', () => ({
+  FILE_READ_TOOL_NAME: TOOL_NAMES.Read,
+}))
+mock.module('@ahcode/builtin-tools/tools/FileEditTool/constants.js', () => ({
+  FILE_EDIT_TOOL_NAME: TOOL_NAMES.Edit,
+}))
+mock.module('@ahcode/builtin-tools/tools/FileWriteTool/prompt.js', () => ({
+  FILE_WRITE_TOOL_NAME: TOOL_NAMES.Write,
+}))
+mock.module('@ahcode/builtin-tools/tools/GlobTool/prompt.js', () => ({
   GLOB_TOOL_NAME: TOOL_NAMES.Glob,
 }))
-mock.module('@claude-code-best/builtin-tools/tools/GrepTool/prompt.js', () => ({
+mock.module('@ahcode/builtin-tools/tools/GrepTool/prompt.js', () => ({
   GREP_TOOL_NAME: TOOL_NAMES.Grep,
 }))
+mock.module('@ahcode/builtin-tools/tools/AgentTool/constants.js', () => ({
+  AGENT_TOOL_NAME: TOOL_NAMES.Agent,
+  VERIFICATION_AGENT_TYPE: 'verification',
+}))
+mock.module('@ahcode/builtin-tools/tools/AgentTool/forkSubagent.js', () => ({
+  isForkSubagentEnabled: () => false,
+}))
+mock.module('@ahcode/builtin-tools/tools/AgentTool/builtInAgents.js', () => ({
+  areExplorePlanAgentsEnabled: () => false,
+}))
 mock.module(
-  '@claude-code-best/builtin-tools/tools/AgentTool/constants.js',
-  () => ({
-    AGENT_TOOL_NAME: TOOL_NAMES.Agent,
-    VERIFICATION_AGENT_TYPE: 'verification',
-  }),
-)
-mock.module(
-  '@claude-code-best/builtin-tools/tools/AgentTool/forkSubagent.js',
-  () => ({ isForkSubagentEnabled: () => false }),
-)
-mock.module(
-  '@claude-code-best/builtin-tools/tools/AgentTool/builtInAgents.js',
-  () => ({ areExplorePlanAgentsEnabled: () => false }),
-)
-mock.module(
-  '@claude-code-best/builtin-tools/tools/AgentTool/built-in/exploreAgent.js',
+  '@ahcode/builtin-tools/tools/AgentTool/built-in/exploreAgent.js',
   () => ({
     EXPLORE_AGENT: { agentType: 'explore' },
     EXPLORE_AGENT_MIN_QUERIES: 5,
   }),
 )
 mock.module(
-  '@claude-code-best/builtin-tools/tools/AskUserQuestionTool/prompt.js',
+  '@ahcode/builtin-tools/tools/AskUserQuestionTool/prompt.js',
   () => ({ ASK_USER_QUESTION_TOOL_NAME: TOOL_NAMES.AskUserQuestion }),
 )
-mock.module(
-  '@claude-code-best/builtin-tools/tools/TodoWriteTool/constants.js',
-  () => ({ TODO_WRITE_TOOL_NAME: 'TodoWrite' }),
-)
-mock.module(
-  '@claude-code-best/builtin-tools/tools/TaskCreateTool/constants.js',
-  () => ({ TASK_CREATE_TOOL_NAME: TOOL_NAMES.TaskCreate }),
-)
-mock.module(
-  '@claude-code-best/builtin-tools/tools/DiscoverSkillsTool/prompt.js',
-  () => ({ DISCOVER_SKILLS_TOOL_NAME: TOOL_NAMES.DiscoverSkills }),
-)
-mock.module(
-  '@claude-code-best/builtin-tools/tools/SkillTool/constants.js',
-  () => ({ SKILL_TOOL_NAME: TOOL_NAMES.Skill }),
-)
-mock.module(
-  '@claude-code-best/builtin-tools/tools/SleepTool/prompt.js',
-  () => ({ SLEEP_TOOL_NAME: TOOL_NAMES.Sleep }),
-)
-mock.module(
-  '@claude-code-best/builtin-tools/tools/REPLTool/constants.js',
-  () => ({ isReplModeEnabled: () => false }),
-)
+mock.module('@ahcode/builtin-tools/tools/TodoWriteTool/constants.js', () => ({
+  TODO_WRITE_TOOL_NAME: 'TodoWrite',
+}))
+mock.module('@ahcode/builtin-tools/tools/TaskCreateTool/constants.js', () => ({
+  TASK_CREATE_TOOL_NAME: TOOL_NAMES.TaskCreate,
+}))
+mock.module('@ahcode/builtin-tools/tools/DiscoverSkillsTool/prompt.js', () => ({
+  DISCOVER_SKILLS_TOOL_NAME: TOOL_NAMES.DiscoverSkills,
+}))
+mock.module('@ahcode/builtin-tools/tools/SkillTool/constants.js', () => ({
+  SKILL_TOOL_NAME: TOOL_NAMES.Skill,
+}))
+mock.module('@ahcode/builtin-tools/tools/SleepTool/prompt.js', () => ({
+  SLEEP_TOOL_NAME: TOOL_NAMES.Sleep,
+}))
+mock.module('@ahcode/builtin-tools/tools/REPLTool/constants.js', () => ({
+  isReplModeEnabled: () => false,
+}))
 
 // --- 导入被测模块 ---
 
@@ -579,9 +564,9 @@ describe('Opus 4.7 Prompt Engineering Audit', () => {
   // TXT 来源: {product_information}
   // ------------------------------------------------------------------
   describe('#13 Product information', () => {
-    test('env info contains Claude Code product description', async () => {
+    test('env info contains AH Code product description', async () => {
       const envInfo = await computeSimpleEnvInfo('claude-opus-4-7')
-      expect(envInfo).toContain('Claude Code')
+      expect(envInfo).toContain('AH Code')
       expect(envInfo).toContain('CLI')
     })
 

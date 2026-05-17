@@ -4,7 +4,7 @@ import * as React from 'react';
 import { color, Text } from '@anthropic/ink';
 import type { MCPServerConnection } from '../services/mcp/types.js';
 import { getAccountInformation, isClaudeAISubscriber } from './auth.js';
-import { getLargeMemoryFiles, getMemoryFiles, MAX_MEMORY_CHARACTER_COUNT } from './claudemd.js';
+import { getLargeMemoryFiles, getMemoryFiles, MAX_MEMORY_CHARACTER_COUNT } from './ahcodemd.js';
 import { getDoctorDiagnostic } from './doctorDiagnostic.js';
 import { getAWSRegion, getDefaultVertexRegion, isEnvTruthy } from './envUtils.js';
 import { getDisplayPath } from './file.js';
@@ -331,7 +331,7 @@ export function buildAPIProviderProperties(): Property[] {
       value: getAWSRegion(),
     });
 
-    if (isEnvTruthy(process.env.CLAUDE_CODE_SKIP_BEDROCK_AUTH)) {
+    if (isEnvTruthy(process.env.AHCODE_SKIP_BEDROCK_AUTH)) {
       properties.push({
         value: 'AWS auth skipped',
       });
@@ -358,7 +358,7 @@ export function buildAPIProviderProperties(): Property[] {
       value: getDefaultVertexRegion(),
     });
 
-    if (isEnvTruthy(process.env.CLAUDE_CODE_SKIP_VERTEX_AUTH)) {
+    if (isEnvTruthy(process.env.AHCODE_SKIP_VERTEX_AUTH)) {
       properties.push({
         value: 'GCP auth skipped',
       });
@@ -380,7 +380,7 @@ export function buildAPIProviderProperties(): Property[] {
       });
     }
 
-    if (isEnvTruthy(process.env.CLAUDE_CODE_SKIP_FOUNDRY_AUTH)) {
+    if (isEnvTruthy(process.env.AHCODE_SKIP_FOUNDRY_AUTH)) {
       properties.push({
         value: 'Microsoft Foundry auth skipped',
       });
@@ -421,17 +421,17 @@ export function buildAPIProviderProperties(): Property[] {
     });
   }
   if (mtlsConfig) {
-    if (mtlsConfig.cert && process.env.CLAUDE_CODE_CLIENT_CERT) {
+    if (mtlsConfig.cert && process.env.AHCODE_CLIENT_CERT) {
       properties.push({
         label: 'mTLS client cert',
-        value: process.env.CLAUDE_CODE_CLIENT_CERT,
+        value: process.env.AHCODE_CLIENT_CERT,
       });
     }
 
-    if (mtlsConfig.key && process.env.CLAUDE_CODE_CLIENT_KEY) {
+    if (mtlsConfig.key && process.env.AHCODE_CLIENT_KEY) {
       properties.push({
         label: 'mTLS client key',
-        value: process.env.CLAUDE_CODE_CLIENT_KEY,
+        value: process.env.AHCODE_CLIENT_KEY,
       });
     }
   }

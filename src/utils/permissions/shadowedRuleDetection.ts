@@ -1,5 +1,5 @@
 import type { ToolPermissionContext } from '../../Tool.js'
-import { BASH_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/BashTool/toolName.js'
+import { BASH_TOOL_NAME } from '@ahcode/builtin-tools/tools/BashTool/toolName.js'
 import type { PermissionRule, PermissionRuleSource } from './PermissionRule.js'
 import {
   getAllowRules,
@@ -52,7 +52,7 @@ type ShadowResult =
  * - command: From slash command frontmatter, potentially shared
  *
  * Personal settings include:
- * - userSettings: User's global ~/.claude settings
+ * - userSettings: User's global ~/.ahcode settings
  * - localSettings: Gitignored per-project settings
  * - cliArg: Runtime CLI arguments
  * - session: In-memory session rules

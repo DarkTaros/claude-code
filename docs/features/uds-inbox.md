@@ -5,7 +5,7 @@
 `UDS_INBOX` 现在不是一个“空壳 flag”，而是一套已经落地的本机 IPC 能力。但它同时承载了两层不同目标，必须拆开理解：
 
 1. **UDS peer messaging**
-   - 面向任意 Claude Code 进程。
+   - 面向任意 AH Code 进程。
    - 使用 `src/utils/udsMessaging.ts` 和 `src/utils/udsClient.ts`。
    - 对外入口是 `/peers` 和 `SendMessageTool` 的 `uds:<socket-path>` 地址。
 2. **pipes control plane**
@@ -37,7 +37,7 @@
 
 - 服务端：`src/utils/udsMessaging.ts`
 - 客户端：`src/utils/udsClient.ts`
-- 发现方式：读取 `~/.claude/sessions/*.json`
+- 发现方式：读取 `~/.ahcode/sessions/*.json`
 - 地址方式：`uds:<socket-path>`
 - 传输方式：**本机 Unix socket / Windows named pipe**
 
@@ -48,7 +48,7 @@
 - 服务端/客户端：`src/utils/pipeTransport.ts`
 - 注册表：`src/utils/pipeRegistry.ts`
 - 生效入口：`src/screens/REPL.tsx`
-- 发现方式：扫描 `~/.claude/pipes/` + `registry.json`
+- 发现方式：扫描 `~/.ahcode/pipes/` + `registry.json`
 - 会话名：`cli-${sessionId.slice(0, 8)}`
 - 传输方式：**本机 Unix socket / Windows named pipe**
 

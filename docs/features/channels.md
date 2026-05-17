@@ -5,7 +5,7 @@
 
 ## 概述
 
-Channel 是一个 MCP 服务器，它将外部事件推送到你运行中的 Claude Code 会话中，以便 Claude 可以在你不在终端时做出反应。详细使用说明请参考以下文档：
+Channel 是一个 MCP 服务器，它将外部事件推送到你运行中的 AH Code 会话中，以便 Claude 可以在你不在终端时做出反应。详细使用说明请参考以下文档：
 
 - **官方文档**：[使用 channels 将事件推送到运行中的会话](https://code.claude.com/docs/zh-CN/channels)
 - **飞书插件**：[claude-code-feishu-channel](https://github.com/whobot-ai/claude-code-feishu-channel) — 社区首个飞书 Channel 插件，支持双向消息、配对认证、群组聊天、文件附件
@@ -70,7 +70,7 @@ ccb --channels plugin:weixin@builtin
 ccb weixin access pair <code>
 ```
 
-确认后，该微信用户后续消息才会进入 Claude Code 会话。
+确认后，该微信用户后续消息才会进入 AH Code 会话。
 
 ## 相关文件
 

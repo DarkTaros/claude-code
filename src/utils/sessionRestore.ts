@@ -12,14 +12,14 @@ import {
 import { clearSystemPromptSections } from '../constants/systemPromptSections.js'
 import { restoreCostStateForSession } from '../cost-tracker.js'
 import type { AppState } from '../state/AppState.js'
-import type { AgentColorName } from '@claude-code-best/builtin-tools/tools/AgentTool/agentColorManager.js'
+import type { AgentColorName } from '@ahcode/builtin-tools/tools/AgentTool/agentColorManager.js'
 import {
   type AgentDefinition,
   type AgentDefinitionsResult,
   getActiveAgentsFromList,
   getAgentDefinitionsWithOverrides,
-} from '@claude-code-best/builtin-tools/tools/AgentTool/loadAgentsDir.js'
-import { TODO_WRITE_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/TodoWriteTool/constants.js'
+} from '@ahcode/builtin-tools/tools/AgentTool/loadAgentsDir.js'
+import { TODO_WRITE_TOOL_NAME } from '@ahcode/builtin-tools/tools/TodoWriteTool/constants.js'
 import { asSessionId } from '../types/ids.js'
 import type {
   AttributionSnapshotMessage,
@@ -29,7 +29,7 @@ import type {
 } from '../types/logs.js'
 import type { Message } from '../types/message.js'
 import { renameRecordingForSession } from './asciicast.js'
-import { clearMemoryFileCaches } from './claudemd.js'
+import { clearMemoryFileCaches } from './ahcodemd.js'
 import {
   type AttributionState,
   attributionRestoreStateFromLog,
@@ -169,7 +169,7 @@ export function computeRestoredAttributionState(
 
 /**
  * Compute standalone agent context (name/color) for session resume.
- * Used for computing initial state before render (per CLAUDE.md guidelines).
+ * Used for computing initial state before render (per AHCODE.md guidelines).
  * Returns undefined if no name/color is set on the session.
  */
 export function computeStandaloneAgentContext(
@@ -515,7 +515,7 @@ export async function processResumedConversation(
     saveMode(context.modeApi?.isCoordinatorMode() ? 'coordinator' : 'normal')
   }
 
-  // Compute initial state before render (per CLAUDE.md guidelines)
+  // Compute initial state before render (per AHCODE.md guidelines)
   const restoredAttribution = opts.includeAttribution
     ? computeRestoredAttributionState(result)
     : undefined

@@ -26,10 +26,10 @@ describe('Permission dialog footer hints', () => {
 })
 
 describe('Permission option labels', () => {
-  test('.claude/ folder option is under 60 chars', () => {
-    const label = 'Yes, allow edits to .claude/ config for this session'
+  test('.ahcode/ folder option is under 60 chars', () => {
+    const label = 'Yes, allow edits to .ahcode/ config for this session'
     expect(label.length).toBeLessThan(60)
-    expect(label).toContain('.claude/')
+    expect(label).toContain('.ahcode/')
   })
 
   test('accept-once option has simple label', () => {

@@ -1,10 +1,10 @@
 /**
  * Files are loaded in the following order:
  *
- * 1. Managed memory (eg. /etc/claude-code/CLAUDE.md) - Global instructions for all users
- * 2. User memory (~/.claude/CLAUDE.md) - Private global instructions for all projects
- * 3. Project memory (CLAUDE.md, .claude/CLAUDE.md, and .claude/rules/*.md in project roots) - Instructions checked into the codebase
- * 4. Local memory (CLAUDE.local.md in project roots) - Private project-specific instructions
+ * 1. Managed memory (eg. /etc/claude-code/AHCODE.md) - Global instructions for all users
+ * 2. User memory (~/.ahcode/AHCODE.md) - Private global instructions for all projects
+ * 3. Project memory (AHCODE.md, .ahcode/AHCODE.md, and .ahcode/rules/*.md in project roots) - Instructions checked into the codebase
+ * 4. Local memory (AHCODE.local.md in project roots) - Private project-specific instructions
  *
  * Files are loaded in reverse order of priority, i.e. the latest files are highest priority
  * with the model paying more attention to them.
@@ -13,7 +13,7 @@
  * - User memory is loaded from the user's home directory
  * - Project and Local files are discovered by traversing from the current directory up to root
  * - Files closer to the current directory have higher priority (loaded later)
- * - CLAUDE.md, .claude/CLAUDE.md, and all .md files in .claude/rules/ are checked in each directory for Project memory
+ * - AHCODE.md, .ahcode/AHCODE.md, and all .md files in .ahcode/rules/ are checked in each directory for Project memory
  *
  * Memory @include directive:
  * - Memory files can include other files using @ notation
@@ -41,7 +41,7 @@ import {
 import picomatch from 'picomatch'
 import { logEvent } from 'src/services/analytics/index.js'
 import {
-  getAdditionalDirectoriesForClaudeMd,
+  getAdditionalDirectoriesForAhcodeMd,
   getOriginalCwd,
 } from '../bootstrap/state.js'
 import { truncateEntrypointContent } from '../memdir/memdir.js'
@@ -49,13 +49,13 @@ import { getAutoMemEntrypoint, isAutoMemoryEnabled } from '../memdir/paths.js'
 import { getFeatureValue_CACHED_MAY_BE_STALE } from '../services/analytics/growthbook.js'
 import {
   getCurrentProjectConfig,
-  getManagedClaudeRulesDir,
+  getManagedAhcodeRulesDir,
   getMemoryPath,
-  getUserClaudeRulesDir,
+  getUserAhcodeRulesDir,
 } from './config.js'
 import { logForDebugging } from './debug.js'
 import { logForDiagnosticsNoPII } from './diagLogs.js'
-import { getClaudeConfigHomeDir, isEnvTruthy } from './envUtils.js'
+import { getAhcodeConfigHomeDir, isEnvTruthy } from './envUtils.js'
 import { getErrnoCode } from './errors.js'
 import { normalizePathForComparison } from './file.js'
 import { cacheKeys, type FileStateCache } from './fileStateCache.js'
@@ -409,7 +409,7 @@ function handleMemoryFileReadError(error: unknown, filePath: string): void {
     // Don't log the full file path to avoid PII/security issues
     logEvent('tengu_claude_md_permission_error', {
       is_access_error: 1,
-      has_home_dir: filePath.includes(getClaudeConfigHomeDir()) ? 1 : 0,
+      has_home_dir: filePath.includes(getAhcodeConfigHomeDir()) ? 1 : 0,
     })
   }
 }
@@ -536,19 +536,19 @@ function extractIncludePathsFromTokens(
 const MAX_INCLUDE_DEPTH = 5
 
 /**
- * Checks whether a CLAUDE.md file path is excluded by the claudeMdExcludes setting.
+ * Checks whether a AHCODE.md file path is excluded by the ahcodeMdExcludes setting.
  * Only applies to User, Project, and Local memory types.
  * Managed, AutoMem, and TeamMem types are never excluded.
  *
  * Matches both the original path and the realpath-resolved path to handle symlinks
  * (e.g., /tmp -> /private/tmp on macOS).
  */
-function isClaudeMdExcluded(filePath: string, type: MemoryType): boolean {
+function isAhcodeMdExcluded(filePath: string, type: MemoryType): boolean {
   if (type !== 'User' && type !== 'Project' && type !== 'Local') {
     return false
   }
 
-  const patterns = getInitialSettings().claudeMdExcludes
+  const patterns = getInitialSettings().ahcodeMdExcludes
   if (!patterns || patterns.length === 0) {
     return false
   }
@@ -558,7 +558,7 @@ function isClaudeMdExcluded(filePath: string, type: MemoryType): boolean {
 
   // Build an expanded pattern list that includes realpath-resolved versions of
   // absolute patterns. This handles symlinks like /tmp -> /private/tmp on macOS:
-  // the user writes "/tmp/project/CLAUDE.md" in their exclude, but the system
+  // the user writes "/tmp/project/AHCODE.md" in their exclude, but the system
   // resolves the CWD to "/private/tmp/project/...", so the file path uses the
   // real path. By resolving the patterns too, both sides match.
   const expandedPatterns = resolveExcludePatterns(patterns).filter(
@@ -595,7 +595,7 @@ function resolveExcludePatterns(patterns: string[]): string[] {
     const dirToResolve = dirname(staticPrefix)
 
     try {
-      // sync IO: called from sync context (isClaudeMdExcluded -> processMemoryFile -> getMemoryFiles)
+      // sync IO: called from sync context (isAhcodeMdExcluded -> processMemoryFile -> getMemoryFiles)
       const resolvedDir = fs.realpathSync(dirToResolve).replaceAll('\\', '/')
       if (resolvedDir !== dirToResolve) {
         const resolvedPattern =
@@ -630,8 +630,8 @@ export async function processMemoryFile(
     return []
   }
 
-  // Skip if path is excluded by claudeMdExcludes setting
-  if (isClaudeMdExcluded(filePath, type)) {
+  // Skip if path is excluded by ahcodeMdExcludes setting
+  if (isAhcodeMdExcluded(filePath, type)) {
     return []
   }
 
@@ -684,7 +684,7 @@ export async function processMemoryFile(
 }
 
 /**
- * Processes all .md files in the .claude/rules/ directory and its subdirectories
+ * Processes all .md files in the .ahcode/rules/ directory and its subdirectories
  * @param rulesDir The path to the rules directory
  * @param type Type of memory file (User, Project, Local)
  * @param processedPaths Set of already processed file paths
@@ -779,7 +779,7 @@ export async function processMdRules({
     if (error instanceof Error && error.message.includes('EACCES')) {
       logEvent('tengu_claude_rules_md_permission_error', {
         is_access_error: 1,
-        has_home_dir: rulesDir.includes(getClaudeConfigHomeDir()) ? 1 : 0,
+        has_home_dir: rulesDir.includes(getAhcodeConfigHomeDir()) ? 1 : 0,
       })
     }
     return []
@@ -796,21 +796,21 @@ export const getMemoryFiles = memoize(
     const config = getCurrentProjectConfig()
     const includeExternal =
       forceIncludeExternal ||
-      config.hasClaudeMdExternalIncludesApproved ||
+      config.hasAhcodeMdExternalIncludesApproved ||
       false
 
     // Process Managed file first (always loaded - policy settings)
-    const managedClaudeMd = getMemoryPath('Managed')
+    const managedAhcodeMd = getMemoryPath('Managed')
     result.push(
       ...(await processMemoryFile(
-        managedClaudeMd,
+        managedAhcodeMd,
         'Managed',
         processedPaths,
         includeExternal,
       )),
     )
-    // Process Managed .claude/rules/*.md files
-    const managedClaudeRulesDir = getManagedClaudeRulesDir()
+    // Process Managed .ahcode/rules/*.md files
+    const managedClaudeRulesDir = getManagedAhcodeRulesDir()
     result.push(
       ...(await processMdRules({
         rulesDir: managedClaudeRulesDir,
@@ -823,17 +823,17 @@ export const getMemoryFiles = memoize(
 
     // Process User file (only if userSettings is enabled)
     if (isSettingSourceEnabled('userSettings')) {
-      const userClaudeMd = getMemoryPath('User')
+      const userAhcodeMd = getMemoryPath('User')
       result.push(
         ...(await processMemoryFile(
-          userClaudeMd,
+          userAhcodeMd,
           'User',
           processedPaths,
           true, // User memory can always include external files
         )),
       )
-      // Process User ~/.claude/rules/*.md files
-      const userClaudeRulesDir = getUserClaudeRulesDir()
+      // Process User ~/.ahcode/rules/*.md files
+      const userClaudeRulesDir = getUserAhcodeRulesDir()
       result.push(
         ...(await processMdRules({
           rulesDir: userClaudeRulesDir,
@@ -856,12 +856,12 @@ export const getMemoryFiles = memoize(
     }
 
     // When running from a git worktree nested inside its main repo (e.g.,
-    // .claude/worktrees/<name>/ from `claude -w`), the upward walk passes
+    // .ahcode/worktrees/<name>/ from `claude -w`), the upward walk passes
     // through both the worktree root and the main repo root. Both contain
-    // checked-in files like CLAUDE.md and .claude/rules/*.md, so the same
+    // checked-in files like AHCODE.md and .ahcode/rules/*.md, so the same
     // content gets loaded twice. Skip Project-type (checked-in) files from
     // directories above the worktree but within the main repo — the worktree
-    // already has its own checkout. CLAUDE.local.md is gitignored so it only
+    // already has its own checkout. AHCODE.local.md is gitignored so it only
     // exists in the main repo and is still loaded.
     // See: https://github.com/anthropics/claude-code/issues/29599
     const gitRoot = findGitRoot(originalCwd)
@@ -882,9 +882,9 @@ export const getMemoryFiles = memoize(
         pathInWorkingPath(dir, canonicalRoot) &&
         !pathInWorkingPath(dir, gitRoot)
 
-      // Try reading CLAUDE.md (Project) - only if projectSettings is enabled
+      // Try reading AHCODE.md (Project) - only if projectSettings is enabled
       if (isSettingSourceEnabled('projectSettings') && !skipProject) {
-        const projectPath = join(dir, 'CLAUDE.md')
+        const projectPath = join(dir, 'AHCODE.md')
         result.push(
           ...(await processMemoryFile(
             projectPath,
@@ -894,8 +894,8 @@ export const getMemoryFiles = memoize(
           )),
         )
 
-        // Try reading .claude/CLAUDE.md (Project)
-        const dotClaudePath = join(dir, '.claude', 'CLAUDE.md')
+        // Try reading .ahcode/AHCODE.md (Project)
+        const dotClaudePath = join(dir, '.ahcode', 'AHCODE.md')
         result.push(
           ...(await processMemoryFile(
             dotClaudePath,
@@ -905,8 +905,8 @@ export const getMemoryFiles = memoize(
           )),
         )
 
-        // Try reading .claude/rules/*.md files (Project)
-        const rulesDir = join(dir, '.claude', 'rules')
+        // Try reading .ahcode/rules/*.md files (Project)
+        const rulesDir = join(dir, '.ahcode', 'rules')
         result.push(
           ...(await processMdRules({
             rulesDir,
@@ -918,9 +918,9 @@ export const getMemoryFiles = memoize(
         )
       }
 
-      // Try reading CLAUDE.local.md (Local) - only if localSettings is enabled
+      // Try reading AHCODE.local.md (Local) - only if localSettings is enabled
       if (isSettingSourceEnabled('localSettings')) {
-        const localPath = join(dir, 'CLAUDE.local.md')
+        const localPath = join(dir, 'AHCODE.local.md')
         result.push(
           ...(await processMemoryFile(
             localPath,
@@ -932,15 +932,15 @@ export const getMemoryFiles = memoize(
       }
     }
 
-    // Process CLAUDE.md from additional directories (--add-dir) if env var is enabled
-    // This is controlled by CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD and defaults to off
+    // Process AHCODE.md from additional directories (--add-dir) if env var is enabled
+    // This is controlled by AHCODE_ADDITIONAL_DIRECTORIES_AHCODE_MD and defaults to off
     // Note: we don't check isSettingSourceEnabled('projectSettings') here because --add-dir
     // is an explicit user action and the SDK defaults settingSources to [] when not specified
-    if (isEnvTruthy(process.env.CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD)) {
-      const additionalDirs = getAdditionalDirectoriesForClaudeMd()
+    if (isEnvTruthy(process.env.AHCODE_ADDITIONAL_DIRECTORIES_AHCODE_MD)) {
+      const additionalDirs = getAdditionalDirectoriesForAhcodeMd()
       for (const dir of additionalDirs) {
-        // Try reading CLAUDE.md from the additional directory
-        const projectPath = join(dir, 'CLAUDE.md')
+        // Try reading AHCODE.md from the additional directory
+        const projectPath = join(dir, 'AHCODE.md')
         result.push(
           ...(await processMemoryFile(
             projectPath,
@@ -950,8 +950,8 @@ export const getMemoryFiles = memoize(
           )),
         )
 
-        // Try reading .claude/CLAUDE.md from the additional directory
-        const dotClaudePath = join(dir, '.claude', 'CLAUDE.md')
+        // Try reading .ahcode/AHCODE.md from the additional directory
+        const dotClaudePath = join(dir, '.ahcode', 'AHCODE.md')
         result.push(
           ...(await processMemoryFile(
             dotClaudePath,
@@ -961,8 +961,8 @@ export const getMemoryFiles = memoize(
           )),
         )
 
-        // Try reading .claude/rules/*.md files from the additional directory
-        const rulesDir = join(dir, '.claude', 'rules')
+        // Try reading .ahcode/rules/*.md files from the additional directory
+        const rulesDir = join(dir, '.ahcode', 'rules')
         result.push(
           ...(await processMdRules({
             rulesDir,
@@ -1023,7 +1023,7 @@ export const getMemoryFiles = memoize(
 
     if (!hasLoggedInitialLoad) {
       hasLoggedInitialLoad = true
-      logEvent('tengu_claudemd__initial_load', {
+      logEvent('tengu_ahcodemd__initial_load', {
         file_count: result.length,
         total_content_length: totalContentLength,
         user_count: typeCounts['User'] ?? 0,
@@ -1041,9 +1041,9 @@ export const getMemoryFiles = memoize(
     // Fire InstructionsLoaded hook for each instruction file loaded
     // (fire-and-forget, audit/observability only).
     // AutoMem/TeamMem are intentionally excluded — they're a separate
-    // memory system, not "instructions" in the CLAUDE.md/rules sense.
+    // memory system, not "instructions" in the AHCODE.md/rules sense.
     // Gated on !forceIncludeExternal: the forceIncludeExternal=true variant
-    // is only used by getExternalClaudeMdIncludes() for approval checks, not
+    // is only used by getExternalAhcodeMdIncludes() for approval checks, not
     // for building context — firing the hook there would double-fire on startup.
     // The one-shot flag is consumed on every !forceIncludeExternal cache miss
     // (NOT gated on hasInstructionsLoadedHook) so the flag is released even
@@ -1149,7 +1149,7 @@ export function filterInjectedMemoryFiles(
   return files.filter(f => f.type !== 'AutoMem' && f.type !== 'TeamMem')
 }
 
-export const getClaudeMds = (
+export const getAhcodeMds = (
   memoryFiles: MemoryFileInfo[],
   filter?: (type: MemoryType) => boolean,
 ): string => {
@@ -1207,8 +1207,8 @@ export async function getManagedAndUserConditionalRules(
 ): Promise<MemoryFileInfo[]> {
   const result: MemoryFileInfo[] = []
 
-  // Process Managed conditional .claude/rules/*.md files
-  const managedClaudeRulesDir = getManagedClaudeRulesDir()
+  // Process Managed conditional .ahcode/rules/*.md files
+  const managedClaudeRulesDir = getManagedAhcodeRulesDir()
   result.push(
     ...(await processConditionedMdRules(
       targetPath,
@@ -1220,8 +1220,8 @@ export async function getManagedAndUserConditionalRules(
   )
 
   if (isSettingSourceEnabled('userSettings')) {
-    // Process User conditional .claude/rules/*.md files
-    const userClaudeRulesDir = getUserClaudeRulesDir()
+    // Process User conditional .ahcode/rules/*.md files
+    const userClaudeRulesDir = getUserAhcodeRulesDir()
     result.push(
       ...(await processConditionedMdRules(
         targetPath,
@@ -1238,7 +1238,7 @@ export async function getManagedAndUserConditionalRules(
 
 /**
  * Gets memory files for a single nested directory (between CWD and target).
- * Loads CLAUDE.md, unconditional rules, and conditional rules for that directory.
+ * Loads AHCODE.md, unconditional rules, and conditional rules for that directory.
  *
  * @param dir The directory to process
  * @param targetPath The target file path (for conditional rule matching)
@@ -1252,9 +1252,9 @@ export async function getMemoryFilesForNestedDirectory(
 ): Promise<MemoryFileInfo[]> {
   const result: MemoryFileInfo[] = []
 
-  // Process project memory files (CLAUDE.md and .claude/CLAUDE.md)
+  // Process project memory files (AHCODE.md and .ahcode/AHCODE.md)
   if (isSettingSourceEnabled('projectSettings')) {
-    const projectPath = join(dir, 'CLAUDE.md')
+    const projectPath = join(dir, 'AHCODE.md')
     result.push(
       ...(await processMemoryFile(
         projectPath,
@@ -1263,7 +1263,7 @@ export async function getMemoryFilesForNestedDirectory(
         false,
       )),
     )
-    const dotClaudePath = join(dir, '.claude', 'CLAUDE.md')
+    const dotClaudePath = join(dir, '.ahcode', 'AHCODE.md')
     result.push(
       ...(await processMemoryFile(
         dotClaudePath,
@@ -1274,17 +1274,17 @@ export async function getMemoryFilesForNestedDirectory(
     )
   }
 
-  // Process local memory file (CLAUDE.local.md)
+  // Process local memory file (AHCODE.local.md)
   if (isSettingSourceEnabled('localSettings')) {
-    const localPath = join(dir, 'CLAUDE.local.md')
+    const localPath = join(dir, 'AHCODE.local.md')
     result.push(
       ...(await processMemoryFile(localPath, 'Local', processedPaths, false)),
     )
   }
 
-  const rulesDir = join(dir, '.claude', 'rules')
+  const rulesDir = join(dir, '.ahcode', 'rules')
 
-  // Process project unconditional .claude/rules/*.md files, which were not eagerly loaded
+  // Process project unconditional .ahcode/rules/*.md files, which were not eagerly loaded
   // Use a separate processedPaths set to avoid marking conditional rule files as processed
   const unconditionalProcessedPaths = new Set(processedPaths)
   result.push(
@@ -1297,7 +1297,7 @@ export async function getMemoryFilesForNestedDirectory(
     })),
   )
 
-  // Process project conditional .claude/rules/*.md files
+  // Process project conditional .ahcode/rules/*.md files
   result.push(
     ...(await processConditionedMdRules(
       targetPath,
@@ -1330,7 +1330,7 @@ export async function getConditionalRulesForCwdLevelDirectory(
   targetPath: string,
   processedPaths: Set<string>,
 ): Promise<MemoryFileInfo[]> {
-  const rulesDir = join(dir, '.claude', 'rules')
+  const rulesDir = join(dir, '.ahcode', 'rules')
   return processConditionedMdRules(
     targetPath,
     rulesDir,
@@ -1341,7 +1341,7 @@ export async function getConditionalRulesForCwdLevelDirectory(
 }
 
 /**
- * Processes all .md files in the .claude/rules/ directory and its subdirectories,
+ * Processes all .md files in the .ahcode/rules/ directory and its subdirectories,
  * filtering to only include files with frontmatter paths that match the target path
  * @param targetPath The file path to match against frontmatter glob patterns
  * @param rulesDir The path to the rules directory
@@ -1371,11 +1371,11 @@ export async function processConditionedMdRules(
       return false
     }
 
-    // For Project rules: glob patterns are relative to the directory containing .claude
+    // For Project rules: glob patterns are relative to the directory containing .ahcode
     // For Managed/User rules: glob patterns are relative to the original CWD
     const baseDir =
       type === 'Project'
-        ? dirname(dirname(rulesDir)) // Parent of .claude
+        ? dirname(dirname(rulesDir)) // Parent of .ahcode
         : getOriginalCwd() // Project root for managed/user rules
 
     const relativePath = isAbsolute(targetPath)
@@ -1395,15 +1395,15 @@ export async function processConditionedMdRules(
   })
 }
 
-export type ExternalClaudeMdInclude = {
+export type ExternalAhcodeMdInclude = {
   path: string
   parent: string
 }
 
-export function getExternalClaudeMdIncludes(
+export function getExternalAhcodeMdIncludes(
   files: MemoryFileInfo[],
-): ExternalClaudeMdInclude[] {
-  const externals: ExternalClaudeMdInclude[] = []
+): ExternalAhcodeMdInclude[] {
+  const externals: ExternalAhcodeMdInclude[] = []
   for (const file of files) {
     if (file.type !== 'User' && file.parent && !pathInOriginalCwd(file.path)) {
       externals.push({ path: file.path, parent: file.parent })
@@ -1412,36 +1412,36 @@ export function getExternalClaudeMdIncludes(
   return externals
 }
 
-export function hasExternalClaudeMdIncludes(files: MemoryFileInfo[]): boolean {
-  return getExternalClaudeMdIncludes(files).length > 0
+export function hasExternalAhcodeMdIncludes(files: MemoryFileInfo[]): boolean {
+  return getExternalAhcodeMdIncludes(files).length > 0
 }
 
-export async function shouldShowClaudeMdExternalIncludesWarning(): Promise<boolean> {
+export async function shouldShowAhcodeMdExternalIncludesWarning(): Promise<boolean> {
   const config = getCurrentProjectConfig()
   if (
-    config.hasClaudeMdExternalIncludesApproved ||
-    config.hasClaudeMdExternalIncludesWarningShown
+    config.hasAhcodeMdExternalIncludesApproved ||
+    config.hasAhcodeMdExternalIncludesWarningShown
   ) {
     return false
   }
 
-  return hasExternalClaudeMdIncludes(await getMemoryFiles(true))
+  return hasExternalAhcodeMdIncludes(await getMemoryFiles(true))
 }
 
 /**
- * Check if a file path is a memory file (CLAUDE.md, CLAUDE.local.md, or .claude/rules/*.md)
+ * Check if a file path is a memory file (AHCODE.md, AHCODE.local.md, or .ahcode/rules/*.md)
  */
 export function isMemoryFilePath(filePath: string): boolean {
   const name = basename(filePath)
   const normalizedPath = normalizePathForComparison(filePath)
 
-  // CLAUDE.md or CLAUDE.local.md anywhere
-  if (name === 'CLAUDE.md' || name === 'CLAUDE.local.md') {
+  // AHCODE.md or AHCODE.local.md anywhere
+  if (name === 'AHCODE.md' || name === 'AHCODE.local.md') {
     return true
   }
 
-  // .md files in .claude/rules/ directories
-  if (name.endsWith('.md') && normalizedPath.includes('/.claude/rules/')) {
+  // .md files in .ahcode/rules/ directories
+  if (name.endsWith('.md') && normalizedPath.includes('/.ahcode/rules/')) {
     return true
   }
 

@@ -1,5 +1,5 @@
 /**
- * Bridge module: converts Claude Code's SDKMessage stream events from
+ * Bridge module: converts AH Code's SDKMessage stream events from
  * QueryEngine.submitMessage() into ACP SessionUpdate notifications.
  *
  * Handles all SDKMessage types:
@@ -1225,7 +1225,7 @@ function toAcpNotifications(
         ;(update as Record<string, unknown>)._meta = {
           ...existingMeta,
           claudeCode: {
-            ...((existingMeta?.claudeCode as Record<string, unknown>) ?? {}),
+            ...((existingMeta?.ahcodeCode as Record<string, unknown>) ?? {}),
             parentToolUseId: options.parentToolUseId,
           },
         }

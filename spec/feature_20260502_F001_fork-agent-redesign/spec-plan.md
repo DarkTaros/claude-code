@@ -226,7 +226,7 @@
 
 - [x] 移除背景任务说明的 `!forkEnabled` 条件
   - 位置: `packages/builtin-tools/src/tools/AgentTool/prompt.ts` `getPrompt()` 函数内背景任务说明的条件判断（~L259-261）
-  - 将条件从 `!isEnvTruthy(process.env.CLAUDE_CODE_DISABLE_BACKGROUND_TASKS) && !isInProcessTeammate() && !forkEnabled` 改为 `!isEnvTruthy(process.env.CLAUDE_CODE_DISABLE_BACKGROUND_TASKS) && !isInProcessTeammate()`
+  - 将条件从 `!isEnvTruthy(process.env.AHCODE_DISABLE_BACKGROUND_TASKS) && !isInProcessTeammate() && !forkEnabled` 改为 `!isEnvTruthy(process.env.AHCODE_DISABLE_BACKGROUND_TASKS) && !isInProcessTeammate()`
   - 原因: Task 1 已解耦 forceAsync，fork agent 不再强制异步，背景任务说明应在 fork 启用时也显示
 
 - [x] 更新 continue agent note 中的术语
@@ -249,7 +249,7 @@
     - `forkEnabled = true` 时: prompt 包含背景任务说明（`run_in_background`）
     - `forkEnabled = false` 时: prompt 不包含 "`fork: true`" 文本，不包含 "When to fork" section
     - `forkEnabled = false` 时: prompt 包含 "general-purpose agent" 回退说明
-  - Mock 列表: `isForkSubagentEnabled`（返回 true/false）、`getFeatureValue_CACHED_MAY_BE_STALE`（返回 false）、`shouldInjectAgentListInMessages`（返回 false）、`isInProcessTeammate`（返回 false）、`isTeammate`（返回 false）、`getSubscriptionType`（返回 'pro'）、`hasEmbeddedSearchTools`（返回 false）、环境变量 `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS` 未定义
+  - Mock 列表: `isForkSubagentEnabled`（返回 true/false）、`getFeatureValue_CACHED_MAY_BE_STALE`（返回 false）、`shouldInjectAgentListInMessages`（返回 false）、`isInProcessTeammate`（返回 false）、`isTeammate`（返回 false）、`getSubscriptionType`（返回 'pro'）、`hasEmbeddedSearchTools`（返回 false）、环境变量 `AHCODE_DISABLE_BACKGROUND_TASKS` 未定义
   - 运行命令: `bun test packages/builtin-tools/src/tools/AgentTool/__tests__/prompt.test.ts`
   - 预期: 所有测试通过
 

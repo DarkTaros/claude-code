@@ -11,7 +11,7 @@ import {
 import { type ReleaseChannel, saveGlobalConfig } from './config.js'
 import { logForDebugging } from './debug.js'
 import { env } from './env.js'
-import { getClaudeConfigHomeDir } from './envUtils.js'
+import { getAhcodeConfigHomeDir } from './envUtils.js'
 import { ClaudeError, getErrnoCode, isENOENT } from './errors.js'
 import { execFileNoThrowWithCwd } from './execFileNoThrow.js'
 import { getFsImplementation } from './fsOperations.js'
@@ -82,7 +82,7 @@ export async function assertMinVersion(): Promise<void> {
       lt(MACRO.VERSION, versionConfig.minVersion)
     ) {
       console.error(`
-It looks like your version of Claude Code (${MACRO.VERSION}) needs an update.
+It looks like your version of AH Code (${MACRO.VERSION}) needs an update.
 A newer version (${versionConfig.minVersion} or higher) is required to continue.
 
 To update, please run:
@@ -165,7 +165,7 @@ const LOCK_TIMEOUT_MS = 5 * 60 * 1000 // 5 minute timeout for locks
  * This is a function to ensure it's evaluated at runtime after test setup
  */
 export function getLockFilePath(): string {
-  return join(getClaudeConfigHomeDir(), '.update.lock')
+  return join(getAhcodeConfigHomeDir(), '.update.lock')
 }
 
 /**
@@ -228,7 +228,7 @@ async function acquireLock(): Promise<boolean> {
         // fs.mkdir from getFsImplementation() is always recursive:true and
         // swallows EEXIST internally, so a dir-creation race cannot reach the
         // catch below — only writeFile's EEXIST (true lock contention) can.
-        await fs.mkdir(getClaudeConfigHomeDir())
+        await fs.mkdir(getAhcodeConfigHomeDir())
         await writeFile(lockPath, `${process.pid}`, {
           encoding: 'utf8',
           flag: 'wx',
@@ -480,7 +480,7 @@ export async function installGlobalPackage(
       console.error(`
 Error: Windows NPM detected in WSL
 
-You're running Claude Code in WSL but using the Windows NPM installation from /mnt/c/.
+You're running AH Code in WSL but using the Windows NPM installation from /mnt/c/.
 This configuration is not supported for updates.
 
 To fix this issue:

@@ -8,7 +8,7 @@ import {
   writeFileSync,
 } from 'fs'
 import { basename, join, resolve } from 'path'
-import { getClaudeConfigHomeDir } from '../../utils/envUtils.js'
+import { getAhcodeConfigHomeDir } from '../../utils/envUtils.js'
 import type {
   ProjectContextSource,
   SkillLearningProjectContext,
@@ -22,7 +22,7 @@ const GLOBAL_PROJECT_ID = 'global'
 const GLOBAL_PROJECT_NAME = 'Global'
 
 export function getSkillLearningRootDir(): string {
-  return join(getClaudeConfigHomeDir(), 'skill-learning')
+  return join(getAhcodeConfigHomeDir(), 'skill-learning')
 }
 
 export function getProjectsRegistryPath(): string {

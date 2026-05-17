@@ -145,9 +145,8 @@ function createToolUseContext(): any {
 
 describe('query autonomy/provider boundary', () => {
   test('provider api-error messages fail a consumed autonomy run instead of advancing the flow', async () => {
-    const previousDisableAttachments =
-      process.env.CLAUDE_CODE_DISABLE_ATTACHMENTS
-    process.env.CLAUDE_CODE_DISABLE_ATTACHMENTS = '1'
+    const previousDisableAttachments = process.env.AHCODE_DISABLE_ATTACHMENTS
+    process.env.AHCODE_DISABLE_ATTACHMENTS = '1'
     try {
       const command = await startManagedAutonomyFlowFromHeartbeatTask({
         task: {
@@ -238,17 +237,16 @@ describe('query autonomy/provider boundary', () => {
       expect(getCommandsByMaxPriority('later')).toHaveLength(0)
     } finally {
       if (previousDisableAttachments === undefined) {
-        delete process.env.CLAUDE_CODE_DISABLE_ATTACHMENTS
+        delete process.env.AHCODE_DISABLE_ATTACHMENTS
       } else {
-        process.env.CLAUDE_CODE_DISABLE_ATTACHMENTS = previousDisableAttachments
+        process.env.AHCODE_DISABLE_ATTACHMENTS = previousDisableAttachments
       }
     }
   })
 
   test('generator return cancels a consumed autonomy run instead of leaving it running', async () => {
-    const previousDisableAttachments =
-      process.env.CLAUDE_CODE_DISABLE_ATTACHMENTS
-    process.env.CLAUDE_CODE_DISABLE_ATTACHMENTS = '1'
+    const previousDisableAttachments = process.env.AHCODE_DISABLE_ATTACHMENTS
+    process.env.AHCODE_DISABLE_ATTACHMENTS = '1'
     try {
       const command = await startManagedAutonomyFlowFromHeartbeatTask({
         task: {
@@ -328,9 +326,9 @@ describe('query autonomy/provider boundary', () => {
       expect(getCommandsByMaxPriority('later')).toHaveLength(0)
     } finally {
       if (previousDisableAttachments === undefined) {
-        delete process.env.CLAUDE_CODE_DISABLE_ATTACHMENTS
+        delete process.env.AHCODE_DISABLE_ATTACHMENTS
       } else {
-        process.env.CLAUDE_CODE_DISABLE_ATTACHMENTS = previousDisableAttachments
+        process.env.AHCODE_DISABLE_ATTACHMENTS = previousDisableAttachments
       }
     }
   })

@@ -3,7 +3,7 @@
  *
  * Three-layer model (see reconciler.ts for Layer-2):
  * - Layer 1: intent (settings)
- * - Layer 2: materialization (~/.claude/plugins/) — reconcileMarketplaces()
+ * - Layer 2: materialization (~/.ahcode/plugins/) — reconcileMarketplaces()
  * - Layer 3: active components (AppState) — this file
  *
  * Called from:
@@ -21,8 +21,8 @@ import { getOriginalCwd } from '../../bootstrap/state.js'
 import type { Command } from '../../commands.js'
 import { reinitializeLspServerManager } from '../../services/lsp/manager.js'
 import type { AppState } from '../../state/AppState.js'
-import type { AgentDefinitionsResult } from '@claude-code-best/builtin-tools/tools/AgentTool/loadAgentsDir.js'
-import { getAgentDefinitionsWithOverrides } from '@claude-code-best/builtin-tools/tools/AgentTool/loadAgentsDir.js'
+import type { AgentDefinitionsResult } from '@ahcode/builtin-tools/tools/AgentTool/loadAgentsDir.js'
+import { getAgentDefinitionsWithOverrides } from '@ahcode/builtin-tools/tools/AgentTool/loadAgentsDir.js'
 import type { PluginError } from '../../types/plugin.js'
 import { logForDebugging } from '../debug.js'
 import { errorMessage } from '../errors.js'

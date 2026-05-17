@@ -8,4 +8,4 @@ docs
 packages/remote-control-server/data/*.db
 packages/remote-control-server/data/*.db-wal
 packages/remote-control-server/data/*.db-shm
-.claude
+.ahcode

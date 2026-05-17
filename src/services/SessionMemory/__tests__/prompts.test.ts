@@ -32,20 +32,20 @@ const realIsEnvTruthy = (v: string | boolean | undefined): boolean => {
 // after this suite's flag flips off. Keep aligned with
 // src/utils/model/model.ts getDefaultOpusModel().
 function resolveDefaultOpusModelForTests(): string {
-  if (process.env.CLAUDE_CODE_USE_OPENAI === '1') {
+  if (process.env.AHCODE_USE_OPENAI === '1') {
     if (process.env.OPENAI_DEFAULT_OPUS_MODEL)
       return process.env.OPENAI_DEFAULT_OPUS_MODEL
   }
-  if (process.env.CLAUDE_CODE_USE_GEMINI === '1') {
+  if (process.env.AHCODE_USE_GEMINI === '1') {
     if (process.env.GEMINI_DEFAULT_OPUS_MODEL)
       return process.env.GEMINI_DEFAULT_OPUS_MODEL
   }
   if (process.env.ANTHROPIC_DEFAULT_OPUS_MODEL)
     return process.env.ANTHROPIC_DEFAULT_OPUS_MODEL
-  if (process.env.CLAUDE_CODE_USE_BEDROCK === '1')
+  if (process.env.AHCODE_USE_BEDROCK === '1')
     return 'us.anthropic.claude-opus-4-7-v1'
-  if (process.env.CLAUDE_CODE_USE_VERTEX === '1') return 'claude-opus-4-7'
-  if (process.env.CLAUDE_CODE_USE_FOUNDRY === '1') return 'claude-opus-4-7'
+  if (process.env.AHCODE_USE_VERTEX === '1') return 'claude-opus-4-7'
+  if (process.env.AHCODE_USE_FOUNDRY === '1') return 'claude-opus-4-7'
   return 'claude-opus-4-7'
 }
 
@@ -162,22 +162,22 @@ const VERTEX_REGION_OVERRIDES_SM: ReadonlyArray<[string, string]> = [
   ['claude-sonnet-4', 'VERTEX_REGION_CLAUDE_4_0_SONNET'],
 ]
 
-// Real getClaudeConfigHomeDir is memoized via lodash, so consumers may call
+// Real getAhcodeConfigHomeDir is memoized via lodash, so consumers may call
 // `.cache.clear()` on it. Provide a no-op .cache stub.
 const mockedGetClaudeConfigHomeDirSM: (() => string) & {
   cache: { clear: () => void; get: (k: unknown) => unknown }
 } = Object.assign(
   () =>
     useMockForSessionMemory
-      ? '/mock/home/.claude'
-      : (process.env.CLAUDE_CONFIG_DIR ?? join(homedir(), '.claude')).normalize(
+      ? '/mock/home/.ahcode'
+      : (process.env.AHCODE_CONFIG_DIR ?? join(homedir(), '.ahcode')).normalize(
           'NFC',
         ),
   { cache: { clear: () => {}, get: (_k: unknown) => undefined } },
 )
 
 mock.module('src/utils/envUtils.js', () => ({
-  getClaudeConfigHomeDir: mockedGetClaudeConfigHomeDirSM,
+  getAhcodeConfigHomeDir: mockedGetClaudeConfigHomeDirSM,
   isEnvTruthy: realIsEnvTruthy,
   getEnvBool: () => false,
   getEnvNumber: () => undefined,
@@ -195,8 +195,8 @@ mock.module('src/utils/envUtils.js', () => ({
   getTeamsDir: () =>
     join(
       useMockForSessionMemory
-        ? '/mock/home/.claude'
-        : (process.env.CLAUDE_CONFIG_DIR ?? join(homedir(), '.claude')),
+        ? '/mock/home/.ahcode'
+        : (process.env.AHCODE_CONFIG_DIR ?? join(homedir(), '.ahcode')),
       'teams',
     ),
   hasNodeOption: (flag: string) => {
@@ -205,7 +205,7 @@ mock.module('src/utils/envUtils.js', () => ({
   },
   isEnvDefinedFalsy: realIsEnvDefinedFalsy,
   isBareMode: () =>
-    realIsEnvTruthy(process.env.CLAUDE_CODE_SIMPLE) ||
+    realIsEnvTruthy(process.env.AHCODE_SIMPLE) ||
     process.argv.includes('--bare'),
   parseEnvVars: (rawEnvArgs: string[] | undefined) => {
     const parsed: Record<string, string> = {}

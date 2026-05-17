@@ -6,11 +6,11 @@ import {
   mcpInfoFromString,
 } from '../../services/mcp/mcpStringUtils.js'
 import type { Tool, ToolPermissionContext, ToolUseContext } from '../../Tool.js'
-import { AGENT_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/AgentTool/constants.js'
-import { shouldUseSandbox } from '@claude-code-best/builtin-tools/tools/BashTool/shouldUseSandbox.js'
-import { BASH_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/BashTool/toolName.js'
-import { POWERSHELL_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/PowerShellTool/toolName.js'
-import { REPL_TOOL_NAME } from '@claude-code-best/builtin-tools/tools/REPLTool/constants.js'
+import { AGENT_TOOL_NAME } from '@ahcode/builtin-tools/tools/AgentTool/constants.js'
+import { shouldUseSandbox } from '@ahcode/builtin-tools/tools/BashTool/shouldUseSandbox.js'
+import { BASH_TOOL_NAME } from '@ahcode/builtin-tools/tools/BashTool/toolName.js'
+import { POWERSHELL_TOOL_NAME } from '@ahcode/builtin-tools/tools/PowerShellTool/toolName.js'
+import { REPL_TOOL_NAME } from '@ahcode/builtin-tools/tools/REPLTool/constants.js'
 import type { AssistantMessage } from '../../types/message.js'
 import { extractOutputRedirections } from '../bash/commands.js'
 import { logForDebugging } from '../debug.js'
@@ -1162,7 +1162,7 @@ export async function checkRuleBasedPermissions(
     return toolPermissionResult
   }
 
-  // 1g. Safety checks (e.g. .git/, .claude/, .vscode/, shell configs) are
+  // 1g. Safety checks (e.g. .git/, .ahcode/, .vscode/, shell configs) are
   // bypass-immune — they must prompt even when a PreToolUse hook returned
   // allow. checkPathSafetyForAutoEdit returns {type:'safetyCheck'} for these.
   if (
@@ -1270,7 +1270,7 @@ async function hasPermissionsToUseToolInner(
     return toolPermissionResult
   }
 
-  // 1g. Safety checks (e.g. .git/, .claude/, .vscode/, shell configs) are
+  // 1g. Safety checks (e.g. .git/, .ahcode/, .vscode/, shell configs) are
   // bypass-immune — they must prompt even in bypassPermissions mode.
   // checkPathSafetyForAutoEdit returns {type:'safetyCheck'} for these paths.
   if (

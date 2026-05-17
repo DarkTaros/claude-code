@@ -103,7 +103,7 @@ export function isAnalyticsToolDetailsLoggingEnabled(
   mcpServerType: string | undefined,
   mcpServerBaseUrl: string | undefined,
 ): boolean {
-  if (process.env.CLAUDE_CODE_ENTRYPOINT === 'local-agent') {
+  if (process.env.AHCODE_ENTRYPOINT === 'local-agent') {
     return true
   }
   if (mcpServerType === 'claudeai-proxy') {
@@ -425,16 +425,16 @@ export type EnvContext = {
   isRunningWithBun: boolean
   isCi: boolean
   isClaubbit: boolean
-  isClaudeCodeRemote: boolean
+  isAhcodeRemote: boolean
   isLocalAgentMode: boolean
   isConductor: boolean
   remoteEnvironmentType?: string
   coworkerType?: string
-  claudeCodeContainerId?: string
-  claudeCodeRemoteSessionId?: string
+  ahcodeContainerId?: string
+  ahcodeRemoteSessionId?: string
   tags?: string
   isGithubAction: boolean
-  isClaudeCodeAction: boolean
+  isAhcodeAction: boolean
   isClaudeAiAuth: boolean
   version: string
   versionBase?: string
@@ -484,8 +484,8 @@ export type EventMetadata = {
   sweBenchInstanceId: string
   sweBenchTaskId: string
   // Swarm/team agent identification for analytics attribution
-  agentId?: string // CLAUDE_CODE_AGENT_ID (format: agentName@teamName) or subagent UUID
-  parentSessionId?: string // CLAUDE_CODE_PARENT_SESSION_ID (team lead's session)
+  agentId?: string // AHCODE_AGENT_ID (format: agentName@teamName) or subagent UUID
+  parentSessionId?: string // AHCODE_PARENT_SESSION_ID (team lead's session)
   agentType?: 'teammate' | 'subagent' | 'standalone' // Distinguishes swarm teammates, Agent tool subagents, and standalone agents
   teamName?: string // Team name for swarm agents (from env var or AsyncLocalStorage)
   subscriptionType?: string // OAuth subscription tier (max, pro, enterprise, team)
@@ -583,8 +583,8 @@ const buildEnvContext = memoize(async (): Promise<EnvContext> => {
     platform: getHostPlatformForAnalytics(),
     // Raw process.platform so freebsd/openbsd/aix/sunos are visible in BQ.
     // getHostPlatformForAnalytics() buckets those into 'linux'; here we want
-    // the truth. CLAUDE_CODE_HOST_PLATFORM still overrides for container/remote.
-    platformRaw: process.env.CLAUDE_CODE_HOST_PLATFORM || process.platform,
+    // the truth. AHCODE_HOST_PLATFORM still overrides for container/remote.
+    platformRaw: process.env.AHCODE_HOST_PLATFORM || process.platform,
     arch: env.arch,
     nodeVersion: env.nodeVersion,
     terminal: envDynamic.terminal,
@@ -593,29 +593,29 @@ const buildEnvContext = memoize(async (): Promise<EnvContext> => {
     isRunningWithBun: env.isRunningWithBun(),
     isCi: isEnvTruthy(process.env.CI),
     isClaubbit: isEnvTruthy(process.env.CLAUBBIT),
-    isClaudeCodeRemote: isEnvTruthy(process.env.CLAUDE_CODE_REMOTE),
-    isLocalAgentMode: process.env.CLAUDE_CODE_ENTRYPOINT === 'local-agent',
+    isAhcodeRemote: isEnvTruthy(process.env.AHCODE_REMOTE),
+    isLocalAgentMode: process.env.AHCODE_ENTRYPOINT === 'local-agent',
     isConductor: env.isConductor(),
-    ...(process.env.CLAUDE_CODE_REMOTE_ENVIRONMENT_TYPE && {
-      remoteEnvironmentType: process.env.CLAUDE_CODE_REMOTE_ENVIRONMENT_TYPE,
+    ...(process.env.AHCODE_REMOTE_ENVIRONMENT_TYPE && {
+      remoteEnvironmentType: process.env.AHCODE_REMOTE_ENVIRONMENT_TYPE,
     }),
     // Gated by feature flag to prevent leaking "coworkerType" string in external builds
     ...(feature('COWORKER_TYPE_TELEMETRY')
-      ? process.env.CLAUDE_CODE_COWORKER_TYPE
-        ? { coworkerType: process.env.CLAUDE_CODE_COWORKER_TYPE }
+      ? process.env.AHCODE_COWORKER_TYPE
+        ? { coworkerType: process.env.AHCODE_COWORKER_TYPE }
         : {}
       : {}),
-    ...(process.env.CLAUDE_CODE_CONTAINER_ID && {
-      claudeCodeContainerId: process.env.CLAUDE_CODE_CONTAINER_ID,
+    ...(process.env.AHCODE_CONTAINER_ID && {
+      ahcodeContainerId: process.env.AHCODE_CONTAINER_ID,
     }),
-    ...(process.env.CLAUDE_CODE_REMOTE_SESSION_ID && {
-      claudeCodeRemoteSessionId: process.env.CLAUDE_CODE_REMOTE_SESSION_ID,
+    ...(process.env.AHCODE_REMOTE_SESSION_ID && {
+      ahcodeRemoteSessionId: process.env.AHCODE_REMOTE_SESSION_ID,
     }),
-    ...(process.env.CLAUDE_CODE_TAGS && {
-      tags: process.env.CLAUDE_CODE_TAGS,
+    ...(process.env.AHCODE_TAGS && {
+      tags: process.env.AHCODE_TAGS,
     }),
     isGithubAction: isEnvTruthy(process.env.GITHUB_ACTIONS),
-    isClaudeCodeAction: isEnvTruthy(process.env.CLAUDE_CODE_ACTION),
+    isAhcodeAction: isEnvTruthy(process.env.AHCODE_ACTION),
     isClaudeAiAuth: isClaudeAISubscriber(),
     version: MACRO.VERSION,
     versionBase: getVersionBase(),
@@ -710,8 +710,8 @@ export async function getEventMetadata(
     userType: process.env.USER_TYPE || '',
     ...(betas.length > 0 ? { betas: betas } : {}),
     envContext,
-    ...(process.env.CLAUDE_CODE_ENTRYPOINT && {
-      entrypoint: process.env.CLAUDE_CODE_ENTRYPOINT,
+    ...(process.env.AHCODE_ENTRYPOINT && {
+      entrypoint: process.env.AHCODE_ENTRYPOINT,
     }),
     ...(process.env.CLAUDE_AGENT_SDK_VERSION && {
       agentSdkVersion: process.env.CLAUDE_AGENT_SDK_VERSION,
@@ -827,11 +827,11 @@ export function to1PEventFormat(
     is_running_with_bun: envContext.isRunningWithBun,
     is_ci: envContext.isCi,
     is_claubbit: envContext.isClaubbit,
-    is_claude_code_remote: envContext.isClaudeCodeRemote,
+    is_claude_code_remote: envContext.isAhcodeRemote,
     is_local_agent_mode: envContext.isLocalAgentMode,
     is_conductor: envContext.isConductor,
     is_github_action: envContext.isGithubAction,
-    is_claude_code_action: envContext.isClaudeCodeAction,
+    is_claude_code_action: envContext.isAhcodeAction,
     is_claude_ai_auth: envContext.isClaudeAiAuth,
     version: envContext.version,
     build_time: envContext.buildTime,
@@ -845,11 +845,11 @@ export function to1PEventFormat(
   if (feature('COWORKER_TYPE_TELEMETRY') && envContext.coworkerType) {
     env.coworker_type = envContext.coworkerType
   }
-  if (envContext.claudeCodeContainerId) {
-    env.claude_code_container_id = envContext.claudeCodeContainerId
+  if (envContext.ahcodeContainerId) {
+    env.claude_code_container_id = envContext.ahcodeContainerId
   }
-  if (envContext.claudeCodeRemoteSessionId) {
-    env.claude_code_remote_session_id = envContext.claudeCodeRemoteSessionId
+  if (envContext.ahcodeRemoteSessionId) {
+    env.claude_code_remote_session_id = envContext.ahcodeRemoteSessionId
   }
   if (envContext.tags) {
     env.tags = envContext.tags

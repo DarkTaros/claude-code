@@ -1,6 +1,6 @@
 ---
 title: "MCP 协议 - 连接管理、工具发现与执行链路"
-description: "从源码角度解析 Claude Code 的 MCP 集成：内置 MCP 与外部 MCP 的区别、7 种传输层实现、connectToServer 的 memoize 缓存、工具发现的 LRU 策略、认证状态机、以及 MCP 工具如何进入权限检查链路。"
+description: "从源码角度解析 AH Code 的 MCP 集成：内置 MCP 与外部 MCP 的区别、7 种传输层实现、connectToServer 的 memoize 缓存、工具发现的 LRU 策略、认证状态机、以及 MCP 工具如何进入权限检查链路。"
 keywords: ["MCP", "Model Context Protocol", "工具扩展", "MCP 客户端", "工具发现", "内置 MCP", "外部 MCP"]
 ---
 
@@ -39,11 +39,11 @@ assembleToolPool()                    ← 合并内置工具 + MCP 工具
 
 ## 两种 MCP 模式：内置 vs 外部
 
-Claude Code 的 MCP 实现区分 **内置 MCP 服务器** 和 **外部 MCP 服务器**。两者使用相同的客户端协议和工具发现机制，但在连接方式、生命周期管理和配置来源上完全不同。
+AH Code 的 MCP 实现区分 **内置 MCP 服务器** 和 **外部 MCP 服务器**。两者使用相同的客户端协议和工具发现机制，但在连接方式、生命周期管理和配置来源上完全不同。
 
 ### 内置 MCP 服务器
 
-内置 MCP 服务器由 Claude Code 自身提供，无需用户手动配置。它们在启动时自动注册为 `dynamic` scope 的配置，并在同进程内运行。
+内置 MCP 服务器由 AH Code 自身提供，无需用户手动配置。它们在启动时自动注册为 `dynamic` scope 的配置，并在同进程内运行。
 
 | 服务器 | 名称 | 包路径 | Feature Flag | 启用方式 |
 |--------|------|--------|-------------|---------|
@@ -148,7 +148,7 @@ if (feature('CHICAGO_MCP') && isComputerUseMCPServer(name)) {
 
 #### VSCode SDK MCP
 
-VSCode SDK MCP 是特殊的内置模式。IDE（如 VS Code、JetBrains）通过嵌入方式启动 Claude Code，并传入 `type:'sdk'` 的 MCP 配置。这类配置：
+VSCode SDK MCP 是特殊的内置模式。IDE（如 VS Code、JetBrains）通过嵌入方式启动 AH Code，并传入 `type:'sdk'` 的 MCP 配置。这类配置：
 - 不经过保留名称检查（IDE 可以使用任意名称）
 - 不参与 enterprise MCP 的排他控制
 - 通过 VSCode SDK transport 连接
@@ -176,8 +176,8 @@ export function setupVscodeSdkMcp(sdkClients: MCPServerConnection[]): void {
 | 来源 | Scope | 文件位置 | 优先级 |
 |------|-------|---------|--------|
 | 项目配置 | `project` | `<project>/.mcp.json` | 最高（同名覆盖） |
-| 本地配置 | `local` | `<project>/.claude/settings.local.json` | 高 |
-| 用户配置 | `user` | `~/.claude/settings.json` | 中 |
+| 本地配置 | `local` | `<project>/.ahcode/settings.local.json` | 高 |
+| 用户配置 | `user` | `~/.ahcode/settings.json` | 中 |
 | 插件 | `dynamic` | 插件 manifest 中 `.mcp.json` | 中 |
 | claude.ai | `claudeai` | 通过 API 获取 | 低 |
 | 企业管控 | `enterprise` | 系统管理路径 `managed-mcp.json` | 排他（存在时覆盖全部） |
@@ -304,7 +304,7 @@ timer.unref?.()  // 不阻止进程退出
 
 ## 工具发现：从 MCP 到 Tool 接口
 
-`fetchToolsForClient()`（`client.ts:1744-2000`）使用 `memoizeWithLRU` 缓存（上限 100），将 MCP 工具转换为 Claude Code 的统一 Tool 接口：
+`fetchToolsForClient()`（`client.ts:1744-2000`）使用 `memoizeWithLRU` 缓存（上限 100），将 MCP 工具转换为 AH Code 的统一 Tool 接口：
 
 ```typescript
 const fullyQualifiedName = buildMcpToolName(client.name, tool.name)
@@ -404,4 +404,4 @@ getRemoteMcpServerConnectionBatchSize()  // 默认 20
 | `src/utils/computerUse/setup.ts` | Computer Use 动态注册 |
 | `src/utils/claudeInChrome/mcpServer.ts` | Chrome MCP Server 构建 + Bridge 配置 |
 | `src/tools/MCPTool/MCPTool.ts` | MCP 工具包装：统一 Tool 接口 |
-| `src/entrypoints/mcp.ts` | MCP server 入口（Claude Code 作为 MCP server） |
+| `src/entrypoints/mcp.ts` | MCP server 入口（AH Code 作为 MCP server） |

@@ -17,7 +17,7 @@ import { errorMessage, toError } from '../errors.js'
 import { getAuthHeaders } from '../http.js'
 import { logError } from '../log.js'
 import { jsonStringify } from '../slowOperations.js'
-import { getClaudeCodeUserAgent } from '../userAgent.js'
+import { getAhcodeUserAgent } from '../userAgent.js'
 
 type DataPoint = {
   attributes: Record<string, string>
@@ -48,11 +48,10 @@ export class BigQueryMetricsExporter implements PushMetricExporter {
 
     if (
       process.env.USER_TYPE === 'ant' &&
-      process.env.ANT_CLAUDE_CODE_METRICS_ENDPOINT
+      process.env.ANT_AHCODE_METRICS_ENDPOINT
     ) {
       this.endpoint =
-        process.env.ANT_CLAUDE_CODE_METRICS_ENDPOINT +
-        '/api/claude_code/metrics'
+        process.env.ANT_AHCODE_METRICS_ENDPOINT + '/api/claude_code/metrics'
     } else {
       this.endpoint = defaultEndpoint
     }
@@ -123,7 +122,7 @@ export class BigQueryMetricsExporter implements PushMetricExporter {
 
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
-        'User-Agent': getClaudeCodeUserAgent(),
+        'User-Agent': getAhcodeUserAgent(),
         ...authResult.headers,
       }
 
