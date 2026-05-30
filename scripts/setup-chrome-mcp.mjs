@@ -14,12 +14,21 @@ import { createRequire } from 'node:module'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 
+const require = createRequire(import.meta.url)
+
 if (process.env.AHCODE_SKIP_CHROME_MCP_SETUP === '1') {
   process.exit(0)
 }
 
-const require = createRequire(import.meta.url)
-const cliPath = require.resolve('@ahcode/mcp-chrome-bridge/dist/cli.js')
+let cliPath
+try {
+  cliPath = require.resolve('@ahcode/mcp-chrome-bridge/dist/cli.js')
+} catch {
+  console.warn(
+    '[setup-chrome-mcp] @ahcode/mcp-chrome-bridge not found, skipping Chrome MCP setup.',
+  )
+  process.exit(0)
+}
 
 const userArgs = process.argv.slice(2)
 
